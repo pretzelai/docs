@@ -1,0 +1,49 @@
+---
+title: "Sessions"
+description: "Each session is a branch, a sandbox, and a conversation with an agent."
+---
+
+A session is the core unit of work in Cord. It ties together a Git branch, a cloud sandbox, and a conversation with an AI agent.
+
+## Sessions are branches
+
+When you start a new session, Cord creates a fresh Git branch from your repo's default branch. Everything the agent does -- file changes, new files, deletions -- happens on this branch.
+
+The session name becomes the branch name. You can see the branch, the diff, and the PR status all in one place.
+
+## Starting sessions
+
+There are several ways to start a session:
+
+- **From the Cord UI** -- Click "New Session" on a repository and type your request
+- **From Slack** -- Tag Cord in a channel with a task description
+- **From Linear** -- Assign a ticket that Cord picks up automatically
+- **From your phone** -- Record a voice message describing what you want
+
+Each method creates the same thing: a branch, a sandbox, and an agent working on your request.
+
+## Parallel sessions
+
+You can run multiple sessions at the same time, even on the same repo. Each session gets its own branch and sandbox. This is useful for:
+
+- Working on several features simultaneously
+- Having an agent fix a bug while another agent builds a new feature
+- Trying different approaches to the same problem
+
+## Continuing sessions
+
+Sessions can be continued after the agent finishes. You can:
+
+- **Keep working** -- Give the agent follow-up instructions on the same branch
+- **Continue after merge** -- After merging a PR, start a new session that builds on the merged changes
+- **Fork a session** -- Create a new session that starts from another session's current state
+
+## Session lifecycle
+
+1. **Running** -- An agent is actively working
+2. **Ready** -- Agent is done, waiting for your review
+3. **PR open** -- A pull request has been created
+4. **Merged** -- The PR was merged
+5. **Archived** -- Session is no longer active
+
+You can see the status of all sessions in the sidebar, grouped by repository. Each shows the branch name, diff count, and current status.

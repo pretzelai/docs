@@ -1,0 +1,56 @@
+---
+title: "GitHub"
+description: "How Cord connects to GitHub -- authentication, repos, branches, and PRs."
+---
+
+GitHub is Cord's core integration. Your code lives on GitHub, and Cord creates branches and pull requests there.
+
+## Authentication
+
+Cord uses GitHub OAuth for sign-in. When you create an account, you authorize Cord to:
+
+- Read your profile and email
+- Access repositories you grant permission to
+- Create branches and pull requests
+- Read and write code in those repositories
+
+## Connecting repositories
+
+When you add a repo in Cord, you grant access to that specific repository. Cord doesn't request blanket access to all your repos -- you choose which ones to connect.
+
+For organization repos, you may need an org admin to approve the Cord GitHub App.
+
+## What Cord does on GitHub
+
+For each session, Cord:
+
+| Action | Description |
+|---|---|
+| **Creates a branch** | A new branch from your default branch (usually `main`) |
+| **Pushes commits** | Code changes are committed and pushed to the branch |
+| **Opens a PR** | When you click "Create PR", a pull request is opened |
+| **Updates the PR** | If the agent makes more changes, commits are added to the same PR |
+
+## Branch naming
+
+Branches created by Cord follow the pattern: `cord/<session-name>`. You can customize the prefix in repository settings.
+
+## PR descriptions
+
+PRs created by Cord include:
+
+- A summary of what the agent did
+- The conversation context that led to the changes
+- A link back to the session in Cord
+
+## CI/CD compatibility
+
+Cord PRs are standard GitHub pull requests. Your existing CI/CD pipelines, status checks, branch protection rules, and code review requirements all work as expected. Cord doesn't bypass any of your existing workflows.
+
+## Permissions
+
+Cord requests the minimum GitHub permissions needed:
+
+- `repo` scope for reading code and creating PRs
+- `read:user` for authentication
+- No access to repos you haven't explicitly connected

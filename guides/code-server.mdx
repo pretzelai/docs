@@ -1,0 +1,35 @@
+---
+title: "VS Code (code-server)"
+description: "Open a full VS Code editor in your browser, connected to your sandbox."
+---
+
+Every Cord sandbox includes [code-server](https://github.com/coder/code-server), a VS Code instance running in the cloud. Use it as an escape hatch when you need a full IDE.
+
+## When to use it
+
+Most of the time, you'll work through the Cord chat interface -- give the agent a task, review the diff, merge the PR. But sometimes you want to:
+
+- Manually edit files the agent missed
+- Debug something interactively with breakpoints
+- Explore the codebase in a familiar IDE
+- Run complex terminal workflows
+
+## Opening VS Code
+
+Click the **VS Code** button in any active session. This opens code-server in a new browser tab, connected directly to your sandbox's filesystem.
+
+Everything is shared:
+- The same files the agent is editing
+- The same terminal sessions
+- The same running dev server
+- The same Git branch
+
+Changes you make in VS Code are immediately visible to the agent, and vice versa.
+
+## Connection
+
+VS Code connects directly to the sandbox via a tunnel URL -- it doesn't route through Cord's servers. This means low latency and a responsive editing experience, similar to using VS Code locally.
+
+## Extensions
+
+code-server supports VS Code extensions. Install your preferred extensions through the extensions panel. Note that extensions are installed in the sandbox and won't persist across sessions unless you add them to your [persistent storage](/core-concepts/persistent-storage) setup.

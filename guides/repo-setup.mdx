@@ -1,0 +1,53 @@
+---
+title: "Repository setup"
+description: "Connect repos, configure builds, set environment variables, and enable Docker."
+---
+
+## Connecting a repository
+
+1. Go to your Cord dashboard
+2. Click **Add Repository**
+3. Select a repo from your GitHub account or organization
+4. Cord auto-detects your project's build configuration
+
+You can connect repos from any GitHub organization you have access to. Cord needs read/write access to create branches and pull requests.
+
+## Build detection
+
+When you add a repo, Cord runs an AI-powered build detection wizard that identifies:
+
+- **Package manager** -- npm, yarn, pnpm, bun
+- **Framework** -- Next.js, Vite, Express, Django, Rails, etc.
+- **Build commands** -- install, build, dev server start
+- **Port** -- which port your dev server runs on
+
+You can review and override any of these in repository settings.
+
+## Environment variables
+
+Many projects need environment variables for API keys, database URLs, or feature flags. Add them in **Repository Settings > Environment Variables**.
+
+- Variables are encrypted at rest in the database
+- They're automatically injected into every sandbox on startup
+- They're never exposed in logs or to other users
+
+<Warning>
+Environment variables are available to the AI agent running in your sandbox. Don't add secrets you wouldn't want an AI model to see in context.
+</Warning>
+
+## Docker support
+
+Docker builds work inside Cord sandboxes. If your project uses Docker for development (e.g., docker-compose for local services), it will work the same way in a sandbox.
+
+No additional configuration is needed -- Docker is available by default.
+
+## Repository settings
+
+In repository settings you can configure:
+
+| Setting | Description |
+|---|---|
+| **Build commands** | Override auto-detected install, build, and dev commands |
+| **Environment variables** | Encrypted key-value pairs injected into sandboxes |
+| **Default agent** | Which agent to use for new sessions |
+| **Branch prefix** | Custom prefix for branches Cord creates |

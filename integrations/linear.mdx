@@ -1,0 +1,56 @@
+---
+title: "Linear"
+description: "Assign Linear tickets to Cord and get PRs back automatically."
+---
+
+<Info>
+Linear integration is available on the **Pro** and **Enterprise** plans.
+</Info>
+
+Connect Cord to Linear so your team can assign tickets that Cord picks up and works on autonomously.
+
+## Setup
+
+1. Go to **Settings > Integrations** in Cord
+2. Click **Connect Linear**
+3. Authorize the Cord app in your Linear workspace
+4. Cord auto-maps team members by matching email addresses between GitHub and Linear
+
+## Usage
+
+Assign a Linear issue to **Cord** (it appears as an assignee in your workspace). Cord will:
+
+1. Read the issue title, description, and any linked context
+2. Route to the correct repo
+3. Spin up a sandbox and start an agent
+4. Post updates on the issue as work progresses
+5. Link the PR to the issue when done
+
+## What makes a good Linear ticket for Cord
+
+Cord works best with tickets that are:
+
+- **Specific** -- "Add a /health endpoint to the API" vs "Improve the backend"
+- **Self-contained** -- Everything the agent needs to understand the task is in the ticket
+- **Scoped** -- One clear deliverable, not a multi-week epic
+
+You can include code references, screenshots, and acceptance criteria in the ticket description. The agent reads all of it.
+
+## Repo routing
+
+Cord uses AI to determine which repository a Linear ticket should be routed to, based on:
+
+- The ticket description and labels
+- Your team's previous routing patterns
+- Project and team associations in Linear
+
+If routing is ambiguous, Cord will ask for clarification.
+
+## Status updates
+
+As the agent works, Cord updates the Linear issue:
+
+- Status changes to **In Progress** when the agent starts
+- Comments are added with progress updates
+- The PR is linked when created
+- Status updates to **Done** when the PR is merged

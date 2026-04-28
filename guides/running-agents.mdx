@@ -1,0 +1,65 @@
+---
+title: "Running agents"
+description: "Start sessions, give instructions, review output, and iterate."
+---
+
+## Starting a session
+
+Click **New Session** on any connected repository. You'll be prompted to:
+
+1. Choose an agent (Claude Code or OpenCode)
+2. Select a model (if using OpenCode with multiple providers)
+3. Describe what you want the agent to do
+
+The agent starts working immediately. You'll see its progress in real-time -- files it reads, commands it runs, code it writes.
+
+## Writing good prompts
+
+Agents work best with clear, specific instructions. A few tips:
+
+**Be specific about what you want:**
+```
+Add a GET /api/health endpoint to the Express server in src/server.ts
+that returns { status: "ok", timestamp: Date.now() }
+```
+
+**Reference files when relevant:**
+```
+In src/components/Header.tsx, add a dark mode toggle button
+that uses the existing useTheme hook from src/hooks/useTheme.ts
+```
+
+**Describe acceptance criteria:**
+```
+Create a user registration form with email and password fields.
+It should validate that email is a valid format and password
+is at least 8 characters. Show inline error messages.
+```
+
+## Watching progress
+
+While the agent works, you can see:
+
+- **Chat panel** -- The agent's reasoning, questions, and updates
+- **Changes panel** -- Files modified, with diff counts updated live
+- **Terminal** -- Command output from builds, tests, and servers
+
+Tool calls (file reads, command execution) are collapsed by default to keep the conversation readable. Expand them if you want to see the details.
+
+## Stopping the agent
+
+Click the **Stop** button to halt the agent at any point. The agent will finish its current operation and stop. All code changes made so far are preserved -- nothing is rolled back.
+
+## Iterating
+
+After the agent finishes, you can continue the conversation:
+
+- Ask for changes: *"Move the validation logic into a separate utils file"*
+- Report issues: *"The login form doesn't handle the error case when the API returns 401"*
+- Add requirements: *"Also add unit tests for the new endpoint"*
+
+The agent picks up where it left off, with full context of what it already did.
+
+## Voice input
+
+On mobile, you can record a voice message instead of typing. The audio is transcribed and sent to the agent as a text prompt. See [Mobile](/guides/mobile) for setup.

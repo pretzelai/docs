@@ -1,0 +1,38 @@
+---
+title: "Persistent storage"
+description: "Config files, dotfiles, and tools that carry over across sessions."
+---
+
+Every user gets persistent storage that survives across sandbox sessions. Anything that doesn't belong in the repo but should be available every time you start a new session goes here.
+
+## What persists
+
+- **`.claude/` directory** -- Your Claude Code configuration, skills, and memory files
+- **`.agents/` directory** -- Agent skills and configuration for OpenCode
+- **Dotfiles** -- Shell config, git config, editor settings
+- **Test artifacts** -- Cached builds, test snapshots, and other artifacts you want to keep
+- **Custom tools** -- Any CLI tools or scripts you've installed
+
+## How it works
+
+Persistent storage is backed by cloud storage and mounted into every sandbox when it starts. Think of it as your home directory that follows you from session to session.
+
+The storage is per-user, not per-repo. Your personal configuration is available regardless of which repository you're working in.
+
+## Syncing local skills
+
+If you have Claude Code or OpenCode skills configured on your local machine, you can sync them to Cord so they're available in cloud sessions:
+
+```bash
+curl -fsSL https://runcord.com/install.sh | bash
+```
+
+This CLI tool syncs your local `~/.claude/skills` and `~/.agents/skills` directories into Cord's persistent storage. Run it again any time you update your local skills.
+
+<Tip>
+Your persistent storage is automatically available in every new sandbox. You don't need to configure anything -- just start a session and your tools are there.
+</Tip>
+
+## Storage limits
+
+Persistent storage is included with all plans. Storage is provisioned per user and grows with your usage. If you're hitting limits on the Enterprise plan, contact support.

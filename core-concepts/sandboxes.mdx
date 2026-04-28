@@ -1,0 +1,43 @@
+---
+title: "Sandboxes"
+description: "Cloud dev environments that spin up in seconds, suspend when idle, and resume instantly."
+---
+
+A sandbox is a full cloud development environment for your repository. It has your code, dependencies, dev tools, and a running dev server -- everything an agent (or you) needs to write and test code.
+
+## What's inside a sandbox
+
+Each sandbox is an isolated container that includes:
+
+- A clone of your repository at the latest commit
+- Your project's dependencies installed
+- Environment variables injected from your repo settings
+- Docker support for projects that need it
+- A dev server running on a unique preview URL
+- A headless browser for visual verification
+
+Sandboxes run on [Daytona](https://www.daytona.io/) by default, with [Modal](https://modal.com/) available for teams needing more scale.
+
+## Lifecycle
+
+**Spin-up** -- When you start a new session, Cord creates a sandbox in seconds. Your code is checked out, dependencies installed, and the dev server started automatically.
+
+**Active** -- While you're working with an agent, the sandbox is running. The agent can read files, write code, run commands, start servers, and use a browser -- all inside the sandbox.
+
+**Suspend** -- When a session goes idle, the sandbox suspends automatically. You're not charged for idle time.
+
+**Resume** -- When you return to a session, the sandbox resumes from where it left off. File changes, running processes, and terminal state are preserved.
+
+## Preview URLs
+
+Every sandbox gets a unique URL for its dev server. You can:
+
+- Open it in your browser to see changes live
+- Share it with a teammate to review a feature
+- Let the agent load it in a headless browser to verify its own work visually
+
+## Compute
+
+Sandboxes are billed by the hour. They spin up in seconds, suspend when idle, and resume instantly. You only pay for actual compute time.
+
+See [Usage](/billing/usage) for details on how sandbox hours are metered.

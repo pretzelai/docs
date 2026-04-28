@@ -1,0 +1,57 @@
+---
+title: "Agents"
+description: "Claude Code and OpenCode -- bring your own subscription or API keys."
+---
+
+Cord supports two AI coding agents. Both run inside your cloud sandbox with full access to the filesystem, terminal, and browser.
+
+## Claude Code
+
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) is Anthropic's agentic coding tool. It reads your codebase, writes code, runs commands, and iterates on errors autonomously.
+
+**How to use it in Cord:**
+
+- **Claude Max or Pro subscription** -- Cord runs Claude Code using your existing Anthropic subscription. Log in with your Anthropic account in Cord settings.
+- **Anthropic API key** -- Provide your API key and Cord passes it through directly. You pay Anthropic for token usage.
+
+Claude Code supports extended thinking and has deep context about your codebase through its CLAUDE.md configuration.
+
+## OpenCode
+
+[OpenCode](https://github.com/nicepkg/opencode) is an open-source coding agent that works with multiple model providers. It's the default agent when you connect an OpenAI Codex subscription or bring API keys from any supported provider.
+
+**Supported model providers:**
+
+- OpenAI (GPT-4, Codex)
+- Anthropic (Claude)
+- Google (Gemini)
+- Open-source models via compatible APIs
+
+**How to use it in Cord:**
+
+- **Codex subscription** -- Connect your OpenAI Codex plan and OpenCode uses it directly.
+- **API keys** -- Provide keys from any supported provider in your Cord settings.
+
+## Bring your own keys (BYOK)
+
+Cord doesn't resell AI. You use your existing subscriptions and API keys. This means:
+
+- No double-paying for AI access
+- No vendor lock-in on the model side
+- Full control over which models you use
+- Your API keys are encrypted at rest and never logged
+
+You can switch between agents and models per session.
+
+## What agents can do
+
+Both agents have the same capabilities inside a sandbox:
+
+| Capability | Description |
+|---|---|
+| **Read files** | Browse and understand your entire codebase |
+| **Write code** | Create and edit files across your project |
+| **Run commands** | Execute build scripts, tests, linters, and any CLI tool |
+| **Start servers** | Run dev servers and access them via preview URLs |
+| **Use a browser** | Load pages in a headless browser for visual verification |
+| **Create PRs** | Generate pull requests ready for review |

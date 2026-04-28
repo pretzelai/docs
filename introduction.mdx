@@ -1,0 +1,59 @@
+---
+title: "Introduction"
+description: "Run parallel coding agents in cloud sandboxes. Zero setup, GitHub connected."
+---
+
+Cord runs AI coding agents -- Claude Code and OpenCode -- in cloud sandboxes connected to your GitHub repos. Start a session, describe what you want, and get a PR back.
+
+No local setup. No server maintenance. Works from your laptop or phone.
+
+## How it works
+
+<Steps>
+  <Step title="Connect your GitHub repo">
+    Sign in with GitHub, pick a repo, and Cord detects your build setup automatically.
+  </Step>
+  <Step title="Start a session">
+    Each session spins up a full dev environment in the cloud -- your code, your dependencies, your environment variables. Pick Claude Code or OpenCode as your agent.
+  </Step>
+  <Step title="Agent writes code">
+    Describe what you want in natural language. The agent reads your codebase, writes code, runs tests, and can even check its own work in a live browser preview.
+  </Step>
+  <Step title="Review and merge">
+    Review the diff, check the live preview URL, and merge the PR -- all from Cord. Or start from Slack and Linear, and the PR shows up without you touching the app.
+  </Step>
+</Steps>
+
+## Key features
+
+<CardGroup cols={2}>
+  <Card title="Bring your own keys" icon="key">
+    Use your existing Claude or Codex subscription directly. Or bring raw API keys from Anthropic or OpenAI. No double-paying.
+  </Card>
+  <Card title="Live preview URLs" icon="globe">
+    Every sandbox runs its own dev server with a unique URL. Share it with teammates or let the agent verify its own output.
+  </Card>
+  <Card title="Start from Slack or Linear" icon="message">
+    Tag Cord in Slack or assign a Linear ticket. An agent spins up, writes code, and opens a PR. No context switching.
+  </Card>
+  <Card title="Works from your phone" icon="mobile">
+    Record a voice message to start an agent. Review diffs and merge PRs on the go. Install as a PWA.
+  </Card>
+</CardGroup>
+
+## Quick links
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Go from zero to your first PR in 5 minutes.
+  </Card>
+  <Card title="Core concepts" icon="lightbulb" href="/core-concepts/sandboxes">
+    Understand sandboxes, agents, sessions, and persistent storage.
+  </Card>
+  <Card title="Integrations" icon="plug" href="/integrations/slack">
+    Set up Slack, Linear, and GitHub workflows.
+  </Card>
+  <Card title="Billing" icon="credit-card" href="/billing/plans">
+    Free, Pro, and Enterprise plans.
+  </Card>
+</CardGroup>

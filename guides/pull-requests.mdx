@@ -1,0 +1,52 @@
+---
+title: "Pull requests"
+description: "Create PRs, review diffs, handle merge conflicts, and keep working after merge."
+---
+
+## Creating a PR
+
+When the agent finishes (or at any point during a session), click **Create PR**. Cord will:
+
+1. Push the session's branch to GitHub
+2. Open a pull request with a generated title and description
+3. Link the PR back to the session in Cord
+
+The PR shows up in GitHub like any other pull request. Your team can review it through their normal workflow.
+
+## Reviewing diffs
+
+The **Changes** panel in Cord shows all modified files with a GitHub-style diff view. For each file you can see:
+
+- Lines added (green) and removed (red)
+- Full file context around changes
+- The total diff count in the sidebar
+
+You can review changes before or after creating the PR.
+
+## Live preview
+
+If your project runs a dev server, check the live preview URL before merging. The preview runs in the sandbox and shows exactly what the code changes look like. Share the URL with teammates for a quick review without pulling the branch locally.
+
+## Merge conflicts
+
+If the base branch has changed since the session started and there are conflicts, Cord will flag this in the session status. You can:
+
+- Ask the agent to resolve the conflicts: *"Rebase on main and resolve the merge conflicts"*
+- Resolve them manually through GitHub's conflict resolution UI
+
+## Merging
+
+Merge the PR from Cord or from GitHub -- either works. After merge:
+
+- The session status updates to **Merged**
+- The sandbox can be suspended since the work is done
+
+## Keep working after merge
+
+Need to iterate on the merged changes? Use **Keep Working** to start a new session that:
+
+- Branches from the latest main (which includes your merged changes)
+- Has full context of what was done in the previous session
+- Lets the agent continue building on top of the merged work
+
+This is useful for multi-step features where you want to merge incrementally.

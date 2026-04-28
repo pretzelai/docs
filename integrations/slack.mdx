@@ -1,0 +1,62 @@
+---
+title: "Slack"
+description: "Start coding agents from Slack. Tag Cord, describe the task, get a PR back."
+---
+
+<Info>
+Slack integration is available on the **Pro** and **Enterprise** plans.
+</Info>
+
+Connect Cord to your Slack workspace so anyone on your team can start an agent without leaving Slack.
+
+## Setup
+
+1. Go to **Settings > Integrations** in Cord
+2. Click **Connect Slack**
+3. Authorize the Cord app in your Slack workspace
+4. Cord auto-maps team members by matching GitHub and Slack email addresses
+
+Once connected, Cord appears as a bot in your workspace.
+
+## Usage
+
+Tag `@Cord` in any channel with a task description:
+
+```
+@Cord Add rate limiting to the /api/auth endpoints.
+Use express-rate-limit, 100 requests per 15 minutes per IP.
+```
+
+Cord will:
+
+1. Identify which repo to work on (based on channel context or you can specify)
+2. Spin up a sandbox
+3. Start an agent on the task
+4. Post updates in a thread as the agent works
+5. Share the PR link when done
+
+## Repo routing
+
+If your Slack channel is linked to a specific repo (via channel topic or previous usage), Cord automatically routes to that repo. Otherwise, Cord uses AI to figure out which repo the request is about based on context.
+
+You can always be explicit:
+
+```
+@Cord In the frontend repo, fix the broken dropdown on the settings page.
+```
+
+## Images in Slack
+
+You can paste or upload images in your Slack message to Cord. The agent receives them as context -- useful for bug reports with screenshots or design mockups.
+
+## Notifications
+
+When an agent finishes, Cord posts in the original Slack thread with:
+
+- A summary of what was done
+- A link to the PR
+- A link to the session in Cord for detailed review
+
+## Org-level memory
+
+Cord remembers context from your Slack workspace over time. If your team frequently references specific repos, patterns, or preferences in Slack, Cord picks up on that context.

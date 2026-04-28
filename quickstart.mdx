@@ -1,80 +1,71 @@
 ---
 title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+description: "Go from zero to your first pull request in under 5 minutes."
 ---
 
-## Get started in three steps
+## 1. Sign in with GitHub
 
-Get your documentation site running locally and make your first customization.
+Go to [runcord.com](https://runcord.com) and sign in with your GitHub account. Cord uses GitHub OAuth -- no separate account to create.
 
-### Step 1: Set up your local environment
+## 2. Add a repository
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+After signing in, click **Add Repository** and select a repo from your GitHub account or organization.
 
-### Step 2: Deploy your changes
+Cord will automatically detect your project's build setup (package manager, framework, build commands). You can review and customize this in repository settings.
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+<Tip>
+If your project needs environment variables, add them in **Repository Settings**. They're stored encrypted and injected into every sandbox automatically.
+</Tip>
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+## 3. Start your first session
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+Click **New Session** on your repository. Each session creates:
 
-### Step 3: Go live
+- A fresh Git branch
+- A full cloud sandbox with your code, dependencies, and dev tools
+- An AI coding agent ready to work
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+Choose your agent:
+- **Claude Code** -- use with your Claude Max/Pro subscription or an Anthropic API key
+- **OpenCode** -- works with any model provider, including OpenAI Codex subscriptions
 
-## Next steps
+## 4. Give the agent a task
 
-Now that you have your docs running, explore these key features:
+Type your request in natural language. For example:
+
+```
+Add a /health endpoint that returns { "status": "ok" } with the current timestamp.
+```
+
+The agent will:
+1. Read your codebase to understand the structure
+2. Write the code
+3. Run any relevant tests
+4. Show you the diff
+
+## 5. Review and create a PR
+
+Once the agent is done:
+
+1. Review the changes in the **Changes** panel on the right
+2. Optionally check the **live preview URL** if your project runs a dev server
+3. Click **Create PR** to open a pull request on GitHub
+
+That's it. Your first AI-generated PR is ready for review.
+
+## What's next
 
 <CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+  <Card title="Understand sandboxes" icon="server" href="/core-concepts/sandboxes">
+    How cloud dev environments work, suspend, and resume.
+  </Card>
+  <Card title="Set up Slack" icon="hashtag" href="/integrations/slack">
+    Start agents from Slack without opening Cord.
+  </Card>
+  <Card title="Repo setup" icon="gear" href="/guides/repo-setup">
+    Environment variables, Docker, and build configuration.
+  </Card>
+  <Card title="Use from your phone" icon="mobile" href="/guides/mobile">
+    Install the PWA and work from anywhere.
+  </Card>
 </CardGroup>
-
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>

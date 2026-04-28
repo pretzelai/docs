@@ -1,0 +1,45 @@
+---
+title: "Usage & sandbox hours"
+description: "How sandbox compute is metered and what counts toward your usage."
+---
+
+## What are sandbox hours?
+
+A sandbox hour is one hour of active compute time in a cloud sandbox. This is the primary unit of usage on Cord.
+
+## What counts
+
+- **Active compute** -- time when a sandbox is running (agent working, dev server active, you browsing the preview)
+- **Startup time** -- the few seconds it takes to spin up a new sandbox
+
+## What doesn't count
+
+- **Idle/suspended time** -- when a sandbox is suspended, you're not charged
+- **Resume time** -- waking up a suspended sandbox is near-instant and not billed separately
+- **Cord UI usage** -- browsing sessions, reviewing diffs, and reading chat history is free
+
+## How suspension works
+
+Sandboxes automatically suspend after a period of inactivity. When suspended:
+
+- No compute is billed
+- File changes and state are preserved
+- The sandbox resumes instantly when you return
+
+This means you don't need to worry about forgetting to close a session. Idle sandboxes cost nothing.
+
+## Checking your usage
+
+View your current usage in **Settings > Usage**. You can see:
+
+- Total sandbox hours used this billing period
+- Hours remaining on your plan
+- Per-session breakdown
+
+## Overages
+
+On the Free plan, when you've used your 25 hours, you'll need to upgrade to Pro to continue.
+
+On the Pro plan (250 hours per developer per month), additional hours are available at a per-hour rate. Contact support for details on overage pricing.
+
+Enterprise plans have unlimited sandbox hours.

@@ -1,0 +1,44 @@
+---
+title: "Global skills"
+description: "Sync your local agent skills and configuration into Cord's cloud sandboxes."
+---
+
+If you've configured Claude Code skills or OpenCode skills on your local machine, you can sync them into Cord so they're available in every cloud session.
+
+## What are skills?
+
+Skills are instruction files that give agents context about your coding standards, project conventions, and preferred patterns. For example:
+
+- Code style preferences
+- Framework-specific patterns
+- Testing conventions
+- Deployment workflows
+
+Claude Code reads skills from `~/.claude/skills/` and agent-specific `CLAUDE.md` files. OpenCode reads from `~/.agents/skills/`.
+
+## Syncing your skills
+
+Run the installer to sync your local skills to Cord:
+
+```bash
+curl -fsSL https://runcord.com/install.sh | bash
+```
+
+This will:
+
+1. Authenticate with your Cord account (opens a browser window)
+2. Upload your `~/.claude/skills/` directory
+3. Upload your `~/.agents/skills/` directory
+4. Store them in your [persistent storage](/core-concepts/persistent-storage)
+
+Run the command again any time you update your local skills.
+
+## How they're used
+
+When a sandbox starts, your persistent storage is mounted. The agent automatically picks up your skills files and uses them as context. No configuration needed.
+
+This means your coding standards and preferences follow you into every Cord session, just like they do on your local machine.
+
+<Tip>
+Repo-level `CLAUDE.md` and `.agents/` config files in your repository are also picked up automatically by agents. Global skills and repo-level config work together.
+</Tip>

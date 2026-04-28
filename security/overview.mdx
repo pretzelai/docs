@@ -1,0 +1,67 @@
+---
+title: "Security"
+description: "How Cord handles your code, credentials, and data."
+---
+
+## Data handling
+
+Your code stays in your sandbox and your GitHub repository. Cord doesn't store your source code in its own database -- sandboxes are ephemeral compute environments that are created from and push back to GitHub.
+
+## Bring your own keys (BYOK)
+
+Cord never touches your AI credentials beyond passing them to the agent running in your sandbox:
+
+- API keys are encrypted at rest
+- Keys are injected into the sandbox at startup and exist only in memory
+- Keys are never logged, never stored in plaintext, never sent to Cord's servers
+
+When using subscription-based access (Claude Max/Pro, Codex), authentication happens directly between the agent in your sandbox and the AI provider.
+
+## Sandbox isolation
+
+Each sandbox is an isolated container with:
+
+- **gVisor** -- application kernel-level isolation (the same technology Google Cloud Run uses)
+- **Separate filesystem** -- no shared state between sandboxes
+- **Network isolation** -- sandboxes can't access each other
+- **Ephemeral by default** -- sandboxes are destroyed after use, no lingering state
+
+## Environment variables
+
+Environment variables you set in Cord are:
+
+- Encrypted at rest in the database
+- Decrypted only at sandbox startup
+- Available only inside your sandbox
+- Never exposed in the Cord UI after being set (write-only)
+
+## Authentication
+
+- **GitHub OAuth** -- Cord authenticates via GitHub. No passwords stored.
+- **Session tokens** -- managed by Better Auth, stored encrypted, with automatic expiry.
+
+## Infrastructure
+
+| Component | Provider | Location |
+|---|---|---|
+| Sandboxes | Daytona / Modal | US / EU regions |
+| Database | Neon (Postgres) | US |
+| Session coordination | Cloudflare Durable Objects | Edge (global) |
+| File storage | Cloudflare R2 | US |
+
+## Enterprise
+
+On the Enterprise plan, you can run Cord on your own infrastructure. This means:
+
+- Sandboxes run in your cloud account
+- No code leaves your network
+- Full control over data residency
+- SSO with your identity provider
+
+<Card title="Contact us" icon="shield" href="mailto:founders@runcord.com">
+  Get in touch for Enterprise security details.
+</Card>
+
+## Reporting issues
+
+If you discover a security vulnerability, please email [founders@runcord.com](mailto:founders@runcord.com) directly. Do not open a public GitHub issue.
