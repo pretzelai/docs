@@ -91,7 +91,7 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:founders@runcord.com"
+        "href": "mailto:help@withpretzel.com"
       }
     ],
     "primary": {
@@ -102,8 +102,8 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/raboragat",
-      "github": "https://github.com/runcord",
+      "x": "https://x.com/CordAgents",
+      "github": "https://github.com/pretzelai",
       "linkedin": "https://www.linkedin.com/company/pretzel-ai"
     }
   },
