@@ -68,25 +68,25 @@ This uploads your local `~/.claude/skills` and `~/.agents/skills` directories. R
 You can also upload files from the command line:
 
 ```bash
-# Upload a file
+# Upload a single file
 cord storage upload ~/.bashrc --mount-path "~/.bashrc"
 
-# Upload a folder
+# Upload an entire folder (recursively)
 cord storage upload ./my-config --mount-path "/repo/.config" --name "project config"
 
 # Upload to a specific repo only
 cord storage upload .env.local --mount-path "/repo/.env.local" --repo-id repo_abc123
 ```
 
-Options:
+When uploading folders, the CLI:
+- Recursively walks all files with real-time progress
+- **Skips secrets by default** (`.env`, `*.key`, `*.pem`, `id_rsa`, `.aws/`, `.ssh/`, etc.)
+- Skips symlinks and empty directories
+- Uploads up to 5,000 files, max 1 GB total
 
-| Flag | Description |
-|---|---|
-| `--name` | Display name for the attachment |
-| `--mount-path` | Where to mount in the sandbox |
-| `--repo-id` | Scope to a specific repository |
-| `--no-mount` | Upload without mounting |
-| `--include-sensitive` | Include files normally excluded (e.g. `.env`) |
+Use `--include-sensitive` to override the secret detection if you intentionally want to upload credential files.
+
+See the full [CLI reference](/reference/cli#storage-upload) for all flags and details.
 
 <Tip>
 Persistent storage is automatically available in every new sandbox. You don't need to configure anything per-session -- just start a session and your files are there.

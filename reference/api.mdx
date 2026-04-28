@@ -102,49 +102,6 @@ POST /api/v1/storage-attachments
 
 ## CLI
 
-The Cord CLI is a separate interface that also talks to the API:
+The Cord CLI is a separate tool for authentication, provider management, and persistent storage uploads. It uses browser-based auth (device code flow), separate from API keys.
 
-```bash
-# Install
-curl -fsSL https://runcord.com/install.sh | bash
-
-# Authenticate (opens browser)
-cord auth login
-
-# Check login status
-cord auth status
-
-# List connected providers
-cord providers list
-
-# Connect subscriptions
-cord providers connect claude
-cord providers connect codex
-
-# Disconnect subscriptions
-cord providers disconnect claude
-cord providers disconnect codex
-
-# Upload to persistent storage
-cord storage upload ~/.bashrc --mount-path "~/.bashrc"
-cord storage upload ./config --mount-path "/repo/.config" --name "project config"
-cord storage upload .env.local --repo-id repo_abc123 --mount-path "/repo/.env.local"
-```
-
-### CLI storage upload flags
-
-| Flag | Description |
-|---|---|
-| `--name` | Display name for the attachment |
-| `--mount-path` | Where to mount in the sandbox |
-| `--repo-id` | Scope to a specific repository |
-| `--no-mount` | Upload without mounting |
-| `--include-sensitive` | Include files normally excluded (e.g. `.env`) |
-
-### CLI environment
-
-| Variable | Description |
-|---|---|
-| `CORD_API_URL` | Override the API base URL (default: `https://api.runcord.com`) |
-
-The CLI uses browser-based authentication (device code flow), separate from API keys.
+See the full [CLI reference](/reference/cli) for installation, all commands, and detailed usage.

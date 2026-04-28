@@ -74,6 +74,7 @@
             "group": "Reference",
             "pages": [
               "reference/api",
+              "reference/cli",
               "reference/shortcuts"
             ]
           }

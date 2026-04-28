@@ -5,6 +5,12 @@ description: "Set up Claude, Codex, API keys, or free open source models."
 
 Cord is bring-your-own-AI. You connect your existing subscriptions or API keys, and Cord runs the agent inside your sandbox. You can also use free open source models with no keys required.
 
+## Starter credit
+
+Every new account gets **$100 in free AI credits** -- $50 for Claude and $50 for OpenAI. Claim it during onboarding or in **Settings > Models & API Keys**. No credit card required, credits don't expire.
+
+This is the fastest way to get started and try both Claude Code and Codex-powered sessions before committing to a subscription.
+
 ## Free open source models
 
 Every Cord account has access to open source models at no cost through the **Cord Open Source** provider. No API key needed -- just select it in settings and start a session.
@@ -21,12 +27,6 @@ Every Cord account has access to open source models at no cost through the **Cor
 | **Gemma 4 31B** | Fast responses, lighter tasks |
 
 All models support 128k context and tool calling. They run via the agent (OpenCode) inside your sandbox.
-
-## Starter credit
-
-Every new account gets **$100 in free AI credits** -- $50 for Claude and $50 for OpenAI. Claim it in **Settings > Models & API Keys**. No credit card required, credits don't expire.
-
-This is a good way to try Claude Code and Codex-powered sessions before committing to a subscription.
 
 ## Claude subscription
 
@@ -92,18 +92,26 @@ You can switch providers per session -- you're not locked into one for your whol
 
 ## CLI provider management
 
-If you prefer the command line:
+You can also manage providers from the command line:
 
 ```bash
-# List connected providers
+# List all connected providers + local CLI status
 cord providers list
 
-# Connect Claude subscription
+# Connect Claude (auto-generates token from local Claude CLI if available)
 cord providers connect claude
 
-# Connect Codex subscription
+# Connect Claude with a token directly
+cord providers connect claude --token sk-ant-oat...
+
+# Connect Codex (device code flow, opens browser)
 cord providers connect codex
 
-# Disconnect a provider
+# Disconnect
 cord providers disconnect claude
+cord providers disconnect codex
 ```
+
+The Claude CLI flow is smart -- if you have Claude Code installed and authenticated locally, it auto-generates the setup token for you. Otherwise it prompts you to paste one.
+
+See the full [CLI reference](/reference/cli) for all flags and detailed flow descriptions.

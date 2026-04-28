@@ -1,0 +1,344 @@
+---
+title: "CLI reference"
+description: "Install, authenticate, connect providers, and upload persistent storage from the command line."
+---
+
+The Cord CLI lets you authenticate, manage AI provider connections, and upload files to persistent storage without opening the web app.
+
+## Install
+
+```bash
+curl -fsSL https://runcord.com/install.sh | bash
+```
+
+This installs the `cord` command. Requires Node.js 18+.
+
+## Global options
+
+These flags work with any command:
+
+| Flag | Description |
+|---|---|
+| `--api-base-url <url>` | Target a different API environment (default: `https://api.runcord.com`). Also settable via `CORD_API_URL` env var. |
+| `--no-open` | Don't auto-open the browser during auth flows |
+| `-h`, `--help` | Print usage info |
+
+## Shortcuts
+
+| Shortcut | Expands to |
+|---|---|
+| `cord login` | `cord auth login` |
+| `cord logout` | `cord auth logout` |
+| `cord connect <provider>` | `cord providers connect <provider>` |
+| `cord disconnect <provider>` | `cord providers disconnect <provider>` |
+
+---
+
+## Authentication
+
+### `cord auth login`
+
+Authenticate the CLI with your Cord account.
+
+```bash
+cord auth login [--machine-name <name>] [--no-open]
+```
+
+| Flag | Default | Description |
+|---|---|---|
+| `--machine-name` | Your hostname | A name for this device, shown in your account |
+
+**How it works:**
+
+1. Cord generates a one-time code and opens a verification URL in your browser
+2. You see the code in your terminal:
+   ```
+   Finish login in your browser
+   Code: XXXX-XXXX
+   URL:  https://runcord.com/cli/verify?...
+   ```
+3. Approve the login in your browser
+4. The CLI confirms:
+   ```
+   Logged in
+   API:  https://api.runcord.com
+   User: Jane Doe
+   Org:  org_xxx
+   ```
+
+Auth tokens are stored locally at:
+- **macOS:** `~/Library/Application Support/cord/config.json`
+- **Linux:** `~/.config/cord/config.json`
+- **Windows:** `%APPDATA%/cord/config.json`
+
+The config file is locked to your user (`chmod 600`).
+
+### `cord auth status`
+
+Check your current login state.
+
+```bash
+cord auth status
+```
+
+Shows your logged-in user, organization, and API base URL. Also lists other environments you're logged into (e.g., staging).
+
+### `cord auth logout`
+
+```bash
+cord auth logout [--local-only]
+```
+
+| Flag | Description |
+|---|---|
+| `--local-only` | Clear local config without revoking the remote token |
+
+By default, this revokes the server-side token and clears local config. Use `--local-only` if you just want to clean up locally.
+
+---
+
+## Provider connections
+
+### `cord providers list`
+
+Show all connected AI providers and local CLI status.
+
+```bash
+cord providers list
+```
+
+This checks three things in parallel:
+
+1. **Remote connections** -- providers linked to your Cord account (Codex, Claude, Cord Open Source, API keys)
+2. **Local Codex binary** -- whether `codex` is installed and authenticated on your machine
+3. **Local Claude binary** -- whether `claude` is installed and authenticated on your machine
+
+Example output:
+
+```
+Cord provider connections
+  Codex:             connected (account-id)
+  Claude:            connected (user@email.com, setup-token)
+  Cord Open Source:  connected
+
+Local provider binaries
+  Codex: authenticated, v1.2.3
+  Claude: authenticated, subscription auth, v2.0.0
+```
+
+### `cord providers connect codex`
+
+Connect your ChatGPT Plus/Pro subscription to Cord via device code authorization.
+
+```bash
+cord providers connect codex [--no-open]
+```
+
+**Before you start:** You need to enable device code authorization in your ChatGPT account:
+
+1. Open [chatgpt.com/#settings/Security](https://chatgpt.com/#settings/Security)
+2. Under "Secure sign in with ChatGPT", toggle ON: **"Enable device code authorization for Codex"**
+
+**Flow:**
+
+1. Run the command and press Enter after enabling device code auth
+2. Cord shows a one-time code and opens your browser:
+   ```
+   Your one-time code:  XXXX-XXXX
+   ```
+3. Authorize the device in your browser
+4. The CLI polls until authorization completes:
+   ```
+   Codex connected successfully!
+   ```
+
+The authorization has a time limit -- complete it before the code expires.
+
+### `cord providers connect claude`
+
+Connect your Claude Max/Pro subscription to Cord.
+
+```bash
+cord providers connect claude [--token <token>] [--no-open]
+```
+
+| Flag | Description |
+|---|---|
+| `--token <token>` | Directly provide a Claude setup-token (skips interactive flow) |
+
+There are several ways to connect, and the CLI tries them in order:
+
+<Tabs>
+  <Tab title="Auto-generate from local Claude (recommended)">
+    If you have Claude Code installed and authenticated locally with a subscription:
+
+    ```bash
+    cord providers connect claude
+    ```
+
+    The CLI detects your local Claude installation and asks:
+
+    ```
+    Use your local Claude login to generate a remote setup-token for Cord now? [Y/n]
+    ```
+
+    Press **Y** and the CLI runs `claude setup-token` automatically, extracts the token, and sends it to Cord. This is the easiest method.
+  </Tab>
+  <Tab title="Provide a token directly">
+    If you already have a setup-token (e.g., from running `claude setup-token` yourself):
+
+    ```bash
+    cord providers connect claude --token sk-ant-oat...
+    ```
+
+    Or set the `CLAUDE_CODE_OAUTH_TOKEN` environment variable:
+
+    ```bash
+    export CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
+    cord providers connect claude
+    ```
+  </Tab>
+  <Tab title="Manual paste">
+    If Claude Code isn't installed locally, or isn't authenticated with a subscription, the CLI falls back to a manual prompt:
+
+    ```bash
+    cord providers connect claude
+    ```
+
+    ```
+    Paste your Claude setup-token
+    (for example, the output of `claude setup-token`):
+    ```
+
+    Run `claude setup-token` in another terminal, copy the output, and paste it here.
+  </Tab>
+</Tabs>
+
+After connecting:
+
+```
+Connected Claude
+Stored your Claude subscription token in Cord.
+```
+
+<Tip>
+The CLI also reads Claude metadata from your local `~/.claude.json` (account UUID, email, organization UUID) and sends it along. You can override these with `--account-uuid`, `--email-address`, or `--organization-uuid` flags if needed.
+</Tip>
+
+### `cord providers disconnect codex`
+
+```bash
+cord providers disconnect codex
+```
+
+Removes your Codex subscription connection from Cord.
+
+### `cord providers disconnect claude`
+
+```bash
+cord providers disconnect claude
+```
+
+Removes your Claude subscription connection from Cord.
+
+---
+
+## Storage upload
+
+Upload files and folders to your [persistent storage](/core-concepts/persistent-storage) from the command line.
+
+### `cord storage upload`
+
+```bash
+cord storage upload <path> [flags]
+```
+
+| Flag | Default | Description |
+|---|---|---|
+| `--name <name>` | Basename of the path | Display name for the attachment |
+| `--mount-path <path>` | None (stored only) | Where to mount in sandboxes (e.g., `~/.bashrc`, `/repo/.config`) |
+| `--repo-id <id>` | None (all repos) | Restrict mount to a specific repository |
+| `--no-mount` | false | Store without mounting (configure mount later in Settings) |
+| `--include-sensitive` | false | Include files that look like secrets |
+
+### Uploading a single file
+
+```bash
+# Upload your bashrc to every sandbox
+cord storage upload ~/.bashrc --mount-path "~/.bashrc"
+
+# Upload an env file for a specific repo
+cord storage upload .env.local --mount-path "/repo/.env.local" --repo-id repo_abc123
+
+# Upload without mounting (configure later in the web UI)
+cord storage upload ./my-config.json --no-mount
+```
+
+### Uploading a folder
+
+```bash
+# Upload a config directory
+cord storage upload ./my-config --mount-path "/repo/.config" --name "project config"
+
+# Upload Claude skills
+cord storage upload ~/.claude/skills --mount-path "~/.claude/skills"
+```
+
+When uploading a folder, Cord recursively walks the directory and uploads all files. Progress is shown in real-time:
+
+```
+Uploading files: 45.2% (12.3 MB / 27.1 MB, 42/100 files)
+```
+
+### What gets skipped
+
+By default, the CLI skips files and directories that look like secrets or aren't useful in a sandbox:
+
+**Skipped directories:** `.aws`, `.git`, `.gnupg`, `.ssh`
+
+**Skipped files:** `.env`, `.env.*`, `*.key`, `*.pem`, `*.p12`, `*.pfx`, `id_rsa`, `id_ed25519`, `credentials.json`, `.npmrc`, `.netrc`, and similar credential files.
+
+**Also skipped:** Symlinks (not followed), empty directories (not preserved), non-regular files (sockets, block devices).
+
+Use `--include-sensitive` to override secret detection and upload everything:
+
+```bash
+cord storage upload ./my-config --mount-path "/repo/.config" --include-sensitive
+```
+
+### Upload limits
+
+| Limit | Value |
+|---|---|
+| Max files per upload | 5,000 |
+| Max single file size | 200 MB |
+| Max total upload size | 1 GB |
+
+### Upload summary
+
+After a successful upload:
+
+```
+Upload to Persistent Storage
+  Path:   ./my-folder
+  Name:   my-folder
+  Type:   folder
+  Files:  42
+  Size:   12.3 MB
+  Mount:  /repo/.config for all repositories
+
+  Skipped symlinks: 2
+  Skipped likely secret entries: 3
+
+Uploaded to Persistent Storage
+  Attachment ID: att_xxx
+  Files:         42
+  Size:          12.3 MB
+  Mount path:    /repo/.config
+
+Mount changes apply to new sandboxes only.
+```
+
+<Info>
+If you upload without a mount path, the file is stored but not auto-mounted. You can configure the mount path later in **Settings > Persistent Storage**.
+</Info>
