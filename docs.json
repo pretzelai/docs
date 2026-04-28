@@ -41,6 +41,7 @@
               "guides/ai-providers",
               "guides/org-setup",
               "guides/repo-setup",
+              "guides/build-settings",
               "guides/running-agents",
               "guides/pull-requests",
               "guides/mcp-and-skills",
