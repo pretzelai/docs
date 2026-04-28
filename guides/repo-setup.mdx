@@ -1,6 +1,6 @@
 ---
 title: "Repository setup"
-description: "Connect repos, configure builds, set environment variables, and enable Docker."
+description: "Connect repos, configure builds, set environment variables, and customize per-repo settings."
 ---
 
 ## Connecting a repository
@@ -8,46 +8,107 @@ description: "Connect repos, configure builds, set environment variables, and en
 1. Go to your Cord dashboard
 2. Click **Add Repository**
 3. Select a repo from your GitHub account or organization
-4. Cord auto-detects your project's build configuration
+4. Cord runs an AI-powered setup wizard
 
 You can connect repos from any GitHub organization you have access to. Cord needs read/write access to create branches and pull requests.
 
-## Build detection
+## AI-powered setup wizard
 
-When you add a repo, Cord runs an AI-powered build detection wizard that identifies:
+When you add a repo, Cord's AI setup chat detects your project configuration automatically:
 
 - **Package manager** -- npm, yarn, pnpm, bun
 - **Framework** -- Next.js, Vite, Express, Django, Rails, etc.
 - **Build commands** -- install, build, dev server start
 - **Port** -- which port your dev server runs on
+- **Runtime processes** -- any background services your project needs
 
-You can review and override any of these in repository settings.
+The wizard proposes a configuration that you can review and adjust. If something looks wrong, you can chat with the AI to refine the setup.
+
+## Root directory
+
+If your repo is a monorepo or your project lives in a subdirectory, set the **root directory** in repository settings. This tells the agent and sandbox where the project actually starts (e.g., `apps/web` or `packages/api`).
+
+## Build commands
+
+Cord detects these automatically, but you can override them:
+
+| Command | Description | Example |
+|---|---|---|
+| **Install** | Install dependencies | `npm install`, `pnpm install` |
+| **Build** | Build the project | `npm run build`, `next build` |
+| **Dev** | Start the dev server | `npm run dev`, `next dev` |
+
+## Runtime processes
+
+Some projects need more than just a dev server. In repository settings, you can define multiple **runtime processes** that start with every sandbox:
+
+- A backend API server
+- A frontend dev server
+- A database or queue (via Docker Compose)
+- A watch process for TypeScript compilation
+
+Each process gets a name and a start command. They all run in the sandbox simultaneously.
+
+## Runtime endpoints
+
+Define which URLs should be exposed from the sandbox. Each endpoint maps a port to a preview URL. For example:
+
+- Port 3000 -- frontend dev server
+- Port 8080 -- backend API
+- Port 5432 -- database (for tools that need direct access)
+
+## Docker and Docker Compose
+
+Docker is available in every sandbox by default. If your project uses Docker Compose for local development (e.g., running Postgres, Redis, or other services), it works the same way in a sandbox.
+
+No additional configuration needed -- just make sure your `docker-compose.yml` is in the repo.
+
+## Build hooks
+
+Build hooks let you run custom scripts at specific points in the sandbox setup:
+
+- **Post-install** -- after dependencies are installed
+- **Post-build** -- after the build completes
+- **Pre-start** -- before the dev server starts
+
+Use these for things like database migrations, seed scripts, or custom setup steps that aren't covered by the standard build commands.
 
 ## Environment variables
 
-Many projects need environment variables for API keys, database URLs, or feature flags. Add them in **Repository Settings > Environment Variables**.
+Add environment variables in **Repository Settings > Secret Files**:
 
-- Variables are encrypted at rest in the database
-- They're automatically injected into every sandbox on startup
-- They're never exposed in logs or to other users
+- Variables are **encrypted at rest** in the database
+- **Injected automatically** into every sandbox on startup
+- **Write-only** -- after saving, values are hidden in the UI (you can update but not read back)
+- Available to the agent and all processes in the sandbox
 
 <Warning>
 Environment variables are available to the AI agent running in your sandbox. Don't add secrets you wouldn't want an AI model to see in context.
 </Warning>
 
-## Docker support
+## Per-repo defaults
 
-Docker builds work inside Cord sandboxes. If your project uses Docker for development (e.g., docker-compose for local services), it will work the same way in a sandbox.
-
-No additional configuration is needed -- Docker is available by default.
-
-## Repository settings
-
-In repository settings you can configure:
+Override org-level defaults for a specific repository:
 
 | Setting | Description |
 |---|---|
-| **Build commands** | Override auto-detected install, build, and dev commands |
-| **Environment variables** | Encrypted key-value pairs injected into sandboxes |
-| **Default agent** | Which agent to use for new sessions |
-| **Branch prefix** | Custom prefix for branches Cord creates |
+| **Default agent** | Claude Code or OpenCode for sessions on this repo |
+| **Default model** | Which provider and model to use |
+| **Thinking mode** | Enable/disable extended thinking by default |
+| **Branch prefix** | Custom prefix for session branches (default: `cord/`) |
+
+## Sandbox provider
+
+By default, sandboxes run on [Daytona](https://www.daytona.io/). If your team needs more scale or has specific requirements, you can select [Modal](https://modal.com/) as the sandbox provider per-repo.
+
+## Build status
+
+View build history and status in repository settings:
+
+- See past builds with timestamps and outcomes
+- **Trigger a rebuild** manually if something went stale
+- Check build logs for debugging setup issues
+
+<Tip>
+If a new session fails to start or has missing dependencies, try triggering a rebuild in repository settings. This refreshes the base image with the latest dependency state.
+</Tip>

@@ -11,12 +11,21 @@ Connect Cord to your Slack workspace so anyone on your team can start an agent w
 
 ## Setup
 
-1. Go to **Settings > Integrations** in Cord
+1. Go to **Settings > Slack**
 2. Click **Connect Slack**
 3. Authorize the Cord app in your Slack workspace
-4. Cord auto-maps team members by matching GitHub and Slack email addresses
 
-Once connected, Cord appears as a bot in your workspace.
+Once connected, Cord appears as a bot (`@Cord`) in your workspace.
+
+## Team mapping
+
+After connecting, Cord auto-maps team members by matching GitHub and Slack email addresses. You can check mapping status in the Slack settings tab -- it shows which team members are linked and which aren't.
+
+If mappings get out of sync (new team members, changed emails), click **Re-sync Members** to refresh.
+
+### Personal Slack linking
+
+Each team member can also link their personal Slack account in settings. This ensures their Slack messages are attributed to the correct Cord user.
 
 ## Usage
 
@@ -29,7 +38,7 @@ Use express-rate-limit, 100 requests per 15 minutes per IP.
 
 Cord will:
 
-1. Identify which repo to work on (based on channel context or you can specify)
+1. Identify which repo to work on
 2. Spin up a sandbox
 3. Start an agent on the task
 4. Post updates in a thread as the agent works
@@ -37,7 +46,11 @@ Cord will:
 
 ## Repo routing
 
-If your Slack channel is linked to a specific repo (via channel topic or previous usage), Cord automatically routes to that repo. Otherwise, Cord uses AI to figure out which repo the request is about based on context.
+Cord uses AI to determine which repository a Slack message should be routed to, based on:
+
+- Channel context and history
+- Previous routing patterns
+- The content of your message
 
 You can always be explicit:
 
@@ -47,7 +60,51 @@ You can always be explicit:
 
 ## Images in Slack
 
-You can paste or upload images in your Slack message to Cord. The agent receives them as context -- useful for bug reports with screenshots or design mockups.
+You can paste or upload images in your Slack message to Cord. The agent receives them as context -- useful for:
+
+- Bug reports with screenshots
+- Design mockups to implement
+- Error screenshots from the browser
+
+<Tip>
+If image attachments aren't working, check that the Cord Slack app has the `files:read` scope. You'll see a warning in **Settings > Slack** if the scope is missing.
+</Tip>
+
+## Slack memory
+
+Cord can maintain **per-user durable memory** across Slack-started sessions. When enabled, Cord remembers context from your previous interactions -- your preferences, common patterns, and recurring instructions.
+
+### Enabling Slack memory
+
+Admins toggle Slack memory in **Settings > Slack > Enable Slack Memory**. Once enabled:
+
+- Each user gets a personal memory context
+- The memory is included in Slack-triggered sessions
+- Users can view and edit their memory in **Settings > Slack > Personal Slack Memory**
+
+### Editing your memory
+
+Your Slack memory is a free-text field where Cord stores context it's learned about your preferences. You can edit it directly to:
+
+- Add recurring instructions ("always use TypeScript strict mode")
+- Remove incorrect assumptions
+- Add project-specific context
+
+## Slack system prompt
+
+Admins can configure a **custom system prompt** for Slack-triggered sessions in **Settings > Slack > Slack System Prompt**. This prompt is injected into every session started from Slack.
+
+Use it for:
+
+- Team-wide coding standards
+- Project conventions
+- Repo-specific instructions that should apply to every Slack-started task
+
+Leave it empty to use Cord's default prompt.
+
+## Auto-provisioning
+
+When enabled by an admin (**Settings > Slack > Auto-provision**), Cord automatically creates accounts for Slack users who tag `@Cord` for the first time. This removes the need to manually invite everyone -- they just start using it.
 
 ## Notifications
 
@@ -55,8 +112,4 @@ When an agent finishes, Cord posts in the original Slack thread with:
 
 - A summary of what was done
 - A link to the PR
-- A link to the session in Cord for detailed review
-
-## Org-level memory
-
-Cord remembers context from your Slack workspace over time. If your team frequently references specific repos, patterns, or preferences in Slack, Cord picks up on that context.
+- A link to the session in Cord

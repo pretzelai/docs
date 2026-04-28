@@ -38,9 +38,12 @@
           {
             "group": "Guides",
             "pages": [
+              "guides/ai-providers",
+              "guides/org-setup",
               "guides/repo-setup",
               "guides/running-agents",
               "guides/pull-requests",
+              "guides/mcp-and-skills",
               "guides/mobile",
               "guides/global-skills",
               "guides/code-server"
@@ -65,6 +68,13 @@
             "group": "Security",
             "pages": [
               "security/overview"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "reference/api",
+              "reference/shortcuts"
             ]
           }
         ]

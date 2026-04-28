@@ -11,17 +11,26 @@ Connect Cord to Linear so your team can assign tickets that Cord picks up and wo
 
 ## Setup
 
-1. Go to **Settings > Integrations** in Cord
+1. Go to **Settings > Linear**
 2. Click **Connect Linear**
 3. Authorize the Cord app in your Linear workspace
-4. Cord auto-maps team members by matching email addresses between GitHub and Linear
+
+## Team mapping
+
+After connecting, Cord auto-maps team members by matching email addresses between GitHub and Linear. Check mapping status in the Linear settings tab.
+
+If mappings get out of sync (new team members, changed emails), click **Re-sync Members** to refresh.
+
+### Personal Linear linking
+
+Each team member can link their personal Linear account in settings. This ensures tickets and activity are attributed correctly.
 
 ## Usage
 
 Assign a Linear issue to **Cord** (it appears as an assignee in your workspace). Cord will:
 
 1. Read the issue title, description, and any linked context
-2. Route to the correct repo
+2. Route to the correct repository
 3. Spin up a sandbox and start an agent
 4. Post updates on the issue as work progresses
 5. Link the PR to the issue when done
@@ -31,10 +40,10 @@ Assign a Linear issue to **Cord** (it appears as an assignee in your workspace).
 Cord works best with tickets that are:
 
 - **Specific** -- "Add a /health endpoint to the API" vs "Improve the backend"
-- **Self-contained** -- Everything the agent needs to understand the task is in the ticket
-- **Scoped** -- One clear deliverable, not a multi-week epic
+- **Self-contained** -- everything the agent needs is in the ticket
+- **Scoped** -- one clear deliverable, not a multi-week epic
 
-You can include code references, screenshots, and acceptance criteria in the ticket description. The agent reads all of it.
+Include code references, screenshots, and acceptance criteria in the ticket description. The agent reads all of it.
 
 ## Repo routing
 
@@ -50,7 +59,13 @@ If routing is ambiguous, Cord will ask for clarification.
 
 As the agent works, Cord updates the Linear issue:
 
-- Status changes to **In Progress** when the agent starts
-- Comments are added with progress updates
-- The PR is linked when created
-- Status updates to **Done** when the PR is merged
+| Event | Linear status |
+|---|---|
+| Agent starts working | **In Progress** |
+| Progress updates | Comments on the issue |
+| PR created | PR linked to the issue |
+| PR merged | **Done** |
+
+## Disconnecting
+
+Admins can disconnect Linear in **Settings > Linear**. Individual members can unlink their personal Linear account without disconnecting the org-level integration.

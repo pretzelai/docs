@@ -1,0 +1,150 @@
+---
+title: "Cord API"
+description: "Create sessions, list repos, and manage Cord programmatically."
+---
+
+Cord exposes a REST API for programmatic access. Use it to start sessions from scripts, CI pipelines, or your own tools.
+
+## Authentication
+
+The API uses **sandbox API keys** for authentication. Create a key in **Settings > Cord API**.
+
+Each key can be scoped to:
+- **All repositories** in your organization
+- **Selected repositories** only
+
+Include your key in the `Authorization` header:
+
+```bash
+curl -H "Authorization: Bearer cord_sk_..." \
+  https://api.runcord.com/api/v1/repositories
+```
+
+<Warning>
+API keys are shown once at creation and stored as a hash. If you lose a key, create a new one.
+</Warning>
+
+## Endpoints
+
+### List repositories
+
+Returns repositories the API key has access to.
+
+```bash
+GET /api/v1/repositories
+```
+
+**Response:**
+```json
+[
+  {
+    "id": "repo_abc123",
+    "name": "my-app",
+    "owner": "my-org",
+    "defaultBranch": "main"
+  }
+]
+```
+
+### Create a session
+
+Start a new coding session with a prompt. The agent begins working immediately in the background.
+
+```bash
+POST /api/v1/sessions
+```
+
+**Request body:**
+
+```json
+{
+  "repository": "repo_abc123",
+  "message": "Add a /health endpoint that returns status ok",
+  "model": "kimi-k2.6",
+  "thinking": true
+}
+```
+
+| Field | Required | Description |
+|---|---|---|
+| `repository` | Yes | Repository ID (from the list repositories endpoint) |
+| `message` | Yes | The task description for the agent |
+| `model` | No | Model ID to use. Defaults to your configured default. |
+| `thinking` | No | Enable extended thinking/reasoning mode. |
+
+**Response:**
+```json
+{
+  "id": "session_xyz789",
+  "branch": "cord/add-health-endpoint",
+  "status": "running"
+}
+```
+
+### Storage attachments
+
+Manage files in your [persistent storage](/core-concepts/persistent-storage):
+
+```bash
+GET  /api/v1/storage-attachments
+POST /api/v1/storage-attachments
+```
+
+## Use cases
+
+**CI/CD integration** -- Trigger a Cord session when a specific event happens in your pipeline (e.g., "a flaky test was detected, investigate and fix it").
+
+**Custom automation** -- Create sessions based on external events: monitoring alerts, customer feedback, support tickets.
+
+**Agent-to-agent** -- Have one agent use the Cord API to start another session for a sub-task.
+
+**Scheduled tasks** -- Use a cron job to start sessions for recurring maintenance (dependency updates, code cleanup).
+
+## CLI
+
+The Cord CLI is a separate interface that also talks to the API:
+
+```bash
+# Install
+curl -fsSL https://runcord.com/install.sh | bash
+
+# Authenticate (opens browser)
+cord auth login
+
+# Check login status
+cord auth status
+
+# List connected providers
+cord providers list
+
+# Connect subscriptions
+cord providers connect claude
+cord providers connect codex
+
+# Disconnect subscriptions
+cord providers disconnect claude
+cord providers disconnect codex
+
+# Upload to persistent storage
+cord storage upload ~/.bashrc --mount-path "~/.bashrc"
+cord storage upload ./config --mount-path "/repo/.config" --name "project config"
+cord storage upload .env.local --repo-id repo_abc123 --mount-path "/repo/.env.local"
+```
+
+### CLI storage upload flags
+
+| Flag | Description |
+|---|---|
+| `--name` | Display name for the attachment |
+| `--mount-path` | Where to mount in the sandbox |
+| `--repo-id` | Scope to a specific repository |
+| `--no-mount` | Upload without mounting |
+| `--include-sensitive` | Include files normally excluded (e.g. `.env`) |
+
+### CLI environment
+
+| Variable | Description |
+|---|---|
+| `CORD_API_URL` | Override the API base URL (default: `https://api.runcord.com`) |
+
+The CLI uses browser-based authentication (device code flow), separate from API keys.

@@ -16,8 +16,9 @@ The session name becomes the branch name. You can see the branch, the diff, and 
 There are several ways to start a session:
 
 - **From the Cord UI** -- Click "New Session" on a repository and type your request
-- **From Slack** -- Tag Cord in a channel with a task description
+- **From Slack** -- Tag `@Cord` in a channel with a task description
 - **From Linear** -- Assign a ticket that Cord picks up automatically
+- **From the API** -- `POST /api/v1/sessions` to create sessions programmatically
 - **From your phone** -- Record a voice message describing what you want
 
 Each method creates the same thing: a branch, a sandbox, and an agent working on your request.
@@ -30,13 +31,89 @@ You can run multiple sessions at the same time, even on the same repo. Each sess
 - Having an agent fix a bug while another agent builds a new feature
 - Trying different approaches to the same problem
 
+## The chat interface
+
+Each session has a chat panel where you communicate with the agent. Beyond plain text, you can:
+
+### @ mentions
+
+Type `@` to reference context the agent should use:
+
+- **Files** -- `@src/server.ts` to point the agent at specific files
+- **Sessions** -- reference a previous session for context
+- **Skills** -- invoke a specific skill
+- **MCP tools** -- reference an MCP tool
+- **PRs** -- reference a pull request
+- **Scratch pad notes** -- attach notes you've written
+
+### Image and file attachments
+
+Paste, drag-and-drop, or use the file picker to attach images and files. Useful for:
+
+- Screenshots of bugs you want fixed
+- Design mockups for the agent to implement
+- Error screenshots from the browser
+
+### Prompt history
+
+Press **Up/Down arrows** in the input to navigate through your previous prompts, like a terminal.
+
+### Edit while running
+
+You can queue a follow-up message while the agent is still working. It will be delivered when the current operation completes.
+
+## Slash commands
+
+Type `/` to access built-in commands:
+
+| Command | Description |
+|---|---|
+| `/undo` | Rewind the agent's last step |
+| `/redo` | Restore a rewound step |
+| `/compact` (or `/summarize`) | Summarize the conversation and free up context window space |
+| `/init` | Re-initialize repo context |
+| `/review` | Ask the agent to do a review pass on its own changes |
+
+Skills and MCP servers can add custom slash commands on top of these.
+
+## Build mode vs Plan mode
+
+Toggle between modes with **Cmd+Shift+B**:
+
+- **Build mode** (default) -- The agent reads, writes, and runs code. It takes action.
+- **Plan mode** -- The agent analyzes and plans but doesn't make changes. Useful for discussing architecture or getting a plan before committing to an approach.
+
+## Scratch pad
+
+Press **Cmd+J** to open the scratch pad -- a quick notes area within your session. Useful for:
+
+- Jotting down requirements before giving the agent a task
+- Tracking things you want to follow up on
+- Notes you want to reference later with `@scratch pad`
+
+## Forking sessions
+
+You can **fork a session** at any message point to create a child session. The fork starts from the exact state of the parent at that message -- same branch, same file changes, same context. Useful for:
+
+- Trying an alternative approach without losing your current work
+- Branching off a session that's going in one direction to explore another
+- Creating a "save point" you can return to
+
+## Context capacity
+
+The context capacity ring in the chat input shows how much of the agent's context window is being used. When it fills up, use `/compact` to summarize the conversation and free space without losing important context.
+
+## Stopping the agent
+
+Press **Escape** once to see a warning, press **Escape** again to stop the agent immediately. All code changes made so far are preserved -- nothing is rolled back.
+
 ## Continuing sessions
 
-Sessions can be continued after the agent finishes. You can:
+Sessions can be continued after the agent finishes:
 
 - **Keep working** -- Give the agent follow-up instructions on the same branch
 - **Continue after merge** -- After merging a PR, start a new session that builds on the merged changes
-- **Fork a session** -- Create a new session that starts from another session's current state
+- **Fork** -- Create a new session from any point in an existing session
 
 ## Session lifecycle
 
@@ -47,3 +124,17 @@ Sessions can be continued after the agent finishes. You can:
 5. **Archived** -- Session is no longer active
 
 You can see the status of all sessions in the sidebar, grouped by repository. Each shows the branch name, diff count, and current status.
+
+## Keyboard shortcuts
+
+| Shortcut | Action |
+|---|---|
+| **Cmd+K** | Open command palette |
+| **Cmd+B** | Toggle sidebar |
+| **Cmd+Alt+B** | Toggle file explorer |
+| **Ctrl+`** | Toggle terminal |
+| **Cmd+'** | Toggle model selector |
+| **Cmd+Shift+B** | Toggle Build/Plan mode |
+| **Cmd+J** | Toggle scratch pad |
+| **Escape** (2x) | Stop agent |
+| **Up/Down** | Navigate prompt history |

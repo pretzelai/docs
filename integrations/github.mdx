@@ -1,6 +1,6 @@
 ---
 title: "GitHub"
-description: "How Cord connects to GitHub -- authentication, repos, branches, and PRs."
+description: "How Cord connects to GitHub -- authentication, repos, branches, PRs, and org admin controls."
 ---
 
 GitHub is Cord's core integration. Your code lives on GitHub, and Cord creates branches and pull requests there.
@@ -16,9 +16,48 @@ Cord uses GitHub OAuth for sign-in. When you create an account, you authorize Co
 
 ## Connecting repositories
 
-When you add a repo in Cord, you grant access to that specific repository. Cord doesn't request blanket access to all your repos -- you choose which ones to connect.
+Cord uses a **GitHub App** for repository access. In **Settings > GitHub**:
 
-For organization repos, you may need an org admin to approve the Cord GitHub App.
+1. Click **Install Cord GitHub App**
+2. Choose your organization or personal account
+3. Select which repositories to grant access to (or all repos)
+
+You can have multiple GitHub App installations -- for different organizations or to add more repositories later.
+
+For organization repos, you may need an org admin to approve the installation.
+
+## Organization rules
+
+Admins can configure GitHub access policies in **Settings > GitHub > Organization Rules**:
+
+| Rule | Description |
+|---|---|
+| **Allow personal repository installs** | Whether team members can connect personal GitHub repos (not just org repos) |
+| **Require each person to link GitHub** | Force all team members to connect their personal GitHub account |
+| **Only admins can add org installs** | Restrict who can install the GitHub App for the organization |
+
+## PR attribution
+
+By default, PRs are created under Cord's bot account. To have PRs attributed to **your personal GitHub account**:
+
+1. Go to **Settings > GitHub > PR Attribution**
+2. Click **Link GitHub Account**
+3. Authorize the connection
+
+Once linked, PRs you create show your name and avatar in GitHub -- they look like you authored them, not a bot.
+
+If your GitHub link expires, Cord will prompt you to reconnect.
+
+## PR shortcuts
+
+Two shortcuts can be enabled in **Settings > GitHub > PR Shortcuts**:
+
+| Shortcut | What it does |
+|---|---|
+| **Quick PR** | One-click PR creation with auto-generated title and description |
+| **YOLO** | One-click PR creation + merge + archive. Skips the review cycle entirely. |
+
+Both are toggleable. When enabled, they appear as buttons in the session UI. See [Pull requests](/guides/pull-requests) for details.
 
 ## What Cord does on GitHub
 
@@ -29,23 +68,17 @@ For each session, Cord:
 | **Creates a branch** | A new branch from your default branch (usually `main`) |
 | **Pushes commits** | Code changes are committed and pushed to the branch |
 | **Opens a PR** | When you click "Create PR", a pull request is opened |
-| **Updates the PR** | If the agent makes more changes, commits are added to the same PR |
+| **Updates the PR** | If the agent makes more changes, new commits are added to the same PR |
 
 ## Branch naming
 
-Branches created by Cord follow the pattern: `cord/<session-name>`. You can customize the prefix in repository settings.
-
-## PR descriptions
-
-PRs created by Cord include:
-
-- A summary of what the agent did
-- The conversation context that led to the changes
-- A link back to the session in Cord
+Branches follow the pattern `cord/<session-name>`. You can customize the prefix per-repo in **Repository Settings > Branch Prefix**.
 
 ## CI/CD compatibility
 
 Cord PRs are standard GitHub pull requests. Your existing CI/CD pipelines, status checks, branch protection rules, and code review requirements all work as expected. Cord doesn't bypass any of your existing workflows.
+
+Even YOLO mode respects branch protection -- if required checks fail, the merge won't go through.
 
 ## Permissions
 
@@ -53,4 +86,4 @@ Cord requests the minimum GitHub permissions needed:
 
 - `repo` scope for reading code and creating PRs
 - `read:user` for authentication
-- No access to repos you haven't explicitly connected
+- No access to repos you haven't explicitly connected via the GitHub App

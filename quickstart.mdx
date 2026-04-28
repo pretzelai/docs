@@ -1,71 +1,100 @@
 ---
 title: "Quickstart"
-description: "Go from zero to your first pull request in under 5 minutes."
+description: "Sign up, connect your AI, add a repo, and get your first PR in under 5 minutes."
 ---
 
 ## 1. Sign in with GitHub
 
 Go to [runcord.com](https://runcord.com) and sign in with your GitHub account. Cord uses GitHub OAuth -- no separate account to create.
 
-## 2. Add a repository
+If you're the first person from your team, Cord creates an organization for you automatically. You can invite teammates later in [Org setup](/guides/org-setup).
 
-After signing in, click **Add Repository** and select a repo from your GitHub account or organization.
+## 2. Set up your AI provider
 
-Cord will automatically detect your project's build setup (package manager, framework, build commands). You can review and customize this in repository settings.
+Before you can start a session, you need an AI provider. Go to **Settings > Models & API Keys**.
+
+<Tabs>
+  <Tab title="Free open source models (fastest start)">
+    Select **Cord Open Source** as your provider. This gives you access to models like **Kimi K2.6**, **DeepSeek V3.2**, **Qwen 3.6 Plus**, and **Gemma 4** at no cost. No API key needed.
+  </Tab>
+  <Tab title="Starter credit">
+    Claim your **$100 starter credit** (available to every new account). This gives you $50 in Claude credits and $50 in OpenAI credits to try both agents without entering any payment info.
+  </Tab>
+  <Tab title="Claude subscription">
+    If you have a Claude Max or Pro subscription, connect it via **Settings > Models & API Keys > Connect Claude**. This lets you run Claude Code directly with your existing plan.
+  </Tab>
+  <Tab title="Codex / ChatGPT subscription">
+    If you have a ChatGPT Plus or Pro plan, connect it via **Settings > Models & API Keys > Connect ChatGPT**. This enables OpenCode with your Codex subscription.
+  </Tab>
+  <Tab title="API keys">
+    Add API keys from any supported provider: Anthropic, OpenAI, Google, Mistral, DeepSeek, xAI, Groq, OpenRouter, or Amazon Bedrock. Paste your key in **Settings > Models & API Keys**.
+  </Tab>
+</Tabs>
 
 <Tip>
-If your project needs environment variables, add them in **Repository Settings**. They're stored encrypted and injected into every sandbox automatically.
+**For team admins:** You can set org-level shared API keys in **Settings > Organization** so your whole team uses the same provider without each person configuring their own. See [Org setup](/guides/org-setup).
 </Tip>
 
-## 3. Start your first session
+## 3. Add a repository
+
+Click **Add Repository** and select a repo from your GitHub account or organization.
+
+Cord auto-detects your build setup -- package manager, framework, build commands, and dev server port. Review and customize in **Repository Settings** if needed.
+
+**Environment variables:** If your project needs them, add them in **Repository Settings > Environment Variables**. They're encrypted at rest and injected into every sandbox automatically.
+
+**Docker:** If your project uses Docker, it works out of the box. Docker is available in every sandbox by default.
+
+## 4. Start your first session
 
 Click **New Session** on your repository. Each session creates:
 
-- A fresh Git branch
-- A full cloud sandbox with your code, dependencies, and dev tools
-- An AI coding agent ready to work
+- A fresh **Git branch** from your default branch
+- A full **cloud sandbox** with your code, dependencies, and a running dev server
+- An **AI coding agent** ready to take instructions
 
-Choose your agent:
-- **Claude Code** -- use with your Claude Max/Pro subscription or an Anthropic API key
-- **OpenCode** -- works with any model provider, including OpenAI Codex subscriptions
+Pick your agent based on your provider:
+- **Claude Code** -- if you connected a Claude subscription or have an Anthropic API key
+- **OpenCode** -- if you connected a Codex subscription, have an OpenAI key, or are using free open source models
 
-## 4. Give the agent a task
+## 5. Give the agent a task
 
-Type your request in natural language. For example:
+Type your request in natural language:
 
 ```
-Add a /health endpoint that returns { "status": "ok" } with the current timestamp.
+Add a GET /api/health endpoint that returns { "status": "ok", "timestamp": Date.now() }.
+Include a test for the new endpoint.
 ```
 
-The agent will:
-1. Read your codebase to understand the structure
-2. Write the code
-3. Run any relevant tests
-4. Show you the diff
+Watch the agent work in real-time:
+- **Chat** -- the agent's reasoning and progress
+- **Changes** -- files being modified with live diff counts
+- **Terminal** -- command output from builds and tests
+- **Preview** -- your dev server running at a unique URL
 
-## 5. Review and create a PR
+## 6. Review and create a PR
 
-Once the agent is done:
+Once the agent finishes:
 
-1. Review the changes in the **Changes** panel on the right
-2. Optionally check the **live preview URL** if your project runs a dev server
-3. Click **Create PR** to open a pull request on GitHub
+1. **Review the diff** in the Changes panel
+2. **Check the live preview** -- click the preview URL to see your running app with the changes applied
+3. **Create a PR** -- click the button, and a pull request opens on GitHub
 
-That's it. Your first AI-generated PR is ready for review.
+Your existing CI/CD, branch protection rules, and code review workflows all work as normal -- it's a standard GitHub PR.
 
 ## What's next
 
 <CardGroup cols={2}>
-  <Card title="Understand sandboxes" icon="server" href="/core-concepts/sandboxes">
-    How cloud dev environments work, suspend, and resume.
+  <Card title="AI providers deep dive" icon="key" href="/guides/ai-providers">
+    All 12+ providers, subscription setup, org-level shared keys.
   </Card>
-  <Card title="Set up Slack" icon="hashtag" href="/integrations/slack">
-    Start agents from Slack without opening Cord.
+  <Card title="Set up your org" icon="building" href="/guides/org-setup">
+    Invite your team, share credentials, configure MCP servers.
   </Card>
-  <Card title="Repo setup" icon="gear" href="/guides/repo-setup">
-    Environment variables, Docker, and build configuration.
+  <Card title="Slack integration" icon="hashtag" href="/integrations/slack">
+    Start sessions by tagging @Cord in Slack.
   </Card>
-  <Card title="Use from your phone" icon="mobile" href="/guides/mobile">
-    Install the PWA and work from anywhere.
+  <Card title="MCP servers & skills" icon="wrench" href="/guides/mcp-and-skills">
+    Give agents access to external tools and your coding standards.
   </Card>
 </CardGroup>

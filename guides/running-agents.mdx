@@ -1,6 +1,6 @@
 ---
 title: "Running agents"
-description: "Start sessions, give instructions, review output, and iterate."
+description: "Start sessions, give instructions, use slash commands, and iterate on output."
 ---
 
 ## Starting a session
@@ -8,14 +8,14 @@ description: "Start sessions, give instructions, review output, and iterate."
 Click **New Session** on any connected repository. You'll be prompted to:
 
 1. Choose an agent (Claude Code or OpenCode)
-2. Select a model (if using OpenCode with multiple providers)
+2. Select a model (defaults to your configured preference)
 3. Describe what you want the agent to do
 
-The agent starts working immediately. You'll see its progress in real-time -- files it reads, commands it runs, code it writes.
+The agent starts working immediately. You'll see its progress in real-time.
 
 ## Writing good prompts
 
-Agents work best with clear, specific instructions. A few tips:
+Agents work best with clear, specific instructions:
 
 **Be specific about what you want:**
 ```
@@ -32,34 +32,100 @@ that uses the existing useTheme hook from src/hooks/useTheme.ts
 **Describe acceptance criteria:**
 ```
 Create a user registration form with email and password fields.
-It should validate that email is a valid format and password
-is at least 8 characters. Show inline error messages.
+Validate that email is a valid format and password is at least 8 chars.
+Show inline error messages. Add tests.
 ```
+
+You can also type `@` to mention specific files, sessions, PRs, or MCP tools -- the agent receives them as context.
+
+## Attaching images and files
+
+Paste, drag-and-drop, or use the file picker to attach context:
+
+- **Screenshots** of bugs or the current UI state
+- **Design mockups** for the agent to implement
+- **Error logs** or terminal output
+- **Documents** with requirements or specs
 
 ## Watching progress
 
-While the agent works, you can see:
+While the agent works, four panels show what's happening:
 
-- **Chat panel** -- The agent's reasoning, questions, and updates
-- **Changes panel** -- Files modified, with diff counts updated live
-- **Terminal** -- Command output from builds, tests, and servers
+| Panel | What it shows |
+|---|---|
+| **Chat** | The agent's reasoning, progress updates, and questions |
+| **Changes** | Files modified with live diff counts |
+| **Terminal** | Command output from builds, tests, and servers |
+| **Preview** | Your dev server running at a unique URL |
 
-Tool calls (file reads, command execution) are collapsed by default to keep the conversation readable. Expand them if you want to see the details.
+Tool calls (file reads, command execution) are collapsed by default to keep the chat readable. Expand them for details.
+
+## Slash commands
+
+Type `/` in the chat input to access built-in commands:
+
+| Command | What it does |
+|---|---|
+| `/undo` | Rewind the agent's last step. Code changes are reverted. |
+| `/redo` | Restore a step you just undid. |
+| `/compact` | Summarize the conversation to free up context window space. Alias: `/summarize`. |
+| `/init` | Re-initialize the agent's understanding of the repo structure. |
+| `/review` | Ask the agent to review its own changes -- useful before creating a PR. |
+
+Skills and MCP servers can register additional custom slash commands.
+
+## Build mode vs Plan mode
+
+Toggle with **Cmd+Shift+B**:
+
+- **Build mode** (default) -- The agent takes action: reads, writes, runs code.
+- **Plan mode** -- The agent analyzes and plans but doesn't make file changes. Use this to discuss architecture, get a plan of attack, or understand tradeoffs before committing.
+
+## Scratch pad
+
+Press **Cmd+J** to open the scratch pad. Use it for:
+
+- Drafting requirements before giving the agent a task
+- Keeping notes during a session
+- Writing context you can reference later with `@scratch pad`
+
+## Context capacity
+
+The **context capacity ring** in the chat input shows how full the agent's context window is. When it's nearly full:
+
+- The agent may start losing earlier context
+- Use `/compact` to summarize the conversation and reclaim space
+- Consider starting a new session for a fresh context
 
 ## Stopping the agent
 
-Click the **Stop** button to halt the agent at any point. The agent will finish its current operation and stop. All code changes made so far are preserved -- nothing is rolled back.
+Press **Escape** once to see a warning, **Escape** again to stop immediately. All code changes made so far are preserved -- nothing is rolled back.
+
+You can also click the **Stop** button in the chat.
 
 ## Iterating
 
-After the agent finishes, you can continue the conversation:
+After the agent finishes, continue the conversation:
 
 - Ask for changes: *"Move the validation logic into a separate utils file"*
-- Report issues: *"The login form doesn't handle the error case when the API returns 401"*
+- Report issues: *"The login form doesn't handle 401 errors"*
 - Add requirements: *"Also add unit tests for the new endpoint"*
+- Review: type `/review` to have the agent self-review before you look at the diff
 
-The agent picks up where it left off, with full context of what it already did.
+You can queue a follow-up message while the agent is still working. It's delivered when the current operation completes.
 
 ## Voice input
 
-On mobile, you can record a voice message instead of typing. The audio is transcribed and sent to the agent as a text prompt. See [Mobile](/guides/mobile) for setup.
+On mobile (or desktop with a microphone), record a voice message instead of typing. The audio is transcribed and sent as a text prompt.
+
+In **Settings > UI Preferences**, you can toggle **Autosend after voice dictation** -- when enabled, the transcribed text is sent immediately without editing.
+
+## Notifications
+
+When you have sessions running in the background:
+
+- The **favicon changes** to show a running indicator
+- You get a **notification** when a session completes (browser notification or push notification on mobile)
+- Notifications include a **direct link** to the finished session
+
+Enable push notifications on mobile by allowing notifications when prompted after installing the PWA.

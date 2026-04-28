@@ -1,0 +1,109 @@
+---
+title: "AI providers"
+description: "Set up Claude, Codex, API keys, or free open source models."
+---
+
+Cord is bring-your-own-AI. You connect your existing subscriptions or API keys, and Cord runs the agent inside your sandbox. You can also use free open source models with no keys required.
+
+## Free open source models
+
+Every Cord account has access to open source models at no cost through the **Cord Open Source** provider. No API key needed -- just select it in settings and start a session.
+
+**Available models:**
+
+| Model | Best for |
+|---|---|
+| **Kimi K2.6** | General-purpose coding, default for new sessions |
+| **DeepSeek V3.2** | Strong reasoning, code generation |
+| **Qwen 3.6 Plus** | Multi-language, large context |
+| **Gemma 4 31B** | Fast responses, lighter tasks |
+| **MiniMax M2.7** | General-purpose |
+| **GLM 5.1** | General-purpose |
+
+All models support 128k context and tool calling. They run via the agent (OpenCode) inside your sandbox.
+
+## Starter credit
+
+Every new account gets **$100 in free AI credits** -- $50 for Claude and $50 for OpenAI. Claim it in **Settings > Models & API Keys**. No credit card required, credits don't expire.
+
+This is a good way to try Claude Code and Codex-powered sessions before committing to a subscription.
+
+## Claude subscription
+
+If you have a **Claude Max** or **Claude Pro** plan from Anthropic, connect it directly:
+
+1. Go to **Settings > Models & API Keys**
+2. Click **Connect Claude**
+3. Authorize via OAuth
+
+Once connected, you can run **Claude Code** as your agent. It uses your existing subscription -- Cord doesn't charge separately for AI usage.
+
+## Codex / ChatGPT subscription
+
+If you have a **ChatGPT Plus** or **ChatGPT Pro** plan from OpenAI:
+
+1. Go to **Settings > Models & API Keys**
+2. Click **Connect ChatGPT**
+3. Complete the device authorization flow
+
+This enables **OpenCode** with your Codex subscription.
+
+## API keys
+
+For direct API access, add keys from any supported provider:
+
+| Provider | Notes |
+|---|---|
+| **Anthropic** | Claude models via API |
+| **OpenAI** | GPT-4, Codex via API |
+| **Google** | Gemini models |
+| **Mistral** | Mistral models |
+| **DeepSeek** | DeepSeek models via API |
+| **xAI** | Grok models |
+| **Groq** | Fast inference |
+| **OpenRouter** | Multi-provider routing |
+| **Amazon Bedrock** | AWS-hosted models (access key or bearer token auth) |
+| **Kimi** | Kimi models via API |
+
+Add keys in **Settings > Models & API Keys**. Keys are encrypted at rest and never logged.
+
+## Org-level shared keys
+
+Admins can add **shared API keys** at the org level so the whole team uses the same provider:
+
+1. Go to **Settings > Organization**
+2. Scroll to **Shared Provider API Keys**
+3. Add keys for any provider
+
+When a shared key is set, team members don't need to configure their own keys for that provider. Individual keys take priority over shared keys if both exist.
+
+## Which agent runs with which provider?
+
+| Provider | Agent | Notes |
+|---|---|---|
+| Claude subscription | **Claude Code** | Uses Anthropic's Claude Code CLI |
+| Anthropic API key | **Claude Code** | Same agent, pay-per-token |
+| Codex / ChatGPT subscription | **OpenCode** | Open source agent, Codex models |
+| OpenAI API key | **OpenCode** | GPT-4 / Codex via API |
+| All other providers | **OpenCode** | Works with any OpenAI-compatible API |
+| Cord Open Source (free) | **OpenCode** | Free models, no key needed |
+
+You can switch providers per session -- you're not locked into one for your whole account.
+
+## CLI provider management
+
+If you prefer the command line:
+
+```bash
+# List connected providers
+cord providers list
+
+# Connect Claude subscription
+cord providers connect claude
+
+# Connect Codex subscription
+cord providers connect codex
+
+# Disconnect a provider
+cord providers disconnect claude
+```

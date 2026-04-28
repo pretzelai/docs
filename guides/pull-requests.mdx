@@ -1,52 +1,102 @@
 ---
 title: "Pull requests"
-description: "Create PRs, review diffs, handle merge conflicts, and keep working after merge."
+description: "Create PRs, use Quick PR, review diffs, adopt existing PRs, and keep working after merge."
 ---
 
 ## Creating a PR
 
-When the agent finishes (or at any point during a session), click **Create PR**. Cord will:
+When the agent finishes (or at any point during a session), click **Create PR**. A popover lets you:
 
-1. Push the session's branch to GitHub
-2. Open a pull request with a generated title and description
-3. Link the PR back to the session in Cord
+- **Edit the title** -- Cord generates one automatically, you can change it
+- **Edit the description** -- AI-generated summary of changes, editable before submission
+- **Toggle draft** -- create as a draft PR if it's not ready for review yet
 
-The PR shows up in GitHub like any other pull request. Your team can review it through their normal workflow.
+Cord pushes the branch to GitHub and opens the pull request. The PR links back to the session.
+
+## AI-generated PR descriptions
+
+When you click Create PR, Cord generates a title and description based on:
+
+- The conversation in the session
+- The actual code changes made
+- The original task description
+
+You can edit both before submitting. The description is formatted with a summary, list of changes, and a link to the Cord session.
+
+## Quick PR
+
+For straightforward changes, use **Quick PR** -- a one-click shortcut that creates a PR with auto-generated title and description, skipping the popover. Enable it in **Settings > GitHub > PR Shortcuts**.
+
+## YOLO mode
+
+**YOLO** goes one step further: it creates a PR, merges it immediately, and archives the session -- all in one click. Useful for trivial changes where you trust the agent's output and don't need a review cycle.
+
+Enable YOLO in **Settings > GitHub > PR Shortcuts**.
+
+<Warning>
+YOLO bypasses your normal review process. It will still respect GitHub branch protection rules and required status checks -- if CI fails, the merge won't go through.
+</Warning>
 
 ## Reviewing diffs
 
-The **Changes** panel in Cord shows all modified files with a GitHub-style diff view. For each file you can see:
+The **Changes** panel shows all modified files with a GitHub-style diff view:
 
 - Lines added (green) and removed (red)
 - Full file context around changes
-- The total diff count in the sidebar
-
-You can review changes before or after creating the PR.
+- Per-file diff counts in the sidebar
+- Expand/collapse individual files
 
 ## Live preview
 
-If your project runs a dev server, check the live preview URL before merging. The preview runs in the sandbox and shows exactly what the code changes look like. Share the URL with teammates for a quick review without pulling the branch locally.
+If your project runs a dev server, check the live preview URL before merging. The preview runs in the sandbox and shows exactly what the code changes look like. Share the URL with teammates for a quick visual review.
+
+## Updating a PR
+
+If you give the agent follow-up instructions after creating a PR, the new commits are pushed to the same branch. The PR updates automatically -- no need to create a new one.
 
 ## Merge conflicts
 
-If the base branch has changed since the session started and there are conflicts, Cord will flag this in the session status. You can:
+If the base branch has changed since the session started:
 
-- Ask the agent to resolve the conflicts: *"Rebase on main and resolve the merge conflicts"*
-- Resolve them manually through GitHub's conflict resolution UI
+- Cord flags the conflict in the session status
+- Ask the agent to resolve it: *"Rebase on main and resolve the merge conflicts"*
+- Or resolve manually through GitHub's conflict resolution UI
 
 ## Merging
 
-Merge the PR from Cord or from GitHub -- either works. After merge:
+Merge from Cord or from GitHub -- either works. After merge:
 
 - The session status updates to **Merged**
-- The sandbox can be suspended since the work is done
+- The sandbox can be suspended
 
 ## Keep working after merge
 
-Need to iterate on the merged changes? Use **Keep Working** to start a new session that:
+Click **Keep Working** to start a new session that:
 
-- Branches from the latest main (which includes your merged changes)
-- Has full context of what was done in the previous session
+- Branches from the latest main (including your merged changes)
+- Has context of what was done in the previous session
 - Lets the agent continue building on top of the merged work
 
-This is useful for multi-step features where you want to merge incrementally.
+Useful for multi-step features where you want to merge incrementally rather than pile everything into one giant PR.
+
+## Adopting an existing PR
+
+If you have a PR on GitHub that was created outside of Cord (manually, by another tool, etc.), you can **adopt** it into a Cord session:
+
+1. In the chat input, reference the PR
+2. Cord checks out the PR's branch into a sandbox
+3. The agent has full context of the existing changes
+4. You can give the agent instructions to continue, fix, or improve the PR
+
+This is useful for picking up half-finished work or having the agent fix CI failures on an existing PR.
+
+## PR flow progress
+
+When creating a PR, Cord shows a real-time progress card:
+
+1. **Staging** -- collecting changes
+2. **Committing** -- creating the git commit
+3. **Pushing** -- pushing the branch to GitHub
+4. **Creating PR** -- opening the pull request
+
+If any step fails, you'll see the error and can retry.

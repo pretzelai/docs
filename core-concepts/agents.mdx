@@ -1,6 +1,6 @@
 ---
 title: "Agents"
-description: "Claude Code and OpenCode -- bring your own subscription or API keys."
+description: "Claude Code and OpenCode -- bring your own subscription, API keys, or use free models."
 ---
 
 Cord supports two AI coding agents. Both run inside your cloud sandbox with full access to the filesystem, terminal, and browser.
@@ -11,37 +11,25 @@ Cord supports two AI coding agents. Both run inside your cloud sandbox with full
 
 **How to use it in Cord:**
 
-- **Claude Max or Pro subscription** -- Cord runs Claude Code using your existing Anthropic subscription. Log in with your Anthropic account in Cord settings.
-- **Anthropic API key** -- Provide your API key and Cord passes it through directly. You pay Anthropic for token usage.
+- **Claude Max or Pro subscription** -- Connect via OAuth in Settings. Agent runs using your existing plan.
+- **Anthropic API key** -- Provide your API key. You pay Anthropic for token usage.
+- **Starter credit** -- Use your $50 free Claude credit (included with every new account).
 
-Claude Code supports extended thinking and has deep context about your codebase through its CLAUDE.md configuration.
+Claude Code supports extended thinking for complex reasoning tasks.
 
 ## OpenCode
 
-[OpenCode](https://github.com/nicepkg/opencode) is an open-source coding agent that works with multiple model providers. It's the default agent when you connect an OpenAI Codex subscription or bring API keys from any supported provider.
+[OpenCode](https://github.com/nicepkg/opencode) is an open-source coding agent that works with multiple model providers. It's the default agent for Codex subscriptions, API keys, and free open source models.
 
 **Supported model providers:**
 
 - OpenAI (GPT-4, Codex)
-- Anthropic (Claude)
+- Anthropic (Claude via API)
 - Google (Gemini)
-- Open-source models via compatible APIs
-
-**How to use it in Cord:**
-
-- **Codex subscription** -- Connect your OpenAI Codex plan and OpenCode uses it directly.
-- **API keys** -- Provide keys from any supported provider in your Cord settings.
-
-## Bring your own keys (BYOK)
-
-Cord doesn't resell AI. You use your existing subscriptions and API keys. This means:
-
-- No double-paying for AI access
-- No vendor lock-in on the model side
-- Full control over which models you use
-- Your API keys are encrypted at rest and never logged
-
-You can switch between agents and models per session.
+- Mistral, DeepSeek, xAI, Groq
+- OpenRouter (multi-provider)
+- Amazon Bedrock
+- **Cord Open Source** -- free models at no cost (Kimi K2.6, DeepSeek V3.2, Qwen 3.6 Plus, Gemma 4, and more)
 
 ## What agents can do
 
@@ -55,3 +43,42 @@ Both agents have the same capabilities inside a sandbox:
 | **Start servers** | Run dev servers and access them via preview URLs |
 | **Use a browser** | Load pages in a headless browser for visual verification |
 | **Create PRs** | Generate pull requests ready for review |
+| **Use MCP tools** | Call external tools and data sources via MCP servers |
+
+## Choosing your default agent and model
+
+In **Settings > Models & API Keys**, you can configure:
+
+- **Default agent** -- Claude Code or OpenCode. This is what new sessions use by default.
+- **Default model** -- which specific model to use (e.g., Claude Sonnet, GPT-4, Kimi K2.6)
+- **Thinking mode** -- enable extended thinking/reasoning for models that support it
+
+You can also override the default per-repo in **Repository Settings** and per-session using the model selector in the chat input.
+
+## Credential routing
+
+When you have multiple AI providers configured (e.g., both an Anthropic API key and a Claude subscription), Cord routes to the right credential automatically.
+
+The routing priority is:
+
+1. **Personal API keys** -- your own keys take first priority
+2. **Personal subscriptions** -- your connected Claude/Codex subscription
+3. **Org-level shared keys** -- keys configured by your admin
+
+You can customize this priority order per-agent in **Settings > Models & API Keys** by dragging credential sources up or down.
+
+## Model selector
+
+In every session, the model selector in the chat input lets you switch models on the fly:
+
+- Change provider and model mid-session
+- Toggle thinking/reasoning mode
+- See which credential source is being used
+
+Press **Cmd+'** to quickly open the model selector.
+
+## Thinking mode
+
+Models that support extended thinking (Claude, some OpenAI models) can be toggled into thinking mode. In this mode, the agent spends more compute on reasoning before acting -- useful for complex architectural decisions, tricky bugs, or multi-step refactors.
+
+Toggle thinking mode in the model selector or set it as the default in settings.
