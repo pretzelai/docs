@@ -159,33 +159,47 @@ The authorization has a time limit -- complete it before the code expires.
 Connect your Claude Max/Pro subscription to Cord.
 
 ```bash
-cord providers connect claude [--token <token>] [--no-open]
+cord providers connect claude [--setup-token] [--token <token>] [--no-open]
 ```
 
 | Flag | Description |
 |---|---|
+| `--setup-token` | Use the setup-token flow instead of browser OAuth |
 | `--token <token>` | Directly provide a Claude setup-token (skips interactive flow) |
 
-There are several ways to connect, and the CLI tries them in order:
-
 <Tabs>
-  <Tab title="Auto-generate from local Claude (recommended)">
-    If you have Claude Code installed and authenticated locally with a subscription:
+  <Tab title="Browser OAuth (default)">
+    The default flow opens your browser to authorize with Claude:
 
     ```bash
     cord providers connect claude
     ```
 
-    The CLI detects your local Claude installation and asks:
+    Cord opens Claude's OAuth consent page. Approve the connection, and the CLI stores your credentials securely:
+
+    ```
+    Connected Claude
+    Stored your Claude subscription token in Cord.
+    ```
+
+    This method automatically handles token refresh -- you won't need to reconnect unless you revoke access.
+  </Tab>
+  <Tab title="Setup token">
+    If you prefer not to use browser OAuth, use the setup-token flow:
+
+    ```bash
+    cord providers connect claude --setup-token
+    ```
+
+    If Claude Code is installed and authenticated locally, the CLI auto-generates the token:
 
     ```
     Use your local Claude login to generate a remote setup-token for Cord now? [Y/n]
     ```
 
-    Press **Y** and the CLI runs `claude setup-token` automatically, extracts the token, and sends it to Cord. This is the easiest method.
-  </Tab>
-  <Tab title="Provide a token directly">
-    If you already have a setup-token (e.g., from running `claude setup-token` yourself):
+    Press **Y** and the CLI runs `claude setup-token` automatically. If Claude Code isn't available, you'll be prompted to paste a token manually.
+
+    You can also provide a token directly:
 
     ```bash
     cord providers connect claude --token sk-ant-oat...
@@ -195,31 +209,10 @@ There are several ways to connect, and the CLI tries them in order:
 
     ```bash
     export CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
-    cord providers connect claude
+    cord providers connect claude --setup-token
     ```
-  </Tab>
-  <Tab title="Manual paste">
-    If Claude Code isn't installed locally, or isn't authenticated with a subscription, the CLI falls back to a manual prompt:
-
-    ```bash
-    cord providers connect claude
-    ```
-
-    ```
-    Paste your Claude setup-token
-    (for example, the output of `claude setup-token`):
-    ```
-
-    Run `claude setup-token` in another terminal, copy the output, and paste it here.
   </Tab>
 </Tabs>
-
-After connecting:
-
-```
-Connected Claude
-Stored your Claude subscription token in Cord.
-```
 
 <Tip>
 The CLI also reads Claude metadata from your local `~/.claude.json` (account UUID, email, organization UUID) and sends it along. You can override these with `--account-uuid`, `--email-address`, or `--organization-uuid` flags if needed.
