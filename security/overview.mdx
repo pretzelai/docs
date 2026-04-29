@@ -9,13 +9,13 @@ Your code stays in your sandbox and your GitHub repository. Cord doesn't store y
 
 ## Bring your own keys (BYOK)
 
-Cord never touches your AI credentials beyond passing them to the agent running in your sandbox:
+Cord receives provider credentials when you add them in Settings or connect a subscription, stores them securely, and injects the selected credential into sandboxes when needed:
 
 - API keys are encrypted at rest
 - Keys are injected into the sandbox at startup and exist only in memory
-- Keys are never logged, never stored in plaintext, never sent to Cord's servers
+- Keys are never logged or stored in plaintext
 
-When using subscription-based access (Claude Max/Pro, Codex), authentication happens directly between the agent in your sandbox and the AI provider.
+For subscription-based access (Claude Max/Pro, Codex), Cord stores the connected subscription credential set encrypted and injects the necessary credentials into sandboxes for the selected agent.
 
 ## Sandbox isolation
 
@@ -37,14 +37,15 @@ Environment variables you set in Cord are:
 
 ## Authentication
 
-- **GitHub OAuth** -- Cord authenticates via GitHub. No passwords stored.
+- **Sign-in methods** -- Cord supports configured sign-in methods such as GitHub, Google, and/or email.
 - **Session tokens** -- managed by Better Auth, stored encrypted, with automatic expiry.
+- **Passwords** -- password-based sign-in, if enabled, stores password hashes rather than plaintext passwords.
 
 ## Infrastructure
 
 | Component | Provider | Location |
 |---|---|---|
-| Sandboxes | Daytona / Modal | US / EU regions |
+| Sandboxes | Modal / Daytona / Freestyle, depending on deployment | US / EU regions |
 | Database | Neon (Postgres) | US |
 | Session coordination | Cloudflare Durable Objects | Edge (global) |
 | File storage | Cloudflare R2 | US |

@@ -117,4 +117,4 @@ cord auth login
 cord storage sync-skills
 ```
 
-This uploads `~/.claude/skills/` and `~/.agents/skills/` to your [persistent storage](/core-concepts/persistent-storage). The agent picks them up automatically in every session.
+This uploads existing, non-empty `~/.claude/skills/` and `~/.agents/skills/` directories to [persistent storage](/core-concepts/persistent-storage) and auto-mounts them for new sandboxes. Run it again after editing local skills.

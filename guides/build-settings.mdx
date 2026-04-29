@@ -58,14 +58,9 @@ Build hooks run in order during the image build phase.
 
 ### Sandbox provider
 
-Choose which infrastructure provider runs your sandboxes:
+Choose which infrastructure provider runs your sandboxes. Provider availability and capabilities are deployment-specific; Repository Settings lists the available providers and whether they support Docker or Docker Compose for your workspace.
 
-| Provider | Docker support | Docker Compose | Notes |
-|---|---|---|---|
-| **Daytona** | Yes | Yes | Default. Full Docker and Compose support. |
-| **Modal** | Yes | No | Alternative for teams needing more scale. |
-
-If your project uses Docker Compose, you must use Daytona.
+If your project uses Docker Compose, choose a provider that supports Compose.
 
 ---
 
@@ -106,7 +101,7 @@ For projects that use Docker Compose, select **Docker Compose** as the runner. C
 | **Project name** | Optional stable project name for the compose stack. |
 
 <Info>
-Docker Compose requires the **Daytona** sandbox provider. If you select Compose as a runner, make sure Daytona is selected as your provider.
+Docker Compose requires a sandbox provider that supports Compose. If you select Compose as a runner, make sure your selected provider supports it.
 </Info>
 
 Cord manages the Compose lifecycle for you -- you don't need to write a `docker compose up` command. The compose stack starts automatically based on your config.

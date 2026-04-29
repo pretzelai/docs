@@ -3,7 +3,7 @@ title: "AI providers"
 description: "Connect your Claude or ChatGPT subscription, add API keys, or use free models."
 ---
 
-Cord is bring-your-own-AI. Connect your existing Claude or ChatGPT subscription, add API keys from any supported provider, or use free open source models. You can also get started immediately with [\$100 in free AI credits](#starter-credit) -- no credit card required.
+Cord is bring-your-own-AI. Connect your existing Claude or ChatGPT subscription, add API keys from any supported provider, or use Cord Open Source models when your account has access. You can also get started immediately with [\$100 in free AI credits](#starter-credit) -- no credit card required.
 
 ## Connect your Claude subscription
 
@@ -33,7 +33,7 @@ You'll be taken to Claude's OAuth page. Approve the connection, and you're done:
 
 ```
 Connected Claude
-Stored your Claude subscription token in Cord.
+Stored your Claude OAuth credential set in Cord.
 ```
 
 This method automatically handles token refresh -- you won't need to reconnect unless you revoke access.
@@ -51,7 +51,7 @@ cord providers connect claude --setup-token
 cord providers connect claude --token sk-ant-oat...
 ```
 
-If Claude Code is installed and authenticated locally, the CLI detects it and offers to generate the token automatically. Otherwise it prompts you to paste one (run `claude setup-token` in another terminal to get it).
+If Claude Code is installed and authenticated locally with a Claude subscription, the CLI detects it and offers to generate the token automatically. API-key-authenticated Claude installs, unknown auth methods, non-interactive terminals, or unsupported platforms fall back to manual token entry.
 
 ### Disconnect
 
@@ -96,7 +96,7 @@ cord providers disconnect codex
 
 ## Check connection status
 
-See all your connected providers and local CLI status:
+See all your connected providers and local CLI status. Remote provider status requires browser CLI auth (`cord auth login`); API-key CLI auth is not enough for provider commands.
 
 ```bash
 cord providers list
@@ -104,13 +104,13 @@ cord providers list
 
 ```
 Cord provider connections
-  Codex:             connected (account-id)
-  Claude:            connected (user@email.com)
-  Cord Open Source:  connected
+Codex: connected (account-id)
+Claude: connected (user@email.com, OAuth)
+Cord Open Source: connected (user, key-prefix)
 
 Local provider binaries
-  Codex: authenticated, v1.2.3
-  Claude: authenticated, subscription auth, v2.0.0
+Local Codex binary: authenticated, v1.2.3, model_provider=openai
+Local Claude binary: authenticated, subscription auth, v2.0.0
 ```
 
 ## API keys
@@ -165,7 +165,7 @@ This is the fastest way to try both Claude Code and Codex-powered sessions befor
 
 ## Free open source models
 
-Every Cord account has access to open source models at no cost through the **Cord Open Source** provider. No API key needed -- enable it in **Settings > Models & API Keys** and start a session.
+Cord Open Source models are available when your account has a configured Cord Open Source credential or credit allocation. If available, they appear under the **Cord Open Source** provider in the model selector.
 
 | Model | Best for |
 |---|---|

@@ -7,7 +7,7 @@ Cord exposes a REST API for programmatic access. Use it to start sessions from s
 
 ## Authentication
 
-The API uses **sandbox API keys** for authentication. Create a key in **Settings > Cord API**.
+The API uses **Cord API keys** for authentication. Create a key in **Settings > Cord API**.
 
 Each key can be scoped to:
 - **All repositories** in your organization
@@ -37,12 +37,8 @@ GET /api/v1/repositories
 **Response:**
 ```json
 [
-  {
-    "id": "repo_abc123",
-    "name": "my-app",
-    "owner": "my-org",
-    "defaultBranch": "main"
-  }
+  "my-org/my-app",
+  "my-org/api"
 ]
 ```
 
@@ -58,26 +54,38 @@ POST /api/v1/sessions
 
 ```json
 {
-  "repository": "repo_abc123",
+  "repository": "my-org/my-app",
   "message": "Add a /health endpoint that returns status ok",
-  "model": "kimi-k2.6",
-  "thinking": true
+  "model": "cord-open-source/kimi-k2.6",
+  "thinking": "default"
 }
 ```
 
 | Field | Required | Description |
 |---|---|---|
-| `repository` | Yes | Repository ID (from the list repositories endpoint) |
+| `repository` | Yes | Repository full name, repo ID, or an unambiguous repository name the API key can access |
 | `message` | Yes | The task description for the agent |
-| `model` | No | Model ID to use. Defaults to your configured default. |
-| `thinking` | No | Enable extended thinking/reasoning mode. |
+| `model` | No | Model to use, either as `provider/model` or an object with `providerID` and `modelID`. Defaults to your configured default. |
+| `thinking` | No | Thinking/reasoning variant string. You can also send `variant`. |
 
 **Response:**
 ```json
 {
-  "id": "session_xyz789",
-  "branch": "cord/add-health-endpoint",
-  "status": "running"
+  "ok": true,
+  "sessionId": "session_xyz789",
+  "repository": {
+    "id": "repo_abc123",
+    "name": "my-app",
+    "fullName": "my-org/my-app",
+    "defaultBranch": "main"
+  },
+  "agentType": "opencode",
+  "model": {
+    "providerID": "cord-open-source",
+    "modelID": "kimi-k2.6"
+  },
+  "thinking": "default",
+  "status": "queued"
 }
 ```
 
@@ -86,8 +94,16 @@ POST /api/v1/sessions
 Manage files in your [persistent storage](/core-concepts/persistent-storage):
 
 ```bash
-GET  /api/v1/storage-attachments
-POST /api/v1/storage-attachments
+GET    /api/v1/storage-attachments
+POST   /api/v1/storage-attachments/upload-plan
+POST   /api/v1/storage-attachments/upload-file
+POST   /api/v1/storage-attachments/finalize-upload
+POST   /api/v1/storage-attachments/upload-status
+POST   /api/v1/storage-attachments/retry-upload-plan
+POST   /api/v1/storage-attachments/report-upload-result
+POST   /api/v1/storage-attachments/discard-upload
+PATCH  /api/v1/storage-attachments/{id}
+DELETE /api/v1/storage-attachments/{id}
 ```
 
 ## Use cases
@@ -102,6 +118,6 @@ POST /api/v1/storage-attachments
 
 ## CLI
 
-The Cord CLI is a separate tool for authentication, provider management, and persistent storage uploads. It uses browser-based auth (device code flow), separate from API keys.
+The Cord CLI is a separate tool for authentication, provider management, and persistent storage uploads. It supports browser CLI auth and API-key auth via `cord auth login --api-key <key>` or `CORD_API_KEY`. Provider commands require browser CLI auth; Persistent Storage commands can use either browser CLI auth or API-key auth.
 
 See the full [CLI reference](/reference/cli) for installation, all commands, and detailed usage.

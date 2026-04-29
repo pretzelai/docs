@@ -15,12 +15,12 @@ This installs the `cord` command. Requires Node.js 18+.
 
 ## Global options
 
-These flags work with any command:
+These flags are parsed globally. Command-specific flags only affect the commands that document them.
 
 | Flag | Description |
 |---|---|
-| `--api-base-url <url>` | Target a different API environment (default: `https://api.runcord.com`). Also settable via `CORD_API_URL` env var. |
-| `--no-open` | Don't auto-open the browser during auth flows |
+| `--api-base-url <url>` | Target a different API environment (default: `https://api.runcord.com`). Also settable via `CORD_API_URL` env var. Does not affect `cord self update`. |
+| `--no-open` | Don't auto-open the browser during `auth login`, `providers connect codex`, or `providers connect claude` |
 | `-h`, `--help` | Print usage info |
 
 ## Shortcuts
@@ -48,9 +48,10 @@ cord auth login [--api-key <key>] [--api-base-url <url>] [--machine-name <name>]
 
 | Flag | Default | Description |
 |---|---|---|
-| `--api-key` | None | Log in with a Cord API key instead of browser device auth |
+| `--api-key <key>` | None | Log in with a Cord API key instead of browser device auth. Also settable via `CORD_API_KEY`. API-key auth works for storage commands, but provider commands require browser CLI auth. |
 | `--api-base-url` | `https://api.runcord.com` | Target a different Cord API environment |
 | `--machine-name` | Your hostname | A name for this device, shown in your account |
+| `--no-open` | false | Don't auto-open the browser during device auth |
 
 **How it works:**
 
@@ -75,7 +76,7 @@ Auth tokens are stored locally at:
 - **Linux:** `~/.config/cord/config.json`
 - **Windows:** `%APPDATA%/cord/config.json`
 
-The config file is locked to your user (`chmod 600`).
+The config directory is locked to your user (`chmod 700`) and the config file uses `chmod 600`. Auth is stored per API base URL, so prod and staging can stay logged in at the same time.
 
 ### `cord auth status`
 
@@ -98,7 +99,7 @@ cord auth logout [--api-base-url <url>] [--local-only]
 | `--api-base-url <url>` | Target a different Cord API environment |
 | `--local-only` | Clear local config without revoking the remote token |
 
-By default, this revokes the server-side token and clears local config. Use `--local-only` if you just want to clean up locally.
+For browser CLI auth, this revokes the server-side token when possible and clears local config. API-key auth cannot revoke the underlying API key, so logout only clears the local CLI config for that API key.
 
 ---
 
@@ -114,7 +115,7 @@ cord providers list [--api-base-url <url>]
 
 This checks three things in parallel:
 
-1. **Remote connections** -- providers linked to your Cord account (Codex, Claude, Cord Open Source, API keys)
+1. **Remote connections** -- subscription/provider connections linked to your Cord account (Codex, Claude, Cord Open Source)
 2. **Local Codex binary** -- whether `codex` is installed and authenticated on your machine
 3. **Local Claude binary** -- whether `claude` is installed and authenticated on your machine
 
@@ -122,14 +123,16 @@ Example output:
 
 ```
 Cord provider connections
-  Codex:             connected (account-id)
-  Claude:            connected (user@email.com, setup-token)
-  Cord Open Source:  connected
+Codex: connected (account-id)
+Claude: connected (user@email.com, setup-token)
+Cord Open Source: connected (user, key-prefix)
 
 Local provider binaries
-  Codex: authenticated, v1.2.3
-  Claude: authenticated, subscription auth, v2.0.0
+Local Codex binary: authenticated, v1.2.3, model_provider=openai
+Local Claude binary: authenticated, subscription auth, v2.0.0
 ```
+
+Provider connect/disconnect commands require browser CLI auth from `cord auth login`; API-key auth is not enough for provider management.
 
 ### `cord providers connect codex`
 
@@ -164,11 +167,12 @@ The authorization has a time limit -- complete it before the code expires.
 Connect your Claude Max/Pro subscription to Cord.
 
 ```bash
-cord providers connect claude [--setup-token] [--token <token>] [--account-uuid <uuid>] [--email-address <email>] [--organization-uuid <uuid>] [--api-base-url <url>] [--no-open]
+cord providers connect claude [--experimental-oauth] [--setup-token] [--token <token>] [--account-uuid <uuid>] [--email-address <email>] [--organization-uuid <uuid>] [--api-base-url <url>] [--no-open]
 ```
 
 | Flag | Description |
 |---|---|
+| `--experimental-oauth` | Explicitly request Claude browser OAuth. This is already the default and cannot be combined with `--setup-token`, `--token`, or `CLAUDE_CODE_OAUTH_TOKEN`. |
 | `--setup-token` | Use the setup-token flow instead of browser OAuth |
 | `--token <token>` | Directly provide a Claude setup-token (skips interactive flow) |
 | `--account-uuid <uuid>` | Override Claude account metadata sent to Cord |
@@ -188,9 +192,9 @@ cord providers connect claude [--setup-token] [--token <token>] [--account-uuid 
     Cord opens Claude's OAuth consent page. Approve the connection, and the CLI stores your credentials securely:
 
     ```
-    Connected Claude
-    Stored your Claude subscription token in Cord.
-    ```
+Connected Claude
+Stored your Claude OAuth credential set in Cord.
+```
 
     This method automatically handles token refresh -- you won't need to reconnect unless you revoke access.
   </Tab>
@@ -201,13 +205,13 @@ cord providers connect claude [--setup-token] [--token <token>] [--account-uuid 
     cord providers connect claude --setup-token
     ```
 
-    If Claude Code is installed and authenticated locally, the CLI auto-generates the token:
+    If Claude Code is installed, authenticated with a Claude subscription, running in an interactive terminal, and on macOS or Linux, the CLI offers to auto-generate the token:
 
     ```
     Use your local Claude login to generate a remote setup-token for Cord now? [Y/n]
     ```
 
-    Press **Y** and the CLI runs `claude setup-token` automatically. If Claude Code isn't available, you'll be prompted to paste a token manually.
+    Press **Y** and the CLI runs `claude setup-token` automatically. If Claude Code isn't available, is using API-key auth, or can't be verified as a subscription login, you'll be prompted to paste a token manually.
 
     You can also provide a token directly:
 
@@ -215,7 +219,7 @@ cord providers connect claude [--setup-token] [--token <token>] [--account-uuid 
     cord providers connect claude --token sk-ant-oat...
     ```
 
-    Or set the `CLAUDE_CODE_OAUTH_TOKEN` environment variable:
+    Or set the `CLAUDE_CODE_OAUTH_TOKEN` environment variable. The CLI only uses this environment variable with `--setup-token`; without `--setup-token`, browser OAuth remains the default.
 
     ```bash
     export CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat...
@@ -225,7 +229,7 @@ cord providers connect claude [--setup-token] [--token <token>] [--account-uuid 
 </Tabs>
 
 <Tip>
-The CLI also reads Claude metadata from your local `~/.claude.json` (account UUID, email, organization UUID) and sends it along. You can override these with `--account-uuid`, `--email-address`, or `--organization-uuid` flags if needed.
+The CLI reads Claude metadata from `~/.claude.json` and `~/Library/Application Support/Claude/.claude.json` when present. For setup-token flows, it can also use the email detected from local `claude auth status`. You can override metadata with `--account-uuid`, `--email-address`, or `--organization-uuid` flags if needed.
 </Tip>
 
 ### `cord providers disconnect codex`
@@ -265,6 +269,8 @@ cord storage upload <path> [--name <name>] [--mount-path <path>] [--repo-id <id>
 | `--include-sensitive` | false | Include files that look like secrets |
 | `--api-base-url <url>` | `https://api.runcord.com` | Target a different Cord API environment |
 
+`--repo-id` requires `--mount-path`. `--no-mount` cannot be combined with `--mount-path` or `--repo-id`.
+
 ### Uploading a single file
 
 ```bash
@@ -272,7 +278,7 @@ cord storage upload <path> [--name <name>] [--mount-path <path>] [--repo-id <id>
 cord storage upload ~/.bashrc --mount-path "~/.bashrc"
 
 # Upload an env file for a specific repo
-cord storage upload .env.local --mount-path "/repo/.env.local" --repo-id repo_abc123
+cord storage upload .env.local --mount-path "/repo/.env.local" --repo-id repo_abc123 --include-sensitive
 
 # Upload without mounting (configure later in the web UI)
 cord storage upload ./my-config.json --no-mount
@@ -291,16 +297,18 @@ cord storage upload ~/.claude/skills --mount-path "~/.claude/skills"
 When uploading a folder, Cord recursively walks the directory and uploads all files. Progress is shown in real-time:
 
 ```
-Uploading files: 45.2% (12.3 MB / 27.1 MB, 42/100 files)
+Uploading files: 45.2% (12.3 MB/27.1 MB, 42/100 files)
 ```
+
+Progress phases include `Preparing upload`, `Uploading files`, and `Finalizing upload`.
 
 ### What gets skipped
 
-By default, the CLI skips files and directories that look like secrets or aren't useful in a sandbox:
+By default, directory uploads skip files and directories that look like secrets or aren't useful in a sandbox. Single-file uploads that look sensitive are rejected unless you pass `--include-sensitive`. Hidden files and folders are included unless they match sensitive rules.
 
 **Skipped directories:** `.aws`, `.git`, `.gnupg`, `.ssh`
 
-**Skipped files:** `.env`, `.env.*`, `*.key`, `*.pem`, `*.p12`, `*.pfx`, `id_rsa`, `id_ed25519`, `credentials.json`, `.npmrc`, `.netrc`, and similar credential files.
+**Skipped files:** `.env`, `.env.*`, `*.key`, `*.pem`, `*.p12`, `*.pfx`, `id_rsa`, `id_dsa`, `id_ecdsa`, `id_ed25519`, `credentials`, `credentials.json`, `.credentials.json`, `.npmrc`, `.netrc`, and similar credential files.
 
 **Also skipped:** Symlinks (not followed), empty directories (not preserved), non-regular files (sockets, block devices).
 
@@ -315,8 +323,8 @@ cord storage upload ./my-config --mount-path "/repo/.config" --include-sensitive
 | Limit | Value |
 |---|---|
 | Max files per upload | 5,000 |
-| Max single file size | 200 MB |
-| Max total upload size | 1 GB |
+| Max single file size | 200 MiB |
+| Max total upload size | 1 GiB |
 
 ### Upload summary
 
@@ -324,21 +332,23 @@ After a successful upload:
 
 ```
 Upload to Persistent Storage
-  Path:   ./my-folder
-  Name:   my-folder
-  Type:   folder
-  Files:  42
-  Size:   12.3 MB
-  Mount:  /repo/.config for all repositories
-
-  Skipped symlinks: 2
-  Skipped likely secret entries: 3
+Path:  ./my-folder
+Name:  my-folder
+Type:  folder
+Files: 42
+Size:  12.3 MB
+Skipped symlinks: 2
+Skipped likely secret entries: 3 (use --include-sensitive to upload them intentionally)
+Mount: /repo/.config for all repositories
 
 Uploaded to Persistent Storage
-  Attachment ID: att_xxx
-  Files:         42
-  Size:          12.3 MB
-  Mount path:    /repo/.config
+
+Attachment ID: att_xxx
+Files:         42
+Size:          12.3 MB
+Skipped likely secret entries: 3
+Skipped symlinks: 2
+Mount path:    /repo/.config
 
 Mount changes apply to new sandboxes only.
 ```
@@ -349,7 +359,7 @@ If you upload without a mount path, the file is stored but not auto-mounted. You
 
 ### `cord storage sync-skills`
 
-Upload local Claude and OpenCode skills into persistent storage.
+Upload global Claude skills and global agent skills into persistent storage.
 
 ```bash
 cord storage sync-skills [--include-sensitive] [--api-base-url <url>]
@@ -362,7 +372,7 @@ This scans the standard local skill directories and mounts them into future sand
 | `~/.claude/skills` | `~/.claude/skills` |
 | `~/.agents/skills` | `~/.agents/skills` |
 
-Use this after editing local skills so new Cord sessions pick up the latest version.
+The command skips missing directories and directories with no uploadable regular files. In an interactive terminal, it asks before uploading. It replaces existing directory attachments at the same target paths, mounts them for all repositories, and changes apply to new sandboxes only.
 
 ---
 

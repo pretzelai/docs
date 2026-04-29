@@ -3,20 +3,19 @@ title: "Persistent storage"
 description: "Files, config, and tools that carry over across sandbox sessions."
 ---
 
-Every user gets persistent storage that survives across sandbox sessions. Anything that doesn't belong in the repo but should be available every time you start a new session goes here.
+Every user gets persistent storage for files that don't belong in the repo but should be available in future sandboxes. Add files through Settings or the CLI, choose where they mount, and Cord injects them when new sandboxes start.
 
 ## What persists
 
 - **`.claude/` directory** -- Your Claude Code configuration, skills, and memory files
 - **`.agents/` directory** -- Agent skills and configuration for OpenCode
 - **Dotfiles** -- `.bashrc`, `.gitconfig`, editor settings
-- **Test artifacts** -- Cached builds, test snapshots
-- **Custom tools** -- CLI tools or scripts you've installed
+- **Project config** -- Config directories, templates, scripts, or other files you explicitly upload
 - **Secret files** -- Env files or configs you don't want in your repo
 
 ## How it works
 
-Persistent storage is backed by cloud storage and mounted into every sandbox when it starts. Think of it as your home directory that follows you from session to session.
+Persistent storage is backed by cloud storage. Attachments configured with a mount path and auto-mount enabled are mounted into new sandboxes when they start.
 
 Storage is **per-user**, not per-repo. Your personal configuration is available regardless of which repository you're working in.
 
@@ -25,7 +24,7 @@ Storage is **per-user**, not per-repo. Your personal configuration is available 
 You can upload files and folders through the Cord UI:
 
 1. Go to **Settings > Persistent Storage**
-2. Click **Upload** or drag-and-drop files
+2. Click **Upload file** or **Upload folder**, or drag-and-drop files
 3. Configure the mount path (where the file appears in the sandbox, e.g. `~/.bashrc` or `/repo/.claude`)
 4. Choose the scope -- **all repositories** or a **specific repo**
 5. Toggle **auto-mount** to include it in new sandboxes by default
@@ -50,7 +49,7 @@ In the persistent storage settings, you can:
 
 - **Edit settings** -- rename, change mount path, toggle auto-attach
 - **Replace contents** -- re-upload a new version of a file
-- **Resume uploads** -- retry if an upload was interrupted
+- **Complete upload** -- finish an interrupted or incomplete upload
 - **Delete** -- remove files you no longer need
 
 ## Syncing local skills
@@ -59,9 +58,11 @@ If you have Claude Code or OpenCode skills configured on your local machine, syn
 
 ```bash
 curl -fsSL https://runcord.com/install.sh | bash
+cord auth login
+cord storage sync-skills
 ```
 
-This uploads your local `~/.claude/skills` and `~/.agents/skills` directories. Run it again any time you update your local skills.
+This uploads existing, non-empty `~/.claude/skills` and `~/.agents/skills` directories, stores them as persistent storage attachments, and auto-mounts them for new sandboxes. Run it again any time you update your local skills.
 
 ## CLI upload
 
@@ -75,19 +76,21 @@ cord storage upload ~/.bashrc --mount-path "~/.bashrc"
 cord storage upload ./my-config --mount-path "/repo/.config" --name "project config"
 
 # Upload to a specific repo only
-cord storage upload .env.local --mount-path "/repo/.env.local" --repo-id repo_abc123
+cord storage upload .env.local --mount-path "/repo/.env.local" --repo-id repo_abc123 --include-sensitive
 ```
 
 When uploading folders, the CLI:
 - Recursively walks all files with real-time progress
+- Includes hidden files by default unless they match sensitive-file rules
 - **Skips secrets by default** (`.env`, `*.key`, `*.pem`, `id_rsa`, `.aws/`, `.ssh/`, etc.)
+- Rejects single sensitive-file uploads unless you pass `--include-sensitive`
 - Skips symlinks and empty directories
-- Uploads up to 5,000 files, max 1 GB total
+- Uploads up to 5,000 files, max 200 MiB per file and 1 GiB total
 
 Use `--include-sensitive` to override the secret detection if you intentionally want to upload credential files.
 
 See the full [CLI reference](/reference/cli#storage-upload) for all flags and details.
 
 <Tip>
-Persistent storage is automatically available in every new sandbox. You don't need to configure anything per-session -- just start a session and your files are there.
+Persistent storage attachments are available in new sandboxes when they have a mount path and auto-mount enabled. Uploads without a mount path are stored in your library until you enable mounting.
 </Tip>
