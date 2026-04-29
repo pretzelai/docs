@@ -18,7 +18,7 @@ If you have a **Claude Max** or **Claude Pro** plan from Anthropic, connect it t
 
 2. **Log in to Cord:**
    ```bash
-   cord login
+   cord auth login
    ```
 
 ### Connect via browser OAuth (recommended)
@@ -26,7 +26,7 @@ If you have a **Claude Max** or **Claude Pro** plan from Anthropic, connect it t
 The simplest way to connect. Run this command, and Cord opens your browser to authorize with Claude:
 
 ```bash
-cord connect claude
+cord providers connect claude
 ```
 
 You'll be taken to Claude's OAuth page. Approve the connection, and you're done:
@@ -45,10 +45,10 @@ If you prefer not to use browser OAuth, you can connect using a Claude setup tok
 ```bash
 # If you have Claude Code installed locally with an active subscription,
 # the CLI auto-generates the token for you:
-cord connect claude --setup-token
+cord providers connect claude --setup-token
 
 # Or provide a token directly:
-cord connect claude --token sk-ant-oat...
+cord providers connect claude --token sk-ant-oat...
 ```
 
 If Claude Code is installed and authenticated locally, the CLI detects it and offers to generate the token automatically. Otherwise it prompts you to paste one (run `claude setup-token` in another terminal to get it).
@@ -56,7 +56,7 @@ If Claude Code is installed and authenticated locally, the CLI detects it and of
 ### Disconnect
 
 ```bash
-cord disconnect claude
+cord providers disconnect claude
 ```
 
 ## Connect your ChatGPT subscription
@@ -73,7 +73,7 @@ Before connecting, enable device code authorization in your ChatGPT account:
 ### Connect
 
 ```bash
-cord connect codex
+cord providers connect codex
 ```
 
 The CLI shows a one-time code and opens your browser:
@@ -91,7 +91,7 @@ Codex connected successfully!
 ### Disconnect
 
 ```bash
-cord disconnect codex
+cord providers disconnect codex
 ```
 
 ## Check connection status

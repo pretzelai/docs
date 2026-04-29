@@ -25,6 +25,8 @@ These flags work with any command:
 
 ## Shortcuts
 
+These shortcuts exist, but the rest of this page uses canonical command forms.
+
 | Shortcut | Expands to |
 |---|---|
 | `cord login` | `cord auth login` |
@@ -41,11 +43,13 @@ These flags work with any command:
 Authenticate the CLI with your Cord account.
 
 ```bash
-cord auth login [--machine-name <name>] [--no-open]
+cord auth login [--api-key <key>] [--api-base-url <url>] [--machine-name <name>] [--no-open]
 ```
 
 | Flag | Default | Description |
 |---|---|---|
+| `--api-key` | None | Log in with a Cord API key instead of browser device auth |
+| `--api-base-url` | `https://api.runcord.com` | Target a different Cord API environment |
 | `--machine-name` | Your hostname | A name for this device, shown in your account |
 
 **How it works:**
@@ -78,7 +82,7 @@ The config file is locked to your user (`chmod 600`).
 Check your current login state.
 
 ```bash
-cord auth status
+cord auth status [--api-base-url <url>]
 ```
 
 Shows your logged-in user, organization, and API base URL. Also lists other environments you're logged into (e.g., staging).
@@ -86,11 +90,12 @@ Shows your logged-in user, organization, and API base URL. Also lists other envi
 ### `cord auth logout`
 
 ```bash
-cord auth logout [--local-only]
+cord auth logout [--api-base-url <url>] [--local-only]
 ```
 
 | Flag | Description |
 |---|---|
+| `--api-base-url <url>` | Target a different Cord API environment |
 | `--local-only` | Clear local config without revoking the remote token |
 
 By default, this revokes the server-side token and clears local config. Use `--local-only` if you just want to clean up locally.
@@ -104,7 +109,7 @@ By default, this revokes the server-side token and clears local config. Use `--l
 Show all connected AI providers and local CLI status.
 
 ```bash
-cord providers list
+cord providers list [--api-base-url <url>]
 ```
 
 This checks three things in parallel:
@@ -131,7 +136,7 @@ Local provider binaries
 Connect your ChatGPT Plus/Pro subscription to Cord via device code authorization.
 
 ```bash
-cord providers connect codex [--no-open]
+cord providers connect codex [--api-base-url <url>] [--no-open]
 ```
 
 **Before you start:** You need to enable device code authorization in your ChatGPT account:
@@ -159,13 +164,18 @@ The authorization has a time limit -- complete it before the code expires.
 Connect your Claude Max/Pro subscription to Cord.
 
 ```bash
-cord providers connect claude [--setup-token] [--token <token>] [--no-open]
+cord providers connect claude [--setup-token] [--token <token>] [--account-uuid <uuid>] [--email-address <email>] [--organization-uuid <uuid>] [--api-base-url <url>] [--no-open]
 ```
 
 | Flag | Description |
 |---|---|
 | `--setup-token` | Use the setup-token flow instead of browser OAuth |
 | `--token <token>` | Directly provide a Claude setup-token (skips interactive flow) |
+| `--account-uuid <uuid>` | Override Claude account metadata sent to Cord |
+| `--email-address <email>` | Override Claude email metadata sent to Cord |
+| `--organization-uuid <uuid>` | Override Claude organization metadata sent to Cord |
+| `--api-base-url <url>` | Target a different Cord API environment |
+| `--no-open` | Don't auto-open the browser during OAuth |
 
 <Tabs>
   <Tab title="Browser OAuth (default)">
@@ -221,7 +231,7 @@ The CLI also reads Claude metadata from your local `~/.claude.json` (account UUI
 ### `cord providers disconnect codex`
 
 ```bash
-cord providers disconnect codex
+cord providers disconnect codex [--api-base-url <url>]
 ```
 
 Removes your Codex subscription connection from Cord.
@@ -229,7 +239,7 @@ Removes your Codex subscription connection from Cord.
 ### `cord providers disconnect claude`
 
 ```bash
-cord providers disconnect claude
+cord providers disconnect claude [--api-base-url <url>]
 ```
 
 Removes your Claude subscription connection from Cord.
@@ -243,7 +253,7 @@ Upload files and folders to your [persistent storage](/core-concepts/persistent-
 ### `cord storage upload`
 
 ```bash
-cord storage upload <path> [flags]
+cord storage upload <path> [--name <name>] [--mount-path <path>] [--repo-id <id>] [--no-mount] [--include-sensitive] [--api-base-url <url>]
 ```
 
 | Flag | Default | Description |
@@ -253,6 +263,7 @@ cord storage upload <path> [flags]
 | `--repo-id <id>` | None (all repos) | Restrict mount to a specific repository |
 | `--no-mount` | false | Store without mounting (configure mount later in Settings) |
 | `--include-sensitive` | false | Include files that look like secrets |
+| `--api-base-url <url>` | `https://api.runcord.com` | Target a different Cord API environment |
 
 ### Uploading a single file
 
@@ -335,3 +346,32 @@ Mount changes apply to new sandboxes only.
 <Info>
 If you upload without a mount path, the file is stored but not auto-mounted. You can configure the mount path later in **Settings > Persistent Storage**.
 </Info>
+
+### `cord storage sync-skills`
+
+Upload local Claude and OpenCode skills into persistent storage.
+
+```bash
+cord storage sync-skills [--include-sensitive] [--api-base-url <url>]
+```
+
+This scans the standard local skill directories and mounts them into future sandboxes:
+
+| Local path | Sandbox mount path |
+|---|---|
+| `~/.claude/skills` | `~/.claude/skills` |
+| `~/.agents/skills` | `~/.agents/skills` |
+
+Use this after editing local skills so new Cord sessions pick up the latest version.
+
+---
+
+## Self update
+
+### `cord self update`
+
+Update the installed CLI package.
+
+```bash
+cord self update
+```

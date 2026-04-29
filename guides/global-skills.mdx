@@ -18,18 +18,24 @@ Claude Code reads skills from `~/.claude/skills/` and agent-specific `CLAUDE.md`
 
 ## Syncing your skills
 
-Run the installer to sync your local skills to Cord:
+Install the CLI and log in if you haven't already:
 
 ```bash
 curl -fsSL https://runcord.com/install.sh | bash
+cord auth login
+```
+
+Then sync your local skills:
+
+```bash
+cord storage sync-skills
 ```
 
 This will:
 
-1. Authenticate with your Cord account (opens a browser window)
-2. Upload your `~/.claude/skills/` directory
-3. Upload your `~/.agents/skills/` directory
-4. Store them in your [persistent storage](/core-concepts/persistent-storage)
+1. Upload your `~/.claude/skills/` directory
+2. Upload your `~/.agents/skills/` directory
+3. Store them in your [persistent storage](/core-concepts/persistent-storage)
 
 Run the command again any time you update your local skills.
 

@@ -113,6 +113,8 @@ If you maintain skills on your local machine, sync them to Cord:
 
 ```bash
 curl -fsSL https://runcord.com/install.sh | bash
+cord auth login
+cord storage sync-skills
 ```
 
 This uploads `~/.claude/skills/` and `~/.agents/skills/` to your [persistent storage](/core-concepts/persistent-storage). The agent picks them up automatically in every session.
