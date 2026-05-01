@@ -13,6 +13,17 @@ When the agent finishes (or at any point during a session), click **Create PR**.
 
 Cord pushes the branch to GitHub and opens the pull request. The PR links back to the session.
 
+<Tip>
+You can create the PR straight from your terminal without opening Cord:
+
+```bash
+cord pr create <session-id> --title "Add /health endpoint" --draft
+cord pr show <session-id>   # check state, URL, and mergeability
+```
+
+This is handy for CI pipelines that drive Cord end-to-end — kick off a session with `cord sessions create`, watch it with `cord sessions status`, review with `cord diff`, and open the PR with `cord pr create`. Everything is wired through the [Cord API](/reference/api#pull-requests) too if you'd rather make HTTP calls directly.
+</Tip>
+
 ## AI-generated PR descriptions
 
 When you click Create PR, Cord generates a title and description based on:

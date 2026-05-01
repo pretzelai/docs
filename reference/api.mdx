@@ -1,50 +1,114 @@
 ---
 title: "Cord API"
-description: "Create sessions, list repos, and manage Cord programmatically."
+description: "Drive Cord programmatically: start sessions, stream messages, inspect changes, open PRs."
 ---
 
-Cord exposes a REST API for programmatic access. Use it to start sessions from scripts, CI pipelines, or your own tools.
+Cord exposes a JSON REST API for programmatic access. Use it to trigger sessions from CI, scripts, internal tools, or agent-to-agent workflows — then keep following the same session to send follow-up messages, inspect file changes, and open pull requests.
+
+Every endpoint lives under `https://api.runcord.com/api/v1`.
 
 ## Authentication
 
-The API uses **Cord API keys** for authentication. Create a key in **Settings > Cord API**.
-
-Each key can be scoped to:
-- **All repositories** in your organization
-- **Selected repositories** only
-
-Include your key in the `Authorization` header:
+All `/api/v1` endpoints accept the same bearer token header, regardless of whether you authenticate with an **API key** or a **CLI login token**.
 
 ```bash
-curl -H "Authorization: Bearer cord_sk_..." \
+curl -H "Authorization: Bearer <token>" \
   https://api.runcord.com/api/v1/repositories
 ```
+
+<CardGroup cols={2}>
+  <Card title="API keys" icon="key">
+    Prefix `cord_sk_...`. Created in **Settings > Cord API**. Long-lived, scoped to all or selected repositories in your org. Best for CI, bots, and external automation.
+  </Card>
+  <Card title="CLI login tokens" icon="terminal">
+    Prefix `cord_cli_...`. Minted by `cord auth login` from your browser. Same-account scope as your Cord user. Useful for running one-off commands as yourself from scripts.
+  </Card>
+</CardGroup>
 
 <Warning>
 API keys are shown once at creation and stored as a hash. If you lose a key, create a new one.
 </Warning>
 
-## Endpoints
+API keys can be scoped to **all repositories** or to a **selected list**. Endpoints that list or resolve a repository only see repositories the key is allowed to touch. Endpoints that act on an existing session check that the session's repository is still inside the key's scope.
 
-### List repositories
+---
 
-Returns repositories the API key has access to.
+## Current principal
+
+### Get current identity
+
+Returns the user and organization the token belongs to, plus the list of repositories it can access (or `null` when the key grants access to every repo).
+
+```bash
+GET /api/v1/me
+```
+
+**Response:**
+
+```json
+{
+  "authKind": "api_key",
+  "apiKeyName": "GitHub Actions",
+  "organizationId": "org_xxx",
+  "repositoryIds": ["repo_abc123", "repo_def456"],
+  "userEmail": "jane@example.com",
+  "userId": "user_xxx",
+  "userName": "Jane Doe"
+}
+```
+
+For CLI login tokens, `authKind` is `"cli_token"`, `apiKeyName` is `null`, and `repositoryIds` is `null` (CLI tokens inherit the user's normal repository access).
+
+---
+
+## Repositories
+
+### List repository names
+
+Returns a flat list of full names for every repository the token can access. Useful for picking a target when creating a session.
 
 ```bash
 GET /api/v1/repositories
 ```
 
 **Response:**
+
 ```json
-[
-  "my-org/my-app",
-  "my-org/api"
-]
+["my-org/my-app", "my-org/api"]
 ```
+
+### List repositories with details
+
+Same visibility as `/repositories`, but returns structured records — handy when you need the repo's internal ID or default branch.
+
+```bash
+GET /api/v1/repositories/details
+```
+
+**Response:**
+
+```json
+{
+  "repositories": [
+    {
+      "id": "repo_abc123",
+      "name": "my-app",
+      "fullName": "my-org/my-app",
+      "defaultBranch": "main"
+    }
+  ]
+}
+```
+
+---
+
+## Sessions
+
+A **session** is a single coding task: one branch, one agent, and a chat/runtime attached to it. You create a session with a prompt, and Cord streams the agent's work until you stop it or open a PR.
 
 ### Create a session
 
-Start a new coding session with a prompt. The agent begins working immediately in the background.
+Start a new coding session. The agent begins working in the background as soon as the sandbox is ready.
 
 ```bash
 POST /api/v1/sessions
@@ -63,12 +127,13 @@ POST /api/v1/sessions
 
 | Field | Required | Description |
 |---|---|---|
-| `repository` | Yes | Repository full name, repo ID, or an unambiguous repository name the API key can access |
-| `message` | Yes | The task description for the agent |
-| `model` | No | Model to use, either as `provider/model` or an object with `providerID` and `modelID`. Defaults to your configured default. |
-| `thinking` | No | Thinking/reasoning variant string. You can also send `variant`. |
+| `repository` | Yes | Repository full name, repo ID, or an unambiguous repository name the token can access. Ambiguous names return `409` with a `matches` array. |
+| `message` | Yes | The task description for the agent. Becomes the session title. |
+| `model` | No | Either `"provider/model"` (e.g. `"anthropic/claude-sonnet-4"`) or `{ "providerID": "...", "modelID": "..." }`. Defaults to your configured default model. |
+| `thinking` | No | Thinking/reasoning variant string. `variant` is accepted as an alias. |
 
 **Response:**
+
 ```json
 {
   "ok": true,
@@ -80,18 +145,324 @@ POST /api/v1/sessions
     "defaultBranch": "main"
   },
   "agentType": "opencode",
-  "model": {
-    "providerID": "cord-open-source",
-    "modelID": "kimi-k2.6"
-  },
+  "model": { "providerID": "cord-open-source", "modelID": "kimi-k2.6" },
   "thinking": "default",
   "status": "queued"
 }
 ```
 
-### Storage attachments
+The session is queued and initialized asynchronously. Use `GET /api/v1/sessions/:id/status` to poll whether the sandbox is ready and the agent has started.
 
-Manage files in your [persistent storage](/core-concepts/persistent-storage):
+### List sessions
+
+Returns a page of recent sessions the token can see, newest first.
+
+```bash
+GET /api/v1/sessions
+```
+
+**Query parameters:**
+
+| Param | Default | Description |
+|---|---|---|
+| `repository` | All visible repos | Filter to a single repository (full name, ID, or unambiguous name). |
+| `mine` | `false` | When `true`, only sessions created by your user. |
+| `archived` | `false` | One of `false`, `true`, or `all`. |
+| `limit` | `50` | Page size, between `1` and `100`. |
+| `cursor` | None | Opaque cursor from a previous response's `nextCursor`. |
+
+**Response:**
+
+```json
+{
+  "sessions": [
+    {
+      "id": "session_xyz789",
+      "title": "Add a /health endpoint",
+      "status": "running",
+      "lifecycleStatus": "active",
+      "archivedAt": null,
+      "agentType": "opencode",
+      "visibility": "team",
+      "repository": {
+        "id": "repo_abc123",
+        "name": "my-app",
+        "fullName": "my-org/my-app"
+      },
+      "branch": "cord/add-health-endpoint",
+      "baseBranch": "main",
+      "pr": { "number": null, "url": null, "state": null },
+      "createdAt": "2026-04-30T12:34:56.000Z",
+      "updatedAt": "2026-04-30T12:38:04.000Z"
+    }
+  ],
+  "nextCursor": "eyJjcmVhdGVk..."
+}
+```
+
+When `nextCursor` is non-null, pass it back as `cursor=` to fetch the next page.
+
+<Info>
+For CLI login tokens, the list is automatically restricted to sessions you created (`mine=true` is implied). API-key tokens can see every non-private session in the repositories they're scoped to.
+</Info>
+
+### Get a session
+
+Returns the same shape as a single entry in `GET /api/v1/sessions`.
+
+```bash
+GET /api/v1/sessions/:id
+```
+
+**Response:**
+
+```json
+{
+  "session": {
+    "id": "session_xyz789",
+    "title": "Add a /health endpoint",
+    "status": "running",
+    "lifecycleStatus": "active",
+    "repository": { "id": "...", "name": "...", "fullName": "..." },
+    "branch": "cord/add-health-endpoint",
+    "baseBranch": "main",
+    "pr": { "number": null, "url": null, "state": null },
+    "createdAt": "2026-04-30T12:34:56.000Z",
+    "updatedAt": "2026-04-30T12:38:04.000Z"
+  }
+}
+```
+
+### Get session status
+
+Returns a live runtime/activity snapshot for the session. Safe to poll.
+
+```bash
+GET /api/v1/sessions/:id/status
+```
+
+**Response:**
+
+```json
+{
+  "status": {
+    "initReady": true,
+    "status": "running",
+    "lifecycleStatus": "active",
+    "agentType": "opencode",
+    "title": "Add a /health endpoint",
+    "branch": "cord/add-health-endpoint",
+    "baseBranch": "main",
+    "sandboxStatus": "running",
+    "activityState": "assistant_running",
+    "activityTransitionAt": "2026-04-30T12:38:01.000Z",
+    "pendingMessageCount": 0,
+    "pendingQuestionCount": 0,
+    "pendingPermissionCount": 0,
+    "pendingSessionActionCount": 0,
+    "hasActiveEditOperation": true,
+    "runtimeFinality": null
+  }
+}
+```
+
+Notable fields:
+
+| Field | Meaning |
+|---|---|
+| `initReady` | The sandbox is booted and the agent runtime is attached. |
+| `status` | One of `idle`, `running`, `blocked`, `error`. |
+| `lifecycleStatus` | One of `active`, `suspended`, `archived`. |
+| `activityState` | Fine-grained state (`assistant_running`, `waiting_input`, etc.). |
+| `pending*Count` | Counts of queued messages, pending questions, permission prompts, and session actions. |
+| `runtimeFinality` | Non-null once the run has definitively ended. |
+
+<Note>
+Status responses are a filtered subset of the internal snapshot. Runtime URLs, tunnels, and internal fields are deliberately not exposed over the public API.
+</Note>
+
+### Send a message to a session
+
+Send a follow-up message into an existing session. Behaves exactly like typing a message in the web UI.
+
+```bash
+POST /api/v1/sessions/:id/messages
+```
+
+**Request body:**
+
+```json
+{
+  "message": "Also add tests for the new endpoint.",
+  "model": "anthropic/claude-sonnet-4",
+  "thinking": "extended",
+  "clientMessageId": "my-deploy-bot-2026-04-30-001"
+}
+```
+
+| Field | Required | Description |
+|---|---|---|
+| `message` | Yes | The follow-up prompt. |
+| `model` | No | Override the model for this turn. Same shape as in `POST /sessions`. |
+| `thinking` / `variant` | No | Thinking variant for this turn. |
+| `clientMessageId` | No | Your own idempotency key. Letters, digits, `:_./@-` only, up to 200 chars. Cord auto-namespaces it by principal to avoid cross-client collisions. |
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "sessionId": "session_xyz789",
+  "clientMessageId": "api:key_abc123:my-deploy-bot-2026-04-30-001",
+  "status": "accepted"
+}
+```
+
+---
+
+## File changes
+
+### List changed files
+
+Current set of uncommitted file changes inside the session sandbox, keyed by path.
+
+```bash
+GET /api/v1/sessions/:id/files/changes
+```
+
+**Response:**
+
+```json
+{
+  "changes": [
+    { "path": "src/health.ts", "status": "A", "additions": 12, "deletions": 0 },
+    { "path": "src/server.ts", "status": "M", "additions": 3, "deletions": 1 }
+  ]
+}
+```
+
+Status codes follow git porcelain conventions: `A` added, `M` modified, `D` deleted, `R` renamed (with `previousPath`), `?` untracked, `!` ignored.
+
+### Get the unified diff
+
+Returns the unified diff for the session. Pass `path=` to restrict to a single file.
+
+```bash
+GET /api/v1/sessions/:id/files/diff
+GET /api/v1/sessions/:id/files/diff?path=src/health.ts
+```
+
+**Response:**
+
+```json
+{
+  "path": "src/health.ts",
+  "diff": "diff --git a/src/health.ts b/src/health.ts\nnew file mode 100644\n...",
+  "diffAvailability": "ready"
+}
+```
+
+---
+
+## Git
+
+### Git status
+
+Porcelain-style working-tree status, grouped into `staged`, `unstaged`, and `untracked`.
+
+```bash
+GET /api/v1/sessions/:id/git/status
+```
+
+**Response:**
+
+```json
+{
+  "currentBranch": "cord/add-health-endpoint",
+  "ahead": 2,
+  "behind": 0,
+  "staged": [{ "path": "src/health.ts", "status": "A" }],
+  "unstaged": [{ "path": "src/server.ts", "status": "M" }],
+  "untracked": []
+}
+```
+
+### Git log
+
+Commit log for the session branch.
+
+```bash
+GET /api/v1/sessions/:id/git/log
+```
+
+### Staged diff
+
+Unified diff for currently staged changes only.
+
+```bash
+GET /api/v1/sessions/:id/git/staged-diff
+```
+
+---
+
+## Pull requests
+
+### Get the session's PR
+
+Returns the pull request linked to the session, if any.
+
+```bash
+GET /api/v1/sessions/:id/pr
+```
+
+**Response:**
+
+```json
+{
+  "prNumber": 421,
+  "prUrl": "https://github.com/my-org/my-app/pull/421",
+  "prState": "open",
+  "mergeable": true,
+  "mergeableState": "clean",
+  "mergeabilityKnown": true
+}
+```
+
+If no PR is linked yet, `prNumber` is `null`.
+
+### Create a PR
+
+Asks Cord to open a pull request from the session's branch. Cord pushes the branch if needed and creates the PR using the acting user's GitHub identity.
+
+```bash
+POST /api/v1/sessions/:id/pr
+```
+
+**Request body (all optional):**
+
+```json
+{
+  "title": "Add /health endpoint",
+  "body": "Closes #123",
+  "draft": false,
+  "claim": false
+}
+```
+
+| Field | Description |
+|---|---|
+| `title` | Override the PR title. Defaults to a title derived from the session. |
+| `body` | Override the PR body. |
+| `draft` | Open as a draft PR. |
+| `claim` | Take over the session as the acting user if somebody else created it. Subject to the same authorization checks as the web UI. |
+
+Success echoes back the resulting PR fields — same shape as `GET /api/v1/sessions/:id/pr`.
+
+---
+
+## Persistent storage
+
+Manage files in your [persistent storage](/core-concepts/persistent-storage). This is the same surface `cord storage upload` uses.
 
 ```bash
 GET    /api/v1/storage-attachments
@@ -106,18 +477,45 @@ PATCH  /api/v1/storage-attachments/{id}
 DELETE /api/v1/storage-attachments/{id}
 ```
 
+API keys scoped to **selected repositories** can only manage attachments whose auto-attach target is one of those repositories. Global (all-repo) attachments can only be created or edited by keys with all-repository scope, or by CLI login tokens. CLI login tokens behave like the logged-in user and see every attachment they own.
+
+---
+
+## Errors
+
+All error responses look like `{ "error": "Human readable message" }`. Common status codes:
+
+| Status | Meaning |
+|---|---|
+| `400` | Invalid JSON body or invalid query parameters. |
+| `401` | Missing or malformed `Authorization` header. |
+| `403` | Authenticated but not allowed to touch this repository / session / attachment. |
+| `404` | Session, repository, or attachment not found (or not visible to this token). |
+| `409` | Ambiguous repository name — inspect the `matches` array and pass a full name. Also returned for lifecycle conflicts. |
+| `502` / `504` | The session runtime was temporarily unavailable or slow to respond. Safe to retry. |
+
+---
+
+## Pagination
+
+Pagination uses an opaque `nextCursor` string. Save it verbatim and pass it back as `cursor=` on the next request. Cursors embed the ordering position (created timestamp + session ID), so they stay stable even as new sessions are created.
+
+Malformed cursors return `400 Invalid cursor` rather than silently restarting pagination.
+
+---
+
 ## Use cases
 
-**CI/CD integration** -- Trigger a Cord session when a specific event happens in your pipeline (e.g., "a flaky test was detected, investigate and fix it").
+**CI/CD integration** — Trigger a Cord session when a specific event happens in your pipeline (e.g., "a flaky test was detected, investigate and fix it"), then poll `/status` and watch `/files/diff` before auto-opening a PR.
 
-**Custom automation** -- Create sessions based on external events: monitoring alerts, customer feedback, support tickets.
+**Custom automation** — Create sessions based on external events: monitoring alerts, customer feedback, support tickets. Send follow-up messages as the issue evolves.
 
-**Agent-to-agent** -- Have one agent use the Cord API to start another session for a sub-task.
+**Agent-to-agent** — Have one agent use the Cord API to start another session for a sub-task, then read its diff and decide whether to merge it.
 
-**Scheduled tasks** -- Use a cron job to start sessions for recurring maintenance (dependency updates, code cleanup).
+**Scheduled tasks** — Use a cron job to start sessions for recurring maintenance (dependency updates, code cleanup), and let Cord open the PR.
+
+---
 
 ## CLI
 
-The Cord CLI is a separate tool for authentication, provider management, and persistent storage uploads. It supports browser CLI auth and API-key auth via `cord auth login --api-key <key>` or `CORD_API_KEY`. Provider commands require browser CLI auth; Persistent Storage commands can use either browser CLI auth or API-key auth.
-
-See the full [CLI reference](/reference/cli) for installation, all commands, and detailed usage.
+Every endpoint above is wrapped by a matching `cord ...` command in the CLI, so you can use the same capabilities interactively from your terminal without writing any HTTP by hand. See the [CLI reference](/reference/cli) for installation and the full command catalog.
