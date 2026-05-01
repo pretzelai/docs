@@ -18,7 +18,8 @@ There are several ways to start a session:
 - **From the Cord UI** -- Click "New Session" on a repository and type your request
 - **From Slack** -- Tag `@Cord` in a channel with a task description
 - **From Linear** -- Assign a ticket that Cord picks up automatically
-- **From the API** -- `POST /api/v1/sessions` to create sessions programmatically
+- **From the API** -- `POST /api/v1/sessions` to create sessions programmatically, then send follow-ups, inspect diffs, and open PRs. See the [API reference](/reference/api).
+- **From the CLI** -- `cord sessions create --repository my-org/app --message "..."`. See the [CLI reference](/reference/cli#sessions).
 - **From your phone** -- Record a voice message describing what you want
 
 Each method creates the same thing: a branch, a sandbox, and an agent working on your request.
@@ -114,6 +115,8 @@ Sessions can be continued after the agent finishes:
 - **Keep working** -- Give the agent follow-up instructions on the same branch
 - **Continue after merge** -- After merging a PR, start a new session that builds on the merged changes
 - **Fork** -- Create a new session from any point in an existing session
+
+You can also send follow-up messages from the [CLI](/reference/cli#sessions) or [API](/reference/api#send-a-message-to-a-session) — `cord sessions send <session-id> --message "..."` is the terminal equivalent of typing in the chat box.
 
 ## Session lifecycle
 

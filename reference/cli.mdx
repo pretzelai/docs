@@ -1,9 +1,11 @@
 ---
 title: "CLI reference"
-description: "Install, authenticate, connect providers, and upload persistent storage from the command line."
+description: "Drive Cord from your terminal: sessions, repos, diffs, pull requests, providers, and persistent storage."
 ---
 
-The Cord CLI lets you authenticate, manage AI provider connections, and upload files to persistent storage without opening the web app.
+The Cord CLI is a first-class wrapper around the [Cord API](/reference/api). You can authenticate, list and create sessions, inspect diffs, open pull requests, manage AI provider connections, and upload files to persistent storage — all without opening the web app.
+
+Under the hood, every `cord` command talks to the same `/api/v1` endpoints you'd use from a script, so anything the CLI does can also be done over HTTP.
 
 ## Install
 
@@ -11,7 +13,7 @@ The Cord CLI lets you authenticate, manage AI provider connections, and upload f
 curl -fsSL https://runcord.com/install.sh | bash
 ```
 
-This installs the `cord` command. Requires Node.js 18+.
+This installs the `cord` command (published as the `cord-cli` npm package). Requires Node.js 20.12+.
 
 ## Global options
 
@@ -20,8 +22,15 @@ These flags are parsed globally. Command-specific flags only affect the commands
 | Flag | Description |
 |---|---|
 | `--api-base-url <url>` | Target a different API environment (default: `https://api.runcord.com`). Also settable via `CORD_API_URL` env var. Does not affect `cord self update`. |
-| `--no-open` | Don't auto-open the browser during `auth login`, `providers connect codex`, or `providers connect claude` |
-| `-h`, `--help` | Print usage info |
+| `--json` | Emit raw JSON instead of human-formatted output. Designed for scripts and agents: interactive prompts and update checks are suppressed in JSON mode. |
+| `--no-color` | Disable ANSI colors in output. `NO_COLOR` is also honored automatically. |
+| `--no-open` | Don't auto-open the browser during `auth login`, `providers connect codex`, or `providers connect claude`. |
+| `-v`, `--version` | Print the CLI version (as JSON with `--json`). |
+| `-h`, `--help` | Print usage info. |
+
+<Tip>
+Every command that prints output supports `--json`, including `cord sessions list`, `cord diff`, `cord pr show`, and so on. Use it whenever you're piping Cord into another tool.
+</Tip>
 
 ## Shortcuts
 
@@ -34,9 +43,25 @@ These shortcuts exist, but the rest of this page uses canonical command forms.
 | `cord connect <provider>` | `cord providers connect <provider>` |
 | `cord disconnect <provider>` | `cord providers disconnect <provider>` |
 
+## `cord version`
+
+Print the installed CLI version.
+
+```bash
+cord version
+# or: cord --version
+```
+
+With `--json`, prints `{ "version": "0.15.0" }`.
+
 ---
 
 ## Authentication
+
+The CLI supports two kinds of credentials, both accepted as bearer tokens on the same endpoints:
+
+- **Browser CLI login** (`cord_cli_...`) — minted by `cord auth login` from your browser. Acts as your Cord user. Works for every command including providers.
+- **API key** (`cord_sk_...`) — created in **Settings > Cord API**. Scoped to all or selected repositories. Good for CI and automation. Works for sessions, repos, diffs, PRs, and persistent storage. Provider commands require browser CLI auth.
 
 ### `cord auth login`
 
@@ -48,7 +73,7 @@ cord auth login [--api-key <key>] [--api-base-url <url>] [--machine-name <name>]
 
 | Flag | Default | Description |
 |---|---|---|
-| `--api-key <key>` | None | Log in with a Cord API key instead of browser device auth. Also settable via `CORD_API_KEY`. API-key auth works for storage commands, but provider commands require browser CLI auth. |
+| `--api-key <key>` | None | Log in with a Cord API key instead of browser device auth. Also settable via `CORD_API_KEY`. API-key auth works for every command except `providers connect/disconnect`, which require browser CLI auth. |
 | `--api-base-url` | `https://api.runcord.com` | Target a different Cord API environment |
 | `--machine-name` | Your hostname | A name for this device, shown in your account |
 | `--no-open` | false | Don't auto-open the browser during device auth |
@@ -100,6 +125,204 @@ cord auth logout [--api-base-url <url>] [--local-only]
 | `--local-only` | Clear local config without revoking the remote token |
 
 For browser CLI auth, this revokes the server-side token when possible and clears local config. API-key auth cannot revoke the underlying API key, so logout only clears the local CLI config for that API key.
+
+---
+
+## Repositories
+
+### `cord repos list`
+
+Print the full names of every repository the current token can access, one per line.
+
+```bash
+cord repos list
+```
+
+With `--json`, returns a plain string array — the exact shape of [`GET /api/v1/repositories`](/reference/api#list-repository-names).
+
+### `cord repos details`
+
+Same visibility as `cord repos list`, but renders a table with name, full name, and default branch.
+
+```bash
+cord repos details
+```
+
+With `--json`, returns the structured `{ repositories: [...] }` payload from [`GET /api/v1/repositories/details`](/reference/api#list-repositories-with-details).
+
+---
+
+## Sessions
+
+These commands are the terminal equivalent of driving Cord from the web app. Every call goes through the same [public API](/reference/api#sessions) as direct HTTP requests.
+
+### `cord sessions list`
+
+List recent sessions, newest first.
+
+```bash
+cord sessions list [--repository <repo>] [--all] [--limit <n>] [--cursor <cursor>]
+```
+
+| Flag | Default | Description |
+|---|---|---|
+| `--repository <repo>` | All visible repos | Filter to one repository (full name, ID, or unambiguous name). |
+| `--all` | false | Include archived sessions. |
+| `--limit <n>` | `20` | Page size, `1`-`100`. The API default is `50`; the CLI uses `20` so terminal output stays scannable. |
+| `--cursor <cursor>` | None | Pagination cursor from a previous run. The CLI prints the next-page command at the bottom when another page is available. |
+
+Human output shows a table with ID, state, repo, relative updated time, and title. Session IDs link through to the web app on terminals that support hyperlinks.
+
+```bash
+cord sessions list --repository my-org/my-app --limit 5
+```
+
+<Note>
+When you're logged in with a browser CLI token, the list is automatically restricted to sessions you created. API-key principals can see every non-private session in their scoped repositories.
+</Note>
+
+### `cord sessions show <session-id>`
+
+Show structured details for a session — title, status, branch, timestamps.
+
+```bash
+cord sessions show session_xyz789
+```
+
+### `cord sessions status <session-id>`
+
+Print the live runtime status — status, lifecycle, activity state, branch.
+
+```bash
+cord sessions status session_xyz789
+```
+
+Polling-friendly: safe to call repeatedly. Use `--json` if you're driving a state machine from a script.
+
+### `cord sessions create`
+
+Start a new coding session. The agent begins working in the background as soon as the sandbox is ready.
+
+```bash
+cord sessions create \
+  --repository my-org/my-app \
+  --message "Add a /health endpoint that returns status ok" \
+  [--model <provider/model>] \
+  [--thinking <variant>]
+```
+
+| Flag | Required | Description |
+|---|---|---|
+| `--repository <repo>` | Yes | Repository full name, repo ID, or an unambiguous repository name. |
+| `--message <message>` | Yes | The task description for the agent. |
+| `--model <provider/model>` | No | Override the model, e.g. `anthropic/claude-sonnet-4`. |
+| `--thinking <variant>` | No | Thinking/reasoning variant. `--variant` is accepted as an alias. |
+
+Output includes the new session ID, which you can feed into `cord sessions send`, `cord diff`, `cord pr create`, and friends.
+
+### `cord sessions send <session-id>`
+
+Send a follow-up message into an existing session.
+
+```bash
+cord sessions send session_xyz789 \
+  --message "Also add tests for the new endpoint." \
+  [--model <provider/model>] \
+  [--thinking <variant>]
+```
+
+Same `--model` / `--thinking` / `--variant` overrides as `cord sessions create`.
+
+---
+
+## Changes and diffs
+
+### `cord changes <session-id>`
+
+Show the list of files changed in a session — matches `GET /api/v1/sessions/:id/files/changes`.
+
+```bash
+cord changes session_xyz789
+```
+
+Human output is a color-coded table of status (A/M/D/...), path, and `+additions/-deletions`. `--json` returns the raw payload.
+
+### `cord diff <session-id>`
+
+Show the unified diff for a session. Colored output mirrors `git diff`.
+
+```bash
+cord diff session_xyz789
+cord diff session_xyz789 --path src/health.ts
+```
+
+| Flag | Description |
+|---|---|
+| `--path <path>` | Restrict the diff to a single file. |
+
+Pair with `--json` to hand the raw diff to another tool:
+
+```bash
+cord diff session_xyz789 --json | jq -r .diff | less
+```
+
+---
+
+## Git
+
+### `cord git status <session-id>`
+
+Porcelain-style status of the session's working tree, grouped into Staged / Unstaged / Untracked.
+
+```bash
+cord git status session_xyz789
+```
+
+Prints the current branch, ahead/behind counts vs. the base branch, and each changed file with a colored status code. Use `--json` for the structured payload.
+
+---
+
+## Pull requests
+
+### `cord pr show <session-id>`
+
+Show the PR linked to a session, including state and mergeability.
+
+```bash
+cord pr show session_xyz789
+```
+
+Output:
+
+```
+PR #421
+State: open
+URL:   https://github.com/my-org/my-app/pull/421
+Mergeability: clean
+```
+
+If no PR is linked yet, the command prints `No pull request linked to this session.`.
+
+### `cord pr create <session-id>`
+
+Create a pull request from the session's current branch.
+
+```bash
+cord pr create session_xyz789 \
+  [--title "Add /health endpoint"] \
+  [--body "Closes #123"] \
+  [--draft] \
+  [--claim]
+```
+
+| Flag | Description |
+|---|---|
+| `--title <title>` | Override the generated PR title. |
+| `--body <body>` | Override the generated PR body. |
+| `--draft` | Open as a draft PR. |
+| `--claim` | Take over the session as the acting user if it was created by somebody else. |
+
+On success, the CLI prints the resulting PR number, state, and URL.
 
 ---
 

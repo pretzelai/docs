@@ -13,6 +13,26 @@ Click **New Session** on any connected repository. You'll be prompted to:
 
 The agent starts working immediately. You'll see its progress in real-time.
 
+<Tip>
+You can also kick off a session from your terminal or a script. From the CLI:
+
+```bash
+cord sessions create --repository my-org/my-app \
+  --message "Add a /health endpoint that returns status ok"
+```
+
+Or from CI / another service using the [Cord API](/reference/api#create-a-session):
+
+```bash
+curl -X POST https://api.runcord.com/api/v1/sessions \
+  -H "Authorization: Bearer $CORD_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"repository":"my-org/my-app","message":"Add a /health endpoint"}'
+```
+
+The session shows up in the web app immediately and you can watch progress there, or poll `cord sessions status <id>` from your terminal.
+</Tip>
+
 ## Writing good prompts
 
 Agents work best with clear, specific instructions:
@@ -113,6 +133,18 @@ After the agent finishes, continue the conversation:
 - Review: type `/review` to have the agent self-review before you look at the diff
 
 You can queue a follow-up message while the agent is still working. It's delivered when the current operation completes.
+
+<Tip>
+You can also send follow-up messages from your terminal — useful when you're iterating in a loop from a script, or just don't want to switch back to the browser:
+
+```bash
+cord sessions send <session-id> --message "Also add tests for the new endpoint"
+cord diff <session-id>                  # inspect the resulting diff
+cord changes <session-id>               # list changed files
+```
+
+See the [CLI reference](/reference/cli#sessions) for the full command set.
+</Tip>
 
 ## Voice input
 
