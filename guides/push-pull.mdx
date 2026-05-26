@@ -8,7 +8,7 @@ Push & Pull lets you hand off work between your local coding agent and Cord's cl
 It works with any agent that can run shell commands: Claude Code, Cursor, Codex CLI, Aider, Amp, or anything else.
 
 <Info>
-**Quick version:** Install the skill (`npx skills add pretzelai/cord-cloud-skill -y`), then tell your agent "push to Cord" to hand off work or "pull from Cord" to get it back. That's it.
+**Quick version:** Install the skill (`npx skills add pretzelai/cord-cloud-skill -g -y`), then tell your agent "push to Cord" to hand off work or "pull from Cord" to get it back. That's it.
 </Info>
 
 ## Setup
@@ -29,7 +29,7 @@ cord auth login
 The skill is a markdown file that teaches your agent how to do the push/pull workflow. Install it with:
 
 ```bash
-npx skills add pretzelai/cord-cloud-skill -y
+npx skills add pretzelai/cord-cloud-skill -g -y
 ```
 
 This drops the skill into your agent's skills directory. If you prefer to install it manually:
@@ -302,4 +302,4 @@ You're on `main` (or your repo's default branch). Create a feature branch first,
 
 ### Agent doesn't know about push/pull
 
-The skill isn't installed. Run `npx skills add pretzelai/cord-cloud-skill -y` or manually add the SKILL.md to your agent's skills directory.
+The skill isn't installed. Run `npx skills add pretzelai/cord-cloud-skill -g -y` or manually add the SKILL.md to your agent's skills directory.
