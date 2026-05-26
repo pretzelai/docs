@@ -131,6 +131,8 @@ POST /api/v1/sessions
 | `message` | Yes | The task description for the agent. Becomes the session title. |
 | `model` | No | Either `"provider/model"` (e.g. `"anthropic/claude-sonnet-4"`) or `{ "providerID": "...", "modelID": "..." }`. Defaults to your configured default model. |
 | `thinking` | No | Thinking/reasoning variant string. `variant` is accepted as an alias. |
+| `branch` | No | Checkout this branch instead of creating a new `cord/*` branch. Used by `cord push` to continue work on an existing feature branch. Cannot be the repository's base branch. |
+| `source` | No | Metadata tracking how the session was created (`push`, `web`, `api`, `slack`, etc.). Defaults to `api`. |
 
 **Response:**
 
@@ -166,6 +168,7 @@ GET /api/v1/sessions
 | Param | Default | Description |
 |---|---|---|
 | `repository` | All visible repos | Filter to a single repository (full name, ID, or unambiguous name). |
+| `branch` | None | Filter to sessions working on a specific branch. Matches on both the session's working branch and base branch. |
 | `mine` | `false` | When `true`, only sessions created by your user. |
 | `archived` | `false` | One of `false`, `true`, or `all`. |
 | `limit` | `50` | Page size, between `1` and `100`. |
@@ -317,6 +320,67 @@ POST /api/v1/sessions/:id/messages
   "status": "accepted"
 }
 ```
+
+### Pull from a session
+
+Request a handoff from a Cord session back to your local environment. If the session has uncommitted work, Cord can ask the agent to commit and push first. Used by [`cord pull`](/guides/push-pull).
+
+```bash
+POST /api/v1/sessions/:id/pull
+```
+
+**Request body (all optional):**
+
+```json
+{
+  "prepareIfNeeded": true,
+  "suspendAfter": true
+}
+```
+
+| Field | Default | Description |
+|---|---|---|
+| `prepareIfNeeded` | `true` | If the sandbox has dirty or unpushed work, ask the agent to commit and push before returning. |
+| `suspendAfter` | `true` | Suspend the session after the pull completes. |
+
+**Response when the agent is still running:**
+
+```json
+{
+  "status": "running",
+  "phase": "agent_running",
+  "sessionUrl": "https://runcord.com/s/session_xyz789",
+  "message": "The Cord agent is still actively working. Visit the session to check progress."
+}
+```
+
+**Response when preparation is needed:**
+
+```json
+{
+  "status": "running",
+  "phase": "agent_preparing_pull",
+  "sessionUrl": "https://runcord.com/s/session_xyz789",
+  "message": "The Cord session has unpublished work. Cord asked the agent to commit and push it before pull can complete.",
+  "prepareAccepted": true,
+  "prepareError": null,
+  "gitStatus": { "staged": [], "unstaged": [...], "untracked": [...] }
+}
+```
+
+**Response when ready (session is idle/done):**
+
+```json
+{
+  "status": "ready",
+  "context": "## What was done\n\nImplemented the /health endpoint...\n\n## What's left\n\n- Add tests\n- Update docs",
+  "branch": "feature/health-endpoint",
+  "lastCommit": "a1b2c3d4e5f6",
+  "sessionUrl": "https://runcord.com/s/session_xyz789"
+}
+```
+
+The `context` field contains a rich handoff summary generated from the session's conversation — designed to give a local agent or developer full context of what was accomplished.
 
 ---
 
@@ -490,7 +554,7 @@ All error responses look like `{ "error": "Human readable message" }`. Common st
 | `400` | Invalid JSON body or invalid query parameters. |
 | `401` | Missing or malformed `Authorization` header. |
 | `403` | Authenticated but not allowed to touch this repository / session / attachment. |
-| `404` | Session, repository, or attachment not found (or not visible to this token). |
+| `404` | Session, repository, or attachment not found (or not visible to this token). For repositories, the response may include an `installUrl` linking to the GitHub App install page. |
 | `409` | Ambiguous repository name — inspect the `matches` array and pass a full name. Also returned for lifecycle conflicts. |
 | `502` / `504` | The session runtime was temporarily unavailable or slow to respond. Safe to retry. |
 

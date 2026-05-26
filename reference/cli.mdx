@@ -24,7 +24,7 @@ These flags are parsed globally. Command-specific flags only affect the commands
 | `--api-base-url <url>` | Target a different API environment (default: `https://api.runcord.com`). Also settable via `CORD_API_URL` env var. Does not affect `cord self update`. |
 | `--json` | Emit raw JSON instead of human-formatted output. Designed for scripts and agents: interactive prompts and update checks are suppressed in JSON mode. |
 | `--no-color` | Disable ANSI colors in output. `NO_COLOR` is also honored automatically. |
-| `--no-open` | Don't auto-open the browser during `auth login`, `providers connect codex`, or `providers connect claude`. |
+| `--no-open` | Don't auto-open the browser during login flows (`auth login`, `providers connect`, `push`, `pull`, `status`). |
 | `-v`, `--version` | Print the CLI version (as JSON with `--json`). |
 | `-h`, `--help` | Print usage info. |
 
@@ -53,7 +53,7 @@ cord version
 # or: cord --version
 ```
 
-With `--json`, prints `{ "version": "0.15.0" }`.
+With `--json`, prints `{ "version": "<installed-version>" }`.
 
 ---
 
@@ -639,7 +639,7 @@ If you upload without a mount path, the file is stored but not auto-mounted. You
 Upload global Claude skills and global agent skills into persistent storage.
 
 ```bash
-cord storage sync-skills [--include-sensitive] [--api-base-url <url>]
+cord storage sync-skills [--yes] [--include-sensitive] [--api-base-url <url>]
 ```
 
 This scans the standard local skill directories and mounts them into future sandboxes:
