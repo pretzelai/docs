@@ -22,11 +22,25 @@ Cord works as a Progressive Web App (PWA) on iOS and Android. Install it on your
   </Tab>
 </Tabs>
 
+## Navigation
+
+The mobile interface uses an iOS-style bottom sheet navigation:
+
+- **Home** -- Project picker and session list
+- **Sessions** -- Browse active and archived sessions, switch between surfaces (chat, changes, terminal)
+- **Menu** -- Bottom sheet with quick actions, accessible via the hamburger icon
+
+Tap a session to open it. Swipe between surfaces (chat, diff, terminal) or use the surface tabs at the top.
+
 ## Voice input
 
-On mobile, you can record a voice message instead of typing a prompt. Tap the microphone icon in the chat composer, speak your request, and the agent starts working.
+Tap the microphone icon in the composer to dictate your prompt. Voice input works inline — you can mix typed text and voice in the same message.
 
-This is useful for starting agents while away from your desk:
+- The screen stays awake during transcription so you don't lose your recording
+- After dictation, the transcribed text appears in the composer for review before sending
+- In **Settings > UI Preferences**, toggle **Autosend after voice dictation** to skip the review step
+
+Voice is useful for starting agents while away from your desk:
 
 - *"Fix the broken login form -- the submit button doesn't trigger validation"*
 - *"Add a loading spinner to the dashboard page while data is fetching"*
@@ -36,10 +50,25 @@ This is useful for starting agents while away from your desk:
 
 The mobile interface is optimized for review:
 
-- **Session list** -- See all active sessions with their status
-- **Diff view** -- Swipe through file changes
-- **Chat** -- Read the agent's reasoning and give follow-up instructions
+- **Session list** -- See all active sessions with status indicators
+- **Diff view** -- Swipe through file changes with syntax highlighting
+- **Chat** -- Read the agent's reasoning and send follow-up instructions
 - **PR actions** -- Create and merge PRs directly
+- **Archived threads** -- Browse and restore archived sessions
+
+## Project picker
+
+From the home screen, tap the project name to switch between repositories. The picker shows all connected repos and lets you start a new session on any of them.
+
+## Tools panel
+
+Swipe up or tap the tools icon to access session actions:
+
+- Create PR / Quick PR / YOLO
+- View changes and diffs
+- Open terminal
+- Share session link
+- Archive session
 
 ## Starting agents from Slack
 

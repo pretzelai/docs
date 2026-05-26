@@ -1,0 +1,61 @@
+---
+title: "One-Shot"
+description: "Submit a prompt, get a PR back via email. No session to babysit."
+---
+
+One-Shot is a stripped-down interface for fire-and-forget coding tasks. You describe what you want, attach any relevant files, and walk away. Cord spins up a session, runs the agent to completion, opens a PR, and emails you the link.
+
+Go to [oneshot.runcord.com](https://oneshot.runcord.com) to try it.
+
+## How it works
+
+1. **Sign in** — use your existing Cord account (GitHub, Google, or email)
+2. **Pick a repo** — choose from your connected repositories, or connect a new one during onboarding
+3. **Write your prompt** — describe the change you want
+4. **Attach files** (optional) — drag in screenshots, specs, designs, or any context the agent needs
+5. **Submit** — Cord starts working immediately
+
+After submission you see a confirmation screen: *"You will receive an email when your PR is ready."* Close the tab — no need to watch.
+
+When the agent finishes, you get an email with:
+- A link to the pull request on GitHub
+- A link to the Cord session (if you want to see what the agent did)
+
+## When to use One-Shot
+
+One-Shot is best for tasks where you can describe the full requirement upfront and don't need to iterate mid-task:
+
+- Bug fixes with clear repro steps
+- Adding a well-defined endpoint or component
+- Refactoring with specific instructions
+- Writing tests for existing code
+- Documentation updates
+
+For tasks that need back-and-forth (exploratory work, vague requirements, visual iteration), use a normal Cord session instead.
+
+## Voice input
+
+Tap the microphone icon to dictate your prompt instead of typing. The recording is transcribed and placed in the composer for review before sending.
+
+## Attachments
+
+Drag and drop, paste, or click the attachment icon to add files:
+
+- **Screenshots** of bugs or UI you want replicated
+- **Design mockups** for the agent to implement
+- **Documents** with specs or requirements
+- **Error logs** to help the agent understand what's broken
+
+Attached files are sent directly to the agent as context alongside your prompt.
+
+## Repository onboarding
+
+If you don't have any repositories connected when you first use One-Shot, you'll be guided through a quick onboarding flow to connect one. You can connect a repo from your GitHub installations or import a public repository.
+
+## Saved preferences
+
+One-Shot remembers your last-used repository and model selection, so repeat visits start pre-configured. You can change either before submitting.
+
+## Send another
+
+After submitting, click **Send another prompt** to immediately queue another task — useful when you have several independent changes to make across your repos.

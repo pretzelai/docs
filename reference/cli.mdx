@@ -3,7 +3,7 @@ title: "CLI reference"
 description: "Drive Cord from your terminal: sessions, repos, diffs, pull requests, providers, and persistent storage."
 ---
 
-The Cord CLI is a first-class wrapper around the [Cord API](/reference/api). You can authenticate, list and create sessions, inspect diffs, open pull requests, manage AI provider connections, and upload files to persistent storage — all without opening the web app.
+The Cord CLI is a first-class wrapper around the [Cord API](/reference/api). You can authenticate, push and pull work between local and cloud, list and create sessions, inspect diffs, open pull requests, manage AI provider connections, and upload files to persistent storage — all without opening the web app.
 
 Under the hood, every `cord` command talks to the same `/api/v1` endpoints you'd use from a script, so anything the CLI does can also be done over HTTP.
 
@@ -42,6 +42,7 @@ These shortcuts exist, but the rest of this page uses canonical command forms.
 | `cord logout` | `cord auth logout` |
 | `cord connect <provider>` | `cord providers connect <provider>` |
 | `cord disconnect <provider>` | `cord providers disconnect <provider>` |
+| `cord update` | `cord self update` |
 
 ## `cord version`
 
@@ -125,6 +126,59 @@ cord auth logout [--api-base-url <url>] [--local-only]
 | `--local-only` | Clear local config without revoking the remote token |
 
 For browser CLI auth, this revokes the server-side token when possible and clears local config. API-key auth cannot revoke the underlying API key, so logout only clears the local CLI config for that API key.
+
+---
+
+## Push / Pull
+
+Hand off work between your local machine and Cord cloud sessions. See the full [Push & Pull guide](/guides/push-pull) for workflows and examples.
+
+### `cord push`
+
+Push local work to a Cord cloud session for continuation.
+
+```bash
+cord push [--message <msg>] [--context <text>] [--context-file <path>] [--branch <branch>] [--repository <repo>] [--session <id>] [--model <provider/model>] [--thinking <variant>]
+```
+
+| Flag | Default | Description |
+|---|---|---|
+| `--message <msg>` | None | Instruction for what the agent should do next |
+| `--context <text>` | None | Inline handoff context |
+| `--context-file <path>` | None | Handoff context from a file |
+| `--branch <branch>` | Current git branch | Branch for the session |
+| `--repository <repo>` | From git remote | GitHub repository (owner/name) |
+| `--session <id>` | None | Resume a suspended session |
+| `--model <provider/model>` | Your default | Model override |
+| `--thinking <variant>` | None | Thinking variant |
+
+Also reads context from stdin when piped.
+
+### `cord pull`
+
+Pull work from a Cord cloud session back to local.
+
+```bash
+cord pull [--session <id>] [--branch <branch>] [--repository <repo>] [--output <path>] [--no-suspend]
+```
+
+| Flag | Default | Description |
+|---|---|---|
+| `--session <id>` | None | Explicit session to pull from |
+| `--branch <branch>` | Current git branch | Find session by branch |
+| `--repository <repo>` | From git remote | Narrow branch lookup |
+| `--output <path>` | stdout | Save context to a file |
+| `--no-suspend` | false | Keep the cloud session running |
+
+### `cord status`
+
+Check the status of a Cord session linked to the current branch.
+
+```bash
+cord status [--session <id>] [--branch <branch>] [--repository <repo>]
+```
+
+Prints session status (`running`, `idle`, `blocked`, `error`, `suspended`) and a web UI link. If no session exists for the branch, suggests `cord push`.
 
 ---
 
@@ -607,4 +661,5 @@ Update the installed CLI package.
 
 ```bash
 cord self update
+# or: cord update
 ```

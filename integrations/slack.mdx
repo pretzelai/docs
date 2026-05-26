@@ -4,7 +4,7 @@ description: "Start coding agents from Slack. Tag Cord, describe the task, get a
 ---
 
 <Info>
-Slack integration is available on the **Pro** and **Enterprise** plans.
+Slack integration is available on all plans, including **Free**.
 </Info>
 
 Connect Cord to your Slack workspace so anyone on your team can start an agent without leaving Slack.
@@ -105,6 +105,29 @@ Leave it empty to use Cord's default prompt.
 ## Auto-provisioning
 
 When enabled by an admin (**Settings > Slack > Auto-provision**), Cord automatically creates accounts for Slack users who tag `@Cord` for the first time. This removes the need to manually invite everyone -- they just start using it.
+
+## Thread replies as instructions
+
+Reply in a Slack thread where Cord is working to give the agent follow-up instructions. Tag `@Cord` in your reply so it gets picked up:
+
+```
+@Cord Add rate limiting to /api/auth
+
+  → (Cord starts working in a thread)
+
+You: @Cord Actually use a sliding window instead of fixed window
+You: @Cord And add tests
+
+  → (Agent picks up both replies as new instructions)
+```
+
+Replies from other team members in the thread work the same way — tag `@Cord` and the agent receives it as context. This is useful for collaborative steering without leaving Slack.
+
+## File sharing
+
+Agents can share files from the sandbox back to the Slack thread — logs, screenshots, build output, or any artifact. When the agent generates a file worth sharing (like a test report or error log), it posts it as an attachment in the thread.
+
+This also works in reverse: files you upload in your Slack message are passed to the agent as context.
 
 ## Notifications
 

@@ -43,6 +43,8 @@
               "guides/repo-setup",
               "guides/build-settings",
               "guides/running-agents",
+              "guides/one-shot",
+              "guides/push-pull",
               "guides/pull-requests",
               "guides/mcp-and-skills",
               "guides/mobile",

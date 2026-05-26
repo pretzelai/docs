@@ -1,0 +1,148 @@
+---
+title: "Push & Pull"
+description: "Hand off work between your local editor and Cord cloud sessions. Push unfinished work up, pull completed work down."
+---
+
+Push and Pull move work between your local environment and Cord's cloud agents — not just code, but the *context* of what's been done and what's left. Works with any local editor: Claude Code, Cursor, VS Code, a terminal.
+
+## When to use it
+
+- The task will take a while and you want a cloud agent to finish it
+- You need to step away but want work to continue
+- Your local agent ran out of context and a fresh cloud session would do better
+- You want to parallelise — work locally on one thing while a cloud agent handles another
+- A cloud session finished and you want to continue locally with full context
+
+## Push: local → cloud
+
+From your project directory, run:
+
+```bash
+cord push --message "Finish the auth middleware — rate limiting is done, need the token refresh logic"
+```
+
+Cord automatically detects your branch and repo from git, creates a cloud session on that branch, and starts the agent with your message.
+
+### Adding context
+
+The real power is passing rich handoff context — a summary of what's been done, what's left, decisions made, files touched:
+
+```bash
+# Inline context
+cord push \
+  --context "Auth middleware is half-done. Rate limiting works (see src/middleware/rate-limit.ts). Still need: token refresh, session invalidation, and tests." \
+  --message "Pick up from here and finish the middleware"
+
+# From a file (great for agent-generated handoffs)
+cord push --context-file ./HANDOFF.md --message "Continue this work"
+
+# Piped from another tool
+cat handoff.md | cord push --message "Take over"
+```
+
+If you provide both `--context` and `--message`, the context is sent first as background, and the message as the instruction.
+
+### Resuming a suspended session
+
+If you previously pulled from a session (which suspends it), you can push back to that same session:
+
+```bash
+cord push --session session_abc123 --message "I fixed the types locally, continue with the API tests"
+```
+
+### Options
+
+| Flag | Default | Description |
+|---|---|---|
+| `--message <msg>` | — | What the cloud agent should do |
+| `--context <text>` | — | Background context (inline) |
+| `--context-file <path>` | — | Background context (from file) |
+| `--branch <branch>` | Current git branch | Branch for the session |
+| `--repository <repo>` | From git remote | GitHub repo (owner/name) |
+| `--session <id>` | — | Resume an existing session |
+| `--model <provider/model>` | Your default | Override model |
+| `--thinking <variant>` | — | Thinking/reasoning mode |
+
+## Pull: cloud → local
+
+When a cloud session finishes (or you want to take over), pull it back:
+
+```bash
+cord pull
+```
+
+This finds the Cord session on your current branch, gets the handoff context (what was done, what's remaining), and suspends the cloud session. Then run `git pull` to get the commits.
+
+```bash
+cord pull --output ./handoff.md
+git pull
+# Now continue locally with full context
+```
+
+### What happens during pull
+
+1. Cord finds the session linked to your current branch
+2. If the sandbox has uncommitted or unpushed work, Cord commits and pushes it first
+3. The handoff context is returned (printed to stdout, or saved with `--output`)
+4. The cloud session is suspended (unless `--no-suspend`)
+
+If the agent is still actively working, pull tells you to check back:
+
+```
+Agent is still working
+Check progress: https://runcord.com/s/session_xyz789
+Run `cord pull` again later or use `cord status` to check.
+```
+
+### Options
+
+| Flag | Default | Description |
+|---|---|---|
+| `--session <id>` | — | Pull from a specific session |
+| `--branch <branch>` | Current git branch | Find session by branch |
+| `--repository <repo>` | From git remote | Narrow lookup to a repo |
+| `--output <path>` | stdout | Save context to a file |
+| `--no-suspend` | — | Keep the cloud session running |
+
+## Status: check on cloud work
+
+Quick check without pulling:
+
+```bash
+cord status
+```
+
+Shows the session status (`running`, `idle`, `blocked`, `error`, `suspended`) and a link to the web UI. If no session exists for your branch, it suggests `cord push`.
+
+## The full loop
+
+A typical workflow looks like this:
+
+```bash
+# You're working locally, decide to hand off
+cord push --context-file ./notes.md --message "Finish the API tests"
+
+# Check in later
+cord status
+# → running
+
+# Agent finished, pull it back
+cord pull --output ./handoff.md
+git pull
+
+# Continue locally with context of what the cloud agent did
+```
+
+## Agent-to-agent handoff
+
+Push/Pull is designed to work with any local agent. If you're using Claude Code locally, you can teach it to hand off to Cord:
+
+1. The local agent writes a handoff file summarizing its progress
+2. It runs `cord push --context-file /tmp/handoff.md --message "Continue from here"`
+3. Later, it (or you) runs `cord pull` to get the result back
+
+This works with any agent that can run shell commands — Claude Code, Aider, Cursor's terminal, a custom script.
+
+<Tip>
+All three commands support `--json` for structured output, making them scriptable. Use `cord push --json` in CI or automation to get back the session ID and URL programmatically.
+</Tip>

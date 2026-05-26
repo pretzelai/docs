@@ -56,6 +56,9 @@ The **Changes** panel shows all modified files with a GitHub-style diff view:
 - Full file context around changes
 - Per-file diff counts in the sidebar
 - Expand/collapse individual files
+- **Expandable context lines** -- click the collapsed line indicators between hunks to reveal more surrounding code without leaving Cord
+
+Diffs are prefetched as you browse sessions, so opening a file's changes is instant.
 
 ## Live preview
 
@@ -67,11 +70,21 @@ If you give the agent follow-up instructions after creating a PR, the new commit
 
 ## Merge conflicts
 
-If the base branch has changed since the session started:
+If the base branch has changed since the session started and there are conflicts, Cord detects them automatically and resolves them for you:
 
-- Cord flags the conflict in the session status
-- Ask the agent to resolve it: *"Rebase on main and resolve the merge conflicts"*
-- Or resolve manually through GitHub's conflict resolution UI
+1. Cord flags the conflict in the session status
+2. The agent rebases on the latest base branch and resolves conflicts
+3. A progress spinner shows while resolution is in progress
+4. Once resolved, the PR becomes mergeable again
+
+This happens automatically when you click **Merge** on a conflicted PR. If automatic resolution fails, you can:
+
+- Ask the agent explicitly: *"Rebase on main and resolve the merge conflicts"*
+- Resolve manually through GitHub's conflict resolution UI
+
+<Tip>
+If the PR branch is behind the base branch but has no actual conflicts, Cord allows the merge with an advisory warning — you don't need to rebase just to be up-to-date.
+</Tip>
 
 ## Merging
 
