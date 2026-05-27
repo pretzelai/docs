@@ -1,89 +1,70 @@
 ---
 title: "GitHub"
-description: "How Cord connects to GitHub -- authentication, repos, branches, PRs, and org admin controls."
+description: "How Cord connects to GitHub — authentication, repos, branches, PRs, and org admin controls."
 ---
 
 GitHub is Cord's core integration. Your code lives on GitHub, and Cord creates branches and pull requests there.
-
-## Authentication
-
-Cord uses GitHub OAuth for sign-in. When you create an account, you authorize Cord to:
-
-- Read your profile and email
-- Access repositories you grant permission to
-- Create branches and pull requests
-- Read and write code in those repositories
 
 ## Connecting repositories
 
 Cord uses a **GitHub App** for repository access. In **Settings > GitHub**:
 
-1. Click **Install Cord GitHub App**
-2. Choose your organization or personal account
-3. Select which repositories to grant access to (or all repos)
+1. Click **Add Organization** (or **Add Personal** for personal repos)
+2. GitHub's standard app installation flow opens — choose which repos to grant access to
+3. After approval you're redirected back to Cord
 
-You can have multiple GitHub App installations -- for different organizations or to add more repositories later.
+You can have multiple installations — one per org, plus personal repos if your org allows it. Add more at any time from the same settings page.
 
-For organization repos, you may need an org admin to approve the installation.
-
-## Organization rules
-
-Admins can configure GitHub access policies in **Settings > GitHub > Organization Rules**:
-
-| Rule | Description |
-|---|---|
-| **Allow personal repository installs** | Whether team members can connect personal GitHub repos (not just org repos) |
-| **Require each person to link GitHub** | Force all team members to connect their personal GitHub account |
-| **Only admins can add org installs** | Restrict who can install the GitHub App for the organization |
+For organization repos, an org admin may need to approve the installation.
 
 ## PR attribution
 
-By default, PRs are created under Cord's bot account. To have PRs attributed to **your personal GitHub account**:
+By default, PRs are created under Cord's bot account. To have PRs show your name and avatar on GitHub:
 
-1. Go to **Settings > GitHub > PR Attribution**
-2. Click **Link GitHub Account**
+1. Go to **Settings > GitHub**
+2. Under **Pull Request Attribution**, click **Link GitHub Account**
 3. Authorize the connection
 
-Once linked, PRs you create show your name and avatar in GitHub -- they look like you authored them, not a bot.
+Once linked, every PR you create looks like you authored it. If the link expires, Cord prompts you to reconnect.
 
-If your GitHub link expires, Cord will prompt you to reconnect.
+<Tip>
+If your org requires everyone to link their GitHub account, PR operations won't work until you do. You'll see a prompt if this applies to you.
+</Tip>
 
-## PR shortcuts
+## Collaborator access
 
-Two shortcuts can be enabled in **Settings > GitHub > PR Shortcuts**:
+If you're a collaborator on a repo whose owner hasn't installed the Cord GitHub App, you can still connect it via **classic OAuth**. In **Settings > GitHub**, look for the **Collaborator Repository Access** section and authorize with your GitHub account. This grants Cord access to repos where you have push permissions, even without an app installation.
 
-| Shortcut | What it does |
+## Organization rules
+
+Org admins see an **Organization Rules** section in **Settings > GitHub** with three controls:
+
+| Rule | What it does |
 |---|---|
-| **Quick PR** | One-click PR creation with auto-generated title and description |
-| **YOLO** | One-click PR creation + merge + archive. Skips the review cycle entirely. |
-
-Both are toggleable. When enabled, they appear as buttons in the session UI. See [Pull requests](/guides/pull-requests) for details.
+| **Allow personal repository installs** | Let team members connect personal GitHub repos (not just org repos) |
+| **Require each person to link GitHub** | Block PR operations until a team member links their GitHub account |
+| **Only admins can add org installs** | Restrict who can install the Cord GitHub App for the org |
 
 ## What Cord does on GitHub
 
 For each session, Cord:
 
-| Action | Description |
-|---|---|
-| **Creates a branch** | A new branch from your default branch (usually `main`) |
-| **Pushes commits** | Code changes are committed and pushed to the branch |
-| **Opens a PR** | When you click "Create PR", a pull request is opened |
-| **Updates the PR** | If the agent makes more changes, new commits are added to the same PR |
+- Creates a branch from your default branch (usually `main`)
+- Pushes commits as the agent works
+- Opens a PR when you click Quick PR or Create PR
+- Pushes follow-up commits to the same branch if you keep iterating
 
 ## Branch naming
 
-Branches follow the pattern `cord/<session-name>`. You can customize the prefix per-repo in **Repository Settings > Branch Prefix**.
+Branches always use the `cord/` prefix:
+
+- Before the first commit: `cord/adjective-animal-e7b7` (auto-generated placeholder)
+- After first commit: `cord/descriptive-slug-a1b2c3` (derived from the commit message, max 5 words)
 
 ## CI/CD compatibility
 
-Cord PRs are standard GitHub pull requests. Your existing CI/CD pipelines, status checks, branch protection rules, and code review requirements all work as expected. Cord doesn't bypass any of your existing workflows.
+Cord PRs are standard GitHub pull requests. Your existing CI/CD pipelines, status checks, branch protection rules, and code review requirements all work normally. Cord doesn't bypass any of your existing workflows — even YOLO respects branch protection.
 
-Even YOLO mode respects branch protection -- if required checks fail, the merge won't go through.
+## Quick PR and YOLO visibility
 
-## Permissions
-
-Cord requests the minimum GitHub permissions needed:
-
-- `repo` scope for reading code and creating PRs
-- `read:user` for authentication
-- No access to repos you haven't explicitly connected via the GitHub App
+Quick PR and YOLO buttons are visible by default. If you don't use them and want a cleaner header, you can toggle them off in **Settings > UI Preferences > Thread Shortcut Settings**.

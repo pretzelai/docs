@@ -1,126 +1,64 @@
 ---
 title: "Pull requests"
-description: "Create PRs, use Quick PR, review diffs, adopt existing PRs, and keep working after merge."
+description: "Create PRs from Cord with one click, customize when needed, and keep iterating after merge."
 ---
-
-## Creating a PR
-
-When the agent finishes (or at any point during a session), click **Create PR**. A popover lets you:
-
-- **Edit the title** -- Cord generates one automatically, you can change it
-- **Edit the description** -- AI-generated summary of changes, editable before submission
-- **Toggle draft** -- create as a draft PR if it's not ready for review yet
-
-Cord pushes the branch to GitHub and opens the pull request. The PR links back to the session.
-
-<Tip>
-You can create the PR straight from your terminal without opening Cord:
-
-```bash
-cord pr create <session-id> --title "Add /health endpoint" --draft
-cord pr show <session-id>   # check state, URL, and mergeability
-```
-
-This is handy for CI pipelines that drive Cord end-to-end — kick off a session with `cord sessions create`, watch it with `cord sessions status`, review with `cord diff`, and open the PR with `cord pr create`. Everything is wired through the [Cord API](/reference/api#pull-requests) too if you'd rather make HTTP calls directly.
-</Tip>
-
-## AI-generated PR descriptions
-
-When you click Create PR, Cord generates a title and description based on:
-
-- The conversation in the session
-- The actual code changes made
-- The original task description
-
-You can edit both before submitting. The description is formatted with a summary, list of changes, and a link to the Cord session.
 
 ## Quick PR
 
-For straightforward changes, use **Quick PR** -- a one-click shortcut that creates a PR with auto-generated title and description, skipping the popover. Enable it in **Settings > GitHub > PR Shortcuts**.
+Quick PR is the fastest way to go from working code to an open pull request. Click the **Quick PR** button in the session header and Cord handles the rest — staging changes, committing, pushing, and opening the PR on GitHub with an AI-generated title and description.
 
-## YOLO mode
+No form to fill out, no decisions to make. One click.
 
-**YOLO** goes one step further: it creates a PR, merges it immediately, and archives the session -- all in one click. Useful for trivial changes where you trust the agent's output and don't need a review cycle.
+Quick PR appears in the session header whenever your session has uncommitted changes or branch commits ready to ship. Cord generates the commit message, PR title, and PR description from:
 
-Enable YOLO in **Settings > GitHub > PR Shortcuts**.
+- The diff
+- The conversation in the session
+- Recent commit history
+
+A progress card appears in the chat showing each step in real time (staging → committing → pushing → creating PR). Once done, you get a link to the PR on GitHub.
+
+If a PR already exists on the branch, Cord pushes new commits to it instead of creating a duplicate.
+
+## Customizing the PR
+
+If you want control over the title, description, or draft status, click the **dropdown caret** next to the Quick PR button. This opens a form where you can:
+
+- Set a custom title
+- Write or edit the description
+- Mark it as a draft PR
+- Click **Auto-fill with AI** to generate a description you can then tweak
+
+Your form inputs are saved automatically — if you close the popover by accident, everything is still there when you reopen it.
+
+## YOLO
+
+The **YOLO** button creates a PR, merges it, and archives the session — all in one click. Use it for changes where you trust the output and don't need a review cycle.
 
 <Warning>
-YOLO bypasses your normal review process. It will still respect GitHub branch protection rules and required status checks -- if CI fails, the merge won't go through.
+YOLO still respects GitHub branch protection rules and required status checks. If CI fails, the merge won't go through.
 </Warning>
 
-## Reviewing diffs
+## Reviewing changes
 
-The **Changes** panel shows all modified files with a GitHub-style diff view:
+The **Changes** panel shows all modified files with a diff view:
 
 - Lines added (green) and removed (red)
-- Full file context around changes
-- Per-file diff counts in the sidebar
+- Per-file change counts in the sidebar
 - Expand/collapse individual files
-- **Expandable context lines** -- click the collapsed line indicators between hunks to reveal more surrounding code without leaving Cord
+- Click collapsed line indicators between hunks to expand more context
 
-Diffs are prefetched as you browse sessions, so opening a file's changes is instant.
-
-## Live preview
-
-If your project runs a dev server, check the live preview URL before merging. The preview runs in the sandbox and shows exactly what the code changes look like. Share the URL with teammates for a quick visual review.
+If your project runs a dev server, check the live preview URL before merging — it shows exactly what the code changes look like in the sandbox.
 
 ## Updating a PR
 
-If you give the agent follow-up instructions after creating a PR, the new commits are pushed to the same branch. The PR updates automatically -- no need to create a new one.
-
-## Merge conflicts
-
-If the base branch has changed since the session started and there are conflicts, Cord detects them automatically and resolves them for you:
-
-1. Cord flags the conflict in the session status
-2. The agent rebases on the latest base branch and resolves conflicts
-3. A progress spinner shows while resolution is in progress
-4. Once resolved, the PR becomes mergeable again
-
-This happens automatically when you click **Merge** on a conflicted PR. If automatic resolution fails, you can:
-
-- Ask the agent explicitly: *"Rebase on main and resolve the merge conflicts"*
-- Resolve manually through GitHub's conflict resolution UI
-
-<Tip>
-If the PR branch is behind the base branch but has no actual conflicts, Cord allows the merge with an advisory warning — you don't need to rebase just to be up-to-date.
-</Tip>
+Give the agent follow-up instructions after creating a PR and the new commits are pushed to the same branch. The PR updates automatically — no need to create a new one or close and reopen.
 
 ## Merging
 
-Merge from Cord or from GitHub -- either works. After merge:
+Merge from Cord or from GitHub — either works. After merge, the session status updates to **Merged**.
 
-- The session status updates to **Merged**
-- The sandbox can be suspended
+If the base branch has diverged and there are conflicts, you can ask the agent to resolve them: *"Rebase on main and fix the conflicts."* Once resolved, the PR becomes mergeable again.
 
 ## Keep working after merge
 
-Click **Keep Working** to start a new session that:
-
-- Branches from the latest main (including your merged changes)
-- Has context of what was done in the previous session
-- Lets the agent continue building on top of the merged work
-
-Useful for multi-step features where you want to merge incrementally rather than pile everything into one giant PR.
-
-## Adopting an existing PR
-
-If you have a PR on GitHub that was created outside of Cord (manually, by another tool, etc.), you can **adopt** it into a Cord session:
-
-1. In the chat input, reference the PR
-2. Cord checks out the PR's branch into a sandbox
-3. The agent has full context of the existing changes
-4. You can give the agent instructions to continue, fix, or improve the PR
-
-This is useful for picking up half-finished work or having the agent fix CI failures on an existing PR.
-
-## PR flow progress
-
-When creating a PR, Cord shows a real-time progress card:
-
-1. **Staging** -- collecting changes
-2. **Committing** -- creating the git commit
-3. **Pushing** -- pushing the branch to GitHub
-4. **Creating PR** -- opening the pull request
-
-If any step fails, you'll see the error and can retry.
+Click **Keep Working** to start a new session that branches from the latest main (including your merged changes) with context from the previous session. Useful for multi-step features where you merge incrementally rather than building one giant PR.
