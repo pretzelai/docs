@@ -1,54 +1,42 @@
 ---
 title: "Running agents"
-description: "Start sessions, give instructions, iterate on output, and ship."
+description: "Starting sessions, giving instructions, and working with the agent."
 ---
 
 ## Starting a session
 
-Pick a repo and type what you want. That's it — the agent starts immediately.
+Pick a repo, type what you want. The agent starts immediately.
 
-The model defaults to your configured preference. Switch it anytime with **Cmd+/** to open the model selector, or change it mid-session.
-
-<Tip>
-You can also start sessions from your terminal:
+Switch models with **Cmd+/** or from the CLI:
 
 ```bash
 cord sessions create --repository my-org/my-app \
   --message "Add a /health endpoint that returns status ok"
 ```
 
-Or hand off from a local agent with [Push & Pull](/guides/push-pull) — say "push to Cord" and your local agent sends its work to the cloud.
-</Tip>
+You can also hand off from a local agent with [Push & Pull](/guides/push-pull).
 
-## Writing good prompts
+## Writing prompts
 
-Be specific. Reference files. Describe what "done" looks like.
+Be specific, reference files, describe what done looks like.
 
 ```
 Add a GET /api/health endpoint to the Express server in src/server.ts
 that returns { status: "ok", timestamp: Date.now() }
 ```
 
-```
-Create a user registration form with email and password fields.
-Validate email format and min 8-char password.
-Show inline errors. Add tests.
-```
-
-Type `@` to mention files, sessions, PRs, skills, or MCP tools — they're attached as context for the agent.
+Type `@` to mention files, sessions, PRs, skills, or MCP tools as context.
 
 ## Attaching context
 
-Paste, drag-and-drop, or use the file picker to attach screenshots, mockups, error logs, or documents. The agent sees them alongside your prompt.
+Paste, drag-and-drop, or use the file picker to attach screenshots, mockups, error logs, or documents.
 
 ## The workspace
 
-While the agent works, the session layout gives you:
-
-- **Chat** — the agent's reasoning, tool calls (collapsed by default), and questions
-- **Changes** — files modified, with a diff view in the right sidebar
-- **Terminal** — command output from builds, tests, and servers (drag handle to resize)
-- **Preview** — your dev server running at a unique URL
+- **Chat** — agent reasoning, tool calls, and questions
+- **Changes** — modified files with diffs
+- **Terminal** — command output (drag to resize)
+- **Preview** — dev server at a unique URL
 
 ## Slash commands
 
@@ -61,49 +49,41 @@ Type `/` in the chat input:
 | `/expand` | Show native terminal panels for active sandboxes |
 | `/repository` | Switch active repository for new sessions |
 
-Skills and MCP servers can register additional slash commands.
-
 ## Quick actions
 
-Below the chat input, action buttons give you one-click access to common operations:
+Buttons below the chat input:
 
 - **Undo** / **Redo** — rewind or restore the agent's last step
 - **Compact** — summarize the conversation to reclaim context space
-- **Review** — ask the agent to self-review its changes before you look at the diff
+- **Review** — agent self-reviews its changes
 
 ## Build mode vs Plan mode
 
 Toggle with **Shift+Tab**:
 
-- **Build mode** (default) — the agent reads, writes, and runs code
-- **Plan mode** — the agent analyzes and plans without making file changes. Use it to discuss architecture or get a plan before committing.
+- **Build mode** (default) — reads, writes, and runs code
+- **Plan mode** — analyzes and plans without making changes
 
 ## Scratch pad
 
-Press **Alt+S** to open the scratch pad. Draft requirements, keep notes, or write context you can reference later with `@notes`.
+**Alt+S** opens a notes area. Reference it later with `@notes`.
 
 ## Context capacity
 
-The context capacity ring in the chat input shows how full the agent's context window is. Colors shift from blue → amber → red as it fills. When it's getting full, use **Compact** to summarize and reclaim space, or start a fresh session.
+The ring in the chat input shows context window usage. When it fills, use **Compact** or start a fresh session.
 
 ## Stopping the agent
 
-Press **Escape** once to see a warning, **Escape** again to confirm. Code changes made so far are preserved.
+**Escape** once shows a warning, **Escape** again stops. Changes are preserved.
 
 ## Iterating
 
-Keep going after the agent finishes — ask for changes, report issues, add requirements. You can queue a follow-up message while the agent is still working; it's delivered when the current step completes.
+Send follow-up instructions after the agent finishes. You can queue messages while the agent is still working.
 
 ## Voice input
 
-Tap the microphone icon (or use `/voice`) to dictate instead of typing. Works on desktop and mobile. The transcribed text appears in the composer for review before sending.
-
-In **Settings > UI Preferences**, toggle **Autosend after voice dictation** to skip the review step.
+Tap the mic icon or use `/voice` to dictate. Toggle **Autosend after voice dictation** in Settings to skip the review step.
 
 ## Notifications
 
-When sessions run in the background:
-
-- The favicon updates to show a running indicator
-- You get a browser notification (or push notification on mobile) when a session finishes
-- Notifications link directly to the finished session
+Background sessions show a favicon indicator and send browser/push notifications when done.

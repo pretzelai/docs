@@ -1,64 +1,44 @@
 ---
 title: "Pull requests"
-description: "Create PRs from Cord with one click, customize when needed, and keep iterating after merge."
+description: "Creating and managing PRs from Cord sessions."
 ---
 
 ## Quick PR
 
-Quick PR is the fastest way to go from working code to an open pull request. Click the **Quick PR** button in the session header and Cord handles the rest — staging changes, committing, pushing, and opening the PR on GitHub with an AI-generated title and description.
+Click **Quick PR** in the session header. Cord stages, commits, pushes, and opens the PR on GitHub with a generated title and description.
 
-No form to fill out, no decisions to make. One click.
+The button appears when your session has uncommitted changes or commits ready to push. The commit message, PR title, and description are generated from the diff, conversation, and recent commit history.
 
-Quick PR appears in the session header whenever your session has uncommitted changes or branch commits ready to ship. Cord generates the commit message, PR title, and PR description from:
-
-- The diff
-- The conversation in the session
-- Recent commit history
-
-A progress card appears in the chat showing each step in real time (staging → committing → pushing → creating PR). Once done, you get a link to the PR on GitHub.
-
-If a PR already exists on the branch, Cord pushes new commits to it instead of creating a duplicate.
+If a PR already exists on the branch, Quick PR pushes new commits to it instead of creating a duplicate.
 
 ## Customizing the PR
 
-If you want control over the title, description, or draft status, click the **dropdown caret** next to the Quick PR button. This opens a form where you can:
+Click the **dropdown caret** next to Quick PR to open a form where you can set the title, description, and draft status. **Auto-fill with AI** generates a description you can edit.
 
-- Set a custom title
-- Write or edit the description
-- Mark it as a draft PR
-- Click **Auto-fill with AI** to generate a description you can then tweak
-
-Your form inputs are saved automatically — if you close the popover by accident, everything is still there when you reopen it.
+Form inputs persist if you close and reopen the popover.
 
 ## YOLO
 
-The **YOLO** button creates a PR, merges it, and archives the session — all in one click. Use it for changes where you trust the output and don't need a review cycle.
+**YOLO** creates a PR, merges it, and archives the session in one action.
 
 <Warning>
-YOLO still respects GitHub branch protection rules and required status checks. If CI fails, the merge won't go through.
+YOLO respects branch protection rules and required status checks. If CI fails, the merge won't go through.
 </Warning>
 
 ## Reviewing changes
 
-The **Changes** panel shows all modified files with a diff view:
+The **Changes** panel shows modified files with a diff view. Lines added are green, lines removed are red. Click collapsed indicators between hunks to expand context.
 
-- Lines added (green) and removed (red)
-- Per-file change counts in the sidebar
-- Expand/collapse individual files
-- Click collapsed line indicators between hunks to expand more context
-
-If your project runs a dev server, check the live preview URL before merging — it shows exactly what the code changes look like in the sandbox.
+Check the live preview URL before merging if your project runs a dev server.
 
 ## Updating a PR
 
-Give the agent follow-up instructions after creating a PR and the new commits are pushed to the same branch. The PR updates automatically — no need to create a new one or close and reopen.
+Send follow-up instructions after creating a PR — new commits push to the same branch and the PR updates automatically.
 
 ## Merging
 
-Merge from Cord or from GitHub — either works. After merge, the session status updates to **Merged**.
-
-If the base branch has diverged and there are conflicts, you can ask the agent to resolve them: *"Rebase on main and fix the conflicts."* Once resolved, the PR becomes mergeable again.
+Merge from Cord or from GitHub. If the base branch has diverged, ask the agent to rebase and fix conflicts.
 
 ## Keep working after merge
 
-Click **Keep Working** to start a new session that branches from the latest main (including your merged changes) with context from the previous session. Useful for multi-step features where you merge incrementally rather than building one giant PR.
+Click **Keep Working** to start a new session branching from the latest main with context from the previous session.

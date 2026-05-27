@@ -1,84 +1,51 @@
 ---
 title: "Agents"
-description: "Claude Code and OpenCode -- bring your own subscription or API keys."
+description: "Claude Code and OpenCode — the two agents available in Cord."
 ---
 
-Cord supports two AI coding agents. Both run inside your cloud sandbox with full access to the filesystem, terminal, and browser.
+Cord runs two agents. Both have full access to the sandbox filesystem, terminal, and browser.
 
 ## Claude Code
 
-[Claude Code](https://docs.anthropic.com/en/docs/claude-code) is Anthropic's agentic coding tool. It reads your codebase, writes code, runs commands, and iterates on errors autonomously.
-
-**How to use it in Cord:**
-
-- **Claude Max or Pro subscription** -- Connect via OAuth in Settings. Agent runs using your existing plan.
-- **Anthropic API key** -- Provide your API key. You pay Anthropic for token usage.
-- **Starter credit** -- Use your \$50 free Claude credit (included with every new account).
-
-Claude Code supports extended thinking for complex reasoning tasks.
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) is Anthropic's coding agent. Used with Claude subscriptions or Anthropic API keys. Supports extended thinking.
 
 ## OpenCode
 
-[OpenCode](https://github.com/nicepkg/opencode) is an open-source coding agent that works with multiple model providers. It's the default agent for Codex subscriptions, API keys, and Cord Open Source models.
+[OpenCode](https://github.com/nicepkg/opencode) is an open-source coding agent. Used with Codex subscriptions, API keys from other providers, and Cord Open Source models.
 
-**Supported model providers:**
+Supported providers: OpenAI, Anthropic (via API), Google, Mistral, DeepSeek, xAI, Groq, OpenRouter, Amazon Bedrock, Cord Open Source.
 
-- OpenAI (GPT-4, Codex)
-- Anthropic (Claude via API)
-- Google (Gemini)
-- Mistral, DeepSeek, xAI, Groq
-- OpenRouter (multi-provider)
-- Amazon Bedrock
-- **Cord Open Source** -- Cord-hosted open-source models available when your account has Cord Open Source access or credits
+## Capabilities
 
-## What agents can do
+Both agents can:
 
-Both agents have the same capabilities inside a sandbox:
+- Read and write files
+- Run commands (builds, tests, linters)
+- Start dev servers
+- Use a headless browser for visual verification
+- Create PRs
+- Call MCP tools
 
-| Capability | Description |
-|---|---|
-| **Read files** | Browse and understand your entire codebase |
-| **Write code** | Create and edit files across your project |
-| **Run commands** | Execute build scripts, tests, linters, and any CLI tool |
-| **Start servers** | Run dev servers and access them via preview URLs |
-| **Use a browser** | Load pages in a headless browser for visual verification |
-| **Create PRs** | Generate pull requests ready for review |
-| **Use MCP tools** | Call external tools and data sources via MCP servers |
+## Defaults
 
-## Choosing your default agent and model
+Configure in **Settings > Models & API Keys**:
 
-In **Settings > Models & API Keys**, you can configure:
+- Default agent (Claude Code or OpenCode)
+- Default model
+- Thinking mode
 
-- **Default agent** -- Claude Code or OpenCode. This is what new sessions use by default.
-- **Default model** -- which specific model to use (e.g., Claude Sonnet, GPT-4, Kimi K2.6)
-- **Thinking mode** -- enable extended thinking/reasoning for models that support it
-
-You can also override the default per-repo in **Repository Settings** and per-session using the model selector in the chat input.
+Override per-repo in Repository Settings, or per-session with **Cmd+/**.
 
 ## Credential routing
 
-When you have multiple AI providers configured (e.g., both an Anthropic API key and a Claude subscription), Cord routes to the right credential automatically.
+When multiple providers are configured, routing priority:
 
-The routing priority is:
+1. Personal API keys
+2. Personal subscriptions
+3. Org-level shared keys
 
-1. **Personal API keys** -- your own keys take first priority
-2. **Personal subscriptions** -- your connected Claude/Codex subscription
-3. **Org-level shared keys** -- keys configured by your admin
-
-You can customize this priority order per-agent in **Settings > Models & API Keys** by dragging credential sources up or down.
-
-## Model selector
-
-In every session, the model selector in the chat input lets you switch models on the fly:
-
-- Change provider and model mid-session
-- Toggle thinking/reasoning mode
-- See which credential source is being used
-
-Press **Cmd+'** to quickly open the model selector.
+Customize priority order in **Settings > Models & API Keys**.
 
 ## Thinking mode
 
-Models that support extended thinking (Claude, some OpenAI models) can be toggled into thinking mode. In this mode, the agent spends more compute on reasoning before acting -- useful for complex architectural decisions, tricky bugs, or multi-step refactors.
-
-Toggle thinking mode in the model selector or set it as the default in settings.
+Extended thinking makes the agent spend more compute on reasoning before acting. Toggle in the model selector (**Cmd+Shift+/**) or set as default.

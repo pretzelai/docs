@@ -1,96 +1,43 @@
 ---
 title: "Persistent storage"
-description: "Files, config, and tools that carry over across sandbox sessions."
+description: "Files and config that persist across sandbox sessions."
 ---
 
-Every user gets persistent storage for files that don't belong in the repo but should be available in future sandboxes. Add files through Settings or the CLI, choose where they mount, and Cord injects them when new sandboxes start.
+Persistent storage holds files that should be available in future sandboxes but don't belong in the repo. Per-user, not per-repo.
 
 ## What persists
 
-- **`.claude/` directory** -- Your Claude Code configuration, skills, and memory files
-- **`.agents/` directory** -- Agent skills and configuration for OpenCode
-- **Dotfiles** -- `.bashrc`, `.gitconfig`, editor settings
-- **Project config** -- Config directories, templates, scripts, or other files you explicitly upload
-- **Secret files** -- Env files or configs you don't want in your repo
+- `.claude/` and `.agents/` directories (skills, config)
+- Dotfiles (`.bashrc`, `.gitconfig`)
+- Project config, templates, scripts
+- Secret files you don't want in your repo
 
-## How it works
+## Uploading
 
-Persistent storage is backed by cloud storage. Attachments configured with a mount path and auto-mount enabled are mounted into new sandboxes when they start.
-
-Storage is **per-user**, not per-repo. Your personal configuration is available regardless of which repository you're working in.
-
-## Uploading files
-
-You can upload files and folders through the Cord UI:
-
-1. Go to **Settings > Persistent Storage**
-2. Click **Upload file** or **Upload folder**, or drag-and-drop files
-3. Configure the mount path (where the file appears in the sandbox, e.g. `~/.bashrc` or `/repo/.claude`)
-4. Choose the scope -- **all repositories** or a **specific repo**
-5. Toggle **auto-mount** to include it in new sandboxes by default
-
-### Mount paths
-
-Each uploaded file or folder gets a mount path that determines where it appears in the sandbox filesystem. For example:
+In **Settings > Persistent Storage**: upload files/folders, set a mount path, choose scope (all repos or specific repo), and toggle auto-mount.
 
 | File | Mount path | Result |
 |---|---|---|
-| `.bashrc` | `~/.bashrc` | Replaces the default `.bashrc` in your sandbox home directory |
-| `claude/` | `/repo/.claude` | Mounts your Claude config into the repo root |
-| `.env.local` | `/repo/.env.local` | Injects an env file into the project |
-
-### Repo scoping
-
-By default, files mount into all repositories. You can scope a file to a specific repo if it only applies there (e.g., an `.env.local` with repo-specific secrets).
-
-### Managing files
-
-In the persistent storage settings, you can:
-
-- **Edit settings** -- rename, change mount path, toggle auto-attach
-- **Replace contents** -- re-upload a new version of a file
-- **Complete upload** -- finish an interrupted or incomplete upload
-- **Delete** -- remove files you no longer need
+| `.bashrc` | `~/.bashrc` | Replaces sandbox `.bashrc` |
+| `claude/` | `/repo/.claude` | Claude config at repo root |
+| `.env.local` | `/repo/.env.local` | Env file in project |
 
 ## Syncing local skills
 
-If you have Claude Code or OpenCode skills configured on your local machine, sync them with the CLI:
-
 ```bash
-curl -fsSL https://runcord.com/install.sh | bash
-cord auth login
 cord storage sync-skills
 ```
 
-This uploads existing, non-empty `~/.claude/skills` and `~/.agents/skills` directories, stores them as persistent storage attachments, and auto-mounts them for new sandboxes. Run it again any time you update your local skills.
+Uploads `~/.claude/skills` and `~/.agents/skills` and auto-mounts them. Run again when you update local skills.
 
 ## CLI upload
 
-You can also upload files from the command line:
-
 ```bash
-# Upload a single file
 cord storage upload ~/.bashrc --mount-path "~/.bashrc"
-
-# Upload an entire folder (recursively)
 cord storage upload ./my-config --mount-path "/repo/.config" --name "project config"
-
-# Upload to a specific repo only
 cord storage upload .env.local --mount-path "/repo/.env.local" --repo-id repo_abc123 --include-sensitive
 ```
 
-When uploading folders, the CLI:
-- Recursively walks all files with real-time progress
-- Includes hidden files by default unless they match sensitive-file rules
-- **Skips secrets by default** (`.env`, `*.key`, `*.pem`, `id_rsa`, `.aws/`, `.ssh/`, etc.)
-- Rejects single sensitive-file uploads unless you pass `--include-sensitive`
-- Skips symlinks and empty directories
-- Uploads up to 5,000 files, max 200 MiB per file and 1 GiB total
+Skips secrets by default (`.env`, `*.key`, `*.pem`, `.aws/`, `.ssh/`). Use `--include-sensitive` to override. Limits: 5,000 files, 200 MiB per file, 1 GiB total.
 
-Use `--include-sensitive` to override the secret detection if you intentionally want to upload credential files.
-
-See the full [CLI reference](/reference/cli#storage-upload) for all flags and details.
-
-<Tip>
-Persistent storage attachments are available in new sandboxes when they have a mount path and auto-mount enabled. Uploads without a mount path are stored in your library until you enable mounting.
-</Tip>
+See [CLI reference](/reference/cli#storage-upload) for all flags.

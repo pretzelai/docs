@@ -1,68 +1,49 @@
 ---
 title: "Security"
-description: "How Cord handles your code, credentials, and data."
+description: "How Cord handles code, credentials, and data."
 ---
 
 ## Data handling
 
-Your code stays in your sandbox and your GitHub repository. Cord doesn't store your source code in its own database -- sandboxes are ephemeral compute environments that are created from and push back to GitHub.
+Code stays in your sandbox and GitHub. Cord doesn't store source code in its database — sandboxes are ephemeral and push back to GitHub.
 
-## Bring your own keys (BYOK)
+## Credentials
 
-Cord receives provider credentials when you add them in Settings or connect a subscription, stores them securely, and injects the selected credential into sandboxes when needed:
-
-- API keys are encrypted at rest
-- Keys are injected into the sandbox at startup and exist only in memory
-- Keys are never logged or stored in plaintext
-
-For subscription-based access (Claude Max/Pro, Codex), Cord stores the connected subscription credential set encrypted and injects the necessary credentials into sandboxes for the selected agent.
+- API keys encrypted at rest, injected into sandboxes at startup, never logged
+- Subscription credentials stored encrypted, injected as needed
 
 ## Sandbox isolation
 
-Each sandbox is an isolated container with:
-
-- **gVisor** -- application kernel-level isolation (the same technology Google Cloud Run uses)
-- **Separate filesystem** -- no shared state between sandboxes
-- **Network isolation** -- sandboxes can't access each other
-- **Ephemeral by default** -- sandboxes are destroyed after use, no lingering state
+- **gVisor** — kernel-level isolation (same as Google Cloud Run)
+- Separate filesystem per sandbox
+- Network isolation between sandboxes
+- Ephemeral — destroyed after use
 
 ## Environment variables
 
-Environment variables you set in Cord are:
-
-- Encrypted at rest in the database
-- Decrypted only at sandbox startup
-- Available only inside your sandbox
-- Never exposed in the Cord UI after being set (write-only)
+Encrypted at rest, decrypted only at startup, write-only in the UI.
 
 ## Authentication
 
-- **Sign-in methods** -- Cord supports configured sign-in methods such as GitHub, Google, and/or email.
-- **Session tokens** -- managed by Better Auth, stored encrypted, with automatic expiry.
-- **Passwords** -- password-based sign-in, if enabled, stores password hashes rather than plaintext passwords.
+GitHub, Google, and/or email sign-in. Session tokens managed by Better Auth with automatic expiry.
 
 ## Infrastructure
 
-| Component | Provider | Location |
-|---|---|---|
-| Sandboxes | Modal / Daytona / Freestyle, depending on deployment | US / EU regions |
-| Database | Neon (Postgres) | US |
-| Session coordination | Cloudflare Durable Objects | Edge (global) |
-| File storage | Cloudflare R2 | US |
+| Component | Provider |
+|---|---|
+| Sandboxes | Modal / Daytona / Freestyle |
+| Database | Neon (Postgres) |
+| Session coordination | Cloudflare Durable Objects |
+| File storage | Cloudflare R2 |
 
 ## Enterprise
 
-On the Enterprise plan, you can run Cord on your own infrastructure. This means:
-
-- Sandboxes run in your cloud account
-- No code leaves your network
-- Full control over data residency
-- SSO with your identity provider
+Run Cord on your own infrastructure: sandboxes in your cloud, no code leaves your network, SSO.
 
 <Card title="Contact us" icon="shield" href="mailto:help@withpretzel.com">
-  Get in touch for Enterprise security details.
+  Enterprise security details.
 </Card>
 
-## Reporting issues
+## Reporting vulnerabilities
 
-If you discover a security vulnerability, please email [help@withpretzel.com](mailto:help@withpretzel.com) directly. Do not open a public GitHub issue.
+Email [help@withpretzel.com](mailto:help@withpretzel.com). Do not open a public GitHub issue.

@@ -1,118 +1,97 @@
 ---
 title: "What is Cord?"
-description: "Run parallel AI coding agents in cloud sandboxes. Claude Code, Codex, and open source models -- zero setup, GitHub connected."
+description: "Cloud sandboxes for AI coding agents. Claude Code, Codex, and open source models with GitHub integration."
 ---
 
-Cord gives your team cloud sandboxes for AI coding agents. Connect your GitHub repos, bring your AI subscription or API keys, and start shipping code from Slack, Linear, your laptop, or your phone.
-
-Each session spins up a full dev environment -- your code, dependencies, dev server, Docker, a browser -- and an AI agent that reads your codebase, writes code, runs tests, and opens a PR.
+Cord runs AI coding agents in cloud sandboxes connected to your GitHub repos. Each session gets a branch, a full dev environment, and an agent that writes code and opens PRs.
 
 ## How it works
 
 <Steps>
   <Step title="Connect your org and repos">
-    Sign in with GitHub and add your organization. Cord is org-native -- repos, credentials, MCP servers, and integrations are configured once at the org level. Every team member gets access automatically.
+    Sign in with GitHub and add your organization. Repos, credentials, MCP servers, and integrations are configured at the org level.
   </Step>
   <Step title="Add your AI provider">
-    Bring your Claude Max/Pro subscription, your Codex subscription, or raw API keys from 12+ providers. Don't have any? New accounts can claim **\$100 in free AI credits** during onboarding.
+    Connect a Claude or Codex subscription, add API keys, or claim **\$100 in free credits** during onboarding.
   </Step>
   <Step title="Start a session">
-    Start from anywhere -- the web app, your phone, Slack, Linear, or the API. Each session creates a Git branch and spins up a cloud sandbox with your full stack running. Describe what you want in plain English (or record a voice message) and the agent writes the code.
+    Start from the web app, Slack, Linear, the CLI, or your phone. Each session creates a branch and spins up a sandbox with your full stack running.
   </Step>
-  <Step title="Review, merge, repeat">
-    Review diffs, check the live preview URL, and merge the PR -- all from Cord. Or skip the app entirely: tag `@Cord` in Slack or assign a Linear ticket, and a PR appears in GitHub.
+  <Step title="Review and merge">
+    Review diffs, check the live preview, and merge the PR.
   </Step>
 </Steps>
 
 ## What runs in a sandbox
 
-Every sandbox is a full dev environment, not a thin container:
+- Your code cloned from GitHub with dependencies installed
+- Dev server running on a unique preview URL
+- Docker support
+- Headless browser for visual verification
+- Terminal accessible from the UI or via VS Code (code-server)
 
-- **Your code** cloned from GitHub with dependencies installed
-- **Dev server** running on a unique preview URL you can share with your team
-- **Docker** fully supported for projects that need it
-- **Headless browser** for the agent to visually verify its own output
-- **Terminal** accessible from the Cord UI or via VS Code (code-server)
-
-Sandboxes spin up in seconds, suspend when idle (you're not charged), and resume instantly.
+Sandboxes suspend when idle (no charge) and resume instantly.
 
 ## AI providers
 
-Cord doesn't lock you into one AI provider. You choose how to connect:
-
-| Method | How it works |
+| Method | Description |
 |---|---|
-| **Starter credit** | Every new account gets \$100 in free AI credits (\$50 Claude + \$50 OpenAI). No credit card needed. |
-| **Cord Open Source** | Use Cord-hosted open-source models when your account has a Cord Open Source credential or credit allocation. |
-| **Claude subscription** | Connect your Claude Max or Pro plan via OAuth. Agent runs Claude Code. |
-| **Codex subscription** | Connect your ChatGPT Plus/Pro plan. Agent runs OpenCode with Codex. |
-| **API keys** | Bring keys from Anthropic, OpenAI, Google, Mistral, DeepSeek, xAI, Groq, OpenRouter, Amazon Bedrock, and more. |
+| **Starter credit** | \$100 free AI credits for Claude and OpenAI with new accounts. |
+| **Cord Open Source** | Free open-source models available to all accounts. |
+| **Claude subscription** | Connect Claude Max/Pro via OAuth. Runs Claude Code. |
+| **Codex subscription** | Connect ChatGPT Plus/Pro. Runs OpenCode. |
+| **API keys** | Anthropic, OpenAI, Google, Mistral, DeepSeek, xAI, Groq, OpenRouter, Bedrock, and more. |
 
-Admins can set **org-level shared API keys** so the whole team uses the same provider without each person configuring their own. See [AI providers](/guides/ai-providers) for setup.
+Admins can set org-level shared API keys. See [AI providers](/guides/ai-providers).
 
-## Org-native by default
+## Org structure
 
-Cord is built for teams, not individuals bolting on collaboration. When an admin sets up Cord:
+Repos, API keys, MCP servers, and integrations are configured at the org level. Every team member gets access without individual setup.
 
-- **Repos** are added at the org level -- every member can start sessions on any connected repo
-- **API keys** can be shared org-wide so individual devs don't need their own
-- **MCP servers** are configured once by an admin and available to every session across the org
-- **Integrations** (Slack, Linear) connect at the org level
-- **Skills and config** propagate to every new sandbox automatically
+Roles: **Owner**, **Admin**, **Member**. Admins manage settings and integrations. Members start sessions.
 
-Roles are simple: **Owner**, **Admin**, and **Member**. Admins manage org settings, repos, shared credentials, and integrations. Members start sessions and write code.
-
-## Start from anywhere
-
-You don't have to open Cord to use Cord:
+## Ways to start sessions
 
 <CardGroup cols={2}>
   <Card title="Slack" icon="hashtag">
-    Tag `@Cord` in any channel with a task description. An agent spins up, writes code, and posts the PR link back in the thread.
+    Tag `@Cord` in a channel with a task description.
   </Card>
   <Card title="Linear" icon="check-square">
-    Assign a ticket to Cord. It reads the issue, routes to the right repo, writes the code, and links the PR to the ticket.
+    Assign a ticket to Cord.
   </Card>
   <Card title="Push & Pull" icon="arrows-rotate">
-    Tell your local agent "push to Cord" and walk away. Say "pull from Cord" the next morning. Works with any agent.
+    Say "push to Cord" from your local agent.
   </Card>
   <Card title="API & CLI" icon="code">
-    Drive Cord from scripts, CI, or your terminal. `POST /api/v1/sessions` kicks off a run; `cord sessions send`, `cord diff`, and `cord pr create` close the loop.
+    `cord sessions create` or `POST /api/v1/sessions`.
   </Card>
   <Card title="One-Shot" icon="bolt">
-    Submit a prompt at [oneshot.runcord.com](https://oneshot.runcord.com), get a PR back via email. No session to watch.
+    Submit a prompt at [oneshot.runcord.com](https://oneshot.runcord.com), get a PR via email.
   </Card>
   <Card title="Mobile" icon="mobile">
-    Install Cord as a PWA. Record voice messages to start agents, review diffs, and merge PRs from your phone.
+    PWA with voice input, diff review, and PR merges.
   </Card>
 </CardGroup>
 
 ## MCP servers and skills
 
-Cord supports the [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) for giving agents access to external tools and data sources.
+Cord supports [MCP](https://modelcontextprotocol.io/) for connecting agents to external tools and data sources. Skills are instruction files that teach agents your coding patterns.
 
-MCPs are scoped at three levels:
-- **Org-level** -- configured by admins, available to every session in the org
-- **Repo-level** -- specific to a repository
-- **User-level** -- personal MCP servers for individual workflows
-
-Skills (instruction files that teach agents your coding standards and patterns) work the same way -- configure once at the org level, and every agent session picks them up.
-
-See [MCP servers & skills](/guides/mcp-and-skills) for configuration.
+Both are scoped at three levels: org, repo, and user. See [MCP servers & skills](/guides/mcp-and-skills).
 
 ## Quick links
 
 <CardGroup cols={2}>
   <Card title="Quickstart" icon="rocket" href="/quickstart">
-    Sign up, add a repo, configure your AI provider, and get your first PR.
+    Sign up, add a repo, start a session.
   </Card>
   <Card title="AI providers" icon="key" href="/guides/ai-providers">
-    Set up Claude, Codex, API keys, or Cord Open Source models.
+    Subscriptions, API keys, free models.
   </Card>
   <Card title="Org setup" icon="building" href="/guides/org-setup">
-    Add your team, share credentials, and configure org-wide settings.
+    Team invites, shared credentials, integrations.
   </Card>
   <Card title="API & CLI" icon="terminal" href="/reference/api">
-    Create sessions, inspect diffs, and open PRs programmatically or from your terminal.
+    Programmatic session and PR management.
   </Card>
 </CardGroup>

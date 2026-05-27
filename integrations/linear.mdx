@@ -1,71 +1,36 @@
 ---
 title: "Linear"
-description: "Assign Linear tickets to Cord and get PRs back automatically."
+description: "Assign Linear tickets to Cord to get PRs back."
 ---
-
-<Info>
-Linear integration is available on all plans, including **Free**.
-</Info>
-
-Connect Cord to Linear so your team can assign tickets that Cord picks up and works on autonomously.
 
 ## Setup
 
-1. Go to **Settings > Linear**
-2. Click **Connect Linear**
-3. Authorize the Cord app in your Linear workspace
+1. **Settings > Linear > Connect Linear**
+2. Authorize the Cord app
 
 ## Team mapping
 
-After connecting, Cord auto-maps team members by matching email addresses between GitHub and Linear. Check mapping status in the Linear settings tab.
-
-If mappings get out of sync (new team members, changed emails), click **Re-sync Members** to refresh.
-
-### Personal Linear linking
-
-Each team member can link their personal Linear account in settings. This ensures tickets and activity are attributed correctly.
+Auto-maps by email. Click **Re-sync Members** if mappings get stale. Members can also link their personal Linear account in settings.
 
 ## Usage
 
-Assign a Linear issue to **Cord** (it appears as an assignee in your workspace). Cord will:
+Assign a Linear issue to **Cord**. It reads the issue, routes to the right repo, starts an agent, and links the PR when done.
 
-1. Read the issue title, description, and any linked context
-2. Route to the correct repository
-3. Spin up a sandbox and start an agent
-4. Post updates on the issue as work progresses
-5. Link the PR to the issue when done
-
-## What makes a good Linear ticket for Cord
-
-Cord works best with tickets that are:
-
-- **Specific** -- "Add a /health endpoint to the API" vs "Improve the backend"
-- **Self-contained** -- everything the agent needs is in the ticket
-- **Scoped** -- one clear deliverable, not a multi-week epic
-
-Include code references, screenshots, and acceptance criteria in the ticket description. The agent reads all of it.
+Write tickets that are specific, self-contained, and scoped to one deliverable. Include code references and acceptance criteria — the agent reads everything.
 
 ## Repo routing
 
-Cord uses AI to determine which repository a Linear ticket should be routed to, based on:
-
-- The ticket description and labels
-- Your team's previous routing patterns
-- Project and team associations in Linear
-
-If routing is ambiguous, Cord will ask for clarification.
+Cord routes based on ticket description, labels, previous patterns, and Linear project/team associations. Be explicit if ambiguous.
 
 ## Status updates
 
-As the agent works, Cord updates the Linear issue:
-
 | Event | Linear status |
 |---|---|
-| Agent starts working | **In Progress** |
-| Progress updates | Comments on the issue |
-| PR created | PR linked to the issue |
+| Agent starts | **In Progress** |
+| Progress | Comments on issue |
+| PR created | PR linked |
 | PR merged | **Done** |
 
 ## Disconnecting
 
-Admins can disconnect Linear in **Settings > Linear**. Individual members can unlink their personal Linear account without disconnecting the org-level integration.
+Admins disconnect in **Settings > Linear**. Members can unlink personal accounts independently.

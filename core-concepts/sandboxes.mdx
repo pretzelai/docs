@@ -1,43 +1,30 @@
 ---
 title: "Sandboxes"
-description: "Cloud dev environments that spin up in seconds, suspend when idle, and resume instantly."
+description: "Cloud dev environments for each session."
 ---
 
-A sandbox is a full cloud development environment for your repository. It has your code, dependencies, dev tools, and a running dev server -- everything an agent (or you) needs to write and test code.
+Each session gets an isolated sandbox with your code, dependencies, and dev server running.
 
-## What's inside a sandbox
+## Contents
 
-Each sandbox is an isolated container that includes:
-
-- A clone of your repository at the latest commit
-- Your project's dependencies installed
-- Environment variables injected from your repo settings
-- Docker support for projects that need it
-- A dev server running on a unique preview URL
-- A headless browser for visual verification
-
-Sandbox providers are deployment/configuration dependent. Repository settings show the providers available for your workspace, such as Modal, Daytona, or Freestyle, and their capabilities.
+- Repository clone at latest commit
+- Dependencies installed
+- Environment variables from repo settings
+- Docker support
+- Dev server on a unique preview URL
+- Headless browser
 
 ## Lifecycle
 
-**Spin-up** -- When you start a new session, Cord creates a sandbox in seconds. Your code is checked out, dependencies installed, and the dev server started automatically.
-
-**Active** -- While you're working with an agent, the sandbox is running. The agent can read files, write code, run commands, start servers, and use a browser -- all inside the sandbox.
-
-**Suspend** -- When a session goes idle, the sandbox suspends automatically. You're not charged for idle time.
-
-**Resume** -- When you return to a session, the sandbox resumes from where it left off. File changes, running processes, and terminal state are preserved.
+- **Spin-up** — seconds. Code checked out, dependencies installed, dev server started.
+- **Active** — agent can read/write files, run commands, start servers, use the browser.
+- **Suspend** — automatic on idle. No charge.
+- **Resume** — instant. File changes and state preserved.
 
 ## Preview URLs
 
-Every sandbox gets a unique URL for its dev server. You can:
-
-- Open it in your browser to see changes live
-- Share it with a teammate to review a feature
-- Let the agent load it in a headless browser to verify its own work visually
+Each sandbox has a unique URL for its dev server. Open it to see changes, share with teammates, or let the agent verify visually.
 
 ## Compute
 
-Sandboxes are billed by the hour. They spin up in seconds, suspend when idle, and resume instantly. You only pay for actual compute time.
-
-See [Usage](/billing/usage) for details on how sandbox hours are metered.
+Billed by the hour, only while active. See [Usage](/billing/usage).

@@ -1,111 +1,95 @@
 ---
 title: "Quickstart"
-description: "Sign up, connect your AI, add a repo, and get your first PR in under 5 minutes."
+description: "Sign up, connect your AI provider, add a repo, and start a session."
 ---
 
-When you sign up for Cord, an onboarding wizard walks you through everything. Here's what to expect.
+The onboarding wizard walks you through setup. Here's what each step does.
 
 ## 1. Create your account
 
-Go to [runcord.com](https://runcord.com) and sign up with **GitHub**, **Google**, or **email/password**.
-
-Cord creates a workspace for you automatically. You can rename it and invite teammates later in [Org setup](/guides/org-setup).
+Go to [runcord.com](https://runcord.com) and sign up with GitHub, Google, or email/password. A workspace is created automatically.
 
 ## 2. Connect a model provider
 
-The onboarding wizard starts here. You need an AI provider before you can start a session. Pick one:
+You need an AI provider before you can start a session.
 
 <Tabs>
   <Tab title="Starter credit (recommended)">
-    Claim your **\$100 starter credit** -- \$50 for Claude and \$50 for OpenAI. One click, no credit card needed, credits don't expire. This is the fastest way to try both agents.
+    Claim **\$100 in free credits** for Claude and OpenAI. No credit card needed.
   </Tab>
   <Tab title="API key">
-    Select a provider (Anthropic, OpenAI, Google, etc.) and paste your API key. The key is verified before saving. Expand **Advanced options** to set a custom base URL if needed.
+    Select a provider and paste your API key. Expand **Advanced options** for custom base URLs.
   </Tab>
   <Tab title="Claude subscription">
-    If you have a Claude Max/Pro subscription, install the Cord CLI, then run `cord auth login` and `cord providers connect claude`. Browser OAuth is the default; setup-token paste is only a fallback.
+    Install the CLI, run `cord auth login` and `cord providers connect claude`. Uses browser OAuth by default.
   </Tab>
   <Tab title="ChatGPT / Codex subscription">
-    Click **Start device authorization** to get a one-time code. Open the ChatGPT link, enter the code, and Cord polls until the connection completes.
+    Click **Start device authorization**, get a one-time code, enter it on the OpenAI page.
   </Tab>
 </Tabs>
 
-<Tip>
-**For team admins:** You can set org-level shared API keys in **Settings > Organization** so your whole team uses the same provider without each person configuring their own. See [Org setup](/guides/org-setup).
-</Tip>
+Admins can set org-level shared API keys in **Settings > Organization** so the team doesn't need individual keys. See [Org setup](/guides/org-setup).
 
 ## 3. Connect GitHub
 
-Click **Connect GitHub**. You'll be redirected to GitHub to install the Cord GitHub App for your organization and select which repositories to grant access to.
-
-After authorizing, you're redirected back to Cord automatically.
+Click **Connect GitHub** to install the Cord GitHub App and select which repos to grant access to.
 
 ## 4. Pick a repository
 
-Search for and select a repository to connect. Cord shows all repos available through your GitHub App installation -- you can filter by name, see the language, and whether it's private.
+Select a repo from your GitHub App installation.
 
 ## 5. Configure your repo
 
-After connecting a repo, Cord walks you through three setup steps:
-
 <Steps>
   <Step title="Build config">
-    Choose **Set up automatically** to have Cord's AI inspect your repo and propose a build configuration (package manager, build commands, dev server, port). You can accept the proposal or iterate on it in a chat. Or choose **Set up manually** to fill in the fields yourself.
+    Choose **Set up automatically** (Cord inspects your repo and proposes config) or **Set up manually**.
   </Step>
   <Step title="Environment variables">
-    Add any environment variables or secret files your project needs. These are encrypted and injected into every sandbox. You can skip this step if your project doesn't need env vars.
+    Add secret files your project needs (encrypted, injected into sandboxes). Skip if not needed.
   </Step>
   <Step title="Prebuilt image (optional)">
-    Cord can build a Docker image with your dependencies pre-installed so sandboxes start faster. This step is optional -- you can skip it and sandboxes will install dependencies on each start.
+    Build a Docker image with dependencies pre-installed for faster sandbox startup.
   </Step>
 </Steps>
 
-Each step has a **Skip** button if you want to configure it later.
+## 6. Start a session
 
-## 6. Start your first session
-
-You're now on the dashboard. Click **New Session** on your repository, choose or confirm the model/agent if prompted, and type your request:
+Click **New Session**, type your request:
 
 ```
 Add a GET /api/health endpoint that returns { "status": "ok", "timestamp": Date.now() }.
-Include a test for the new endpoint.
+Include a test.
 ```
 
-Watch the agent work in real-time:
-- **Chat** -- the agent's reasoning and progress
-- **Changes** -- files being modified with live diff counts
-- **Terminal** -- command output from builds and tests
-- **Preview** -- your dev server running at a unique URL
+The workspace shows:
+- **Chat** — agent reasoning and progress
+- **Changes** — modified files with diffs
+- **Terminal** — command output
+- **Preview** — dev server at a unique URL
 
-## 7. Review and create a PR
+## 7. Create a PR
 
-Once the agent finishes:
-
-1. **Review the diff** in the Changes panel
-2. **Check the live preview** -- click the preview URL to see your running app with the changes
-3. **Create a PR** -- click the button, and a pull request opens on GitHub
-
-Your existing CI/CD, branch protection rules, and code review workflows all work as normal -- it's a standard GitHub PR.
+Review the diff in the Changes panel, check the preview, then click **Quick PR** to open a pull request on GitHub.
 
 ## What's next
 
 <CardGroup cols={2}>
-  <Card title="AI providers deep dive" icon="key" href="/guides/ai-providers">
-    All 12+ providers, subscription setup, org-level shared keys.
+  <Card title="AI providers" icon="key" href="/guides/ai-providers">
+    Subscriptions, API keys, free models.
   </Card>
-  <Card title="Set up your org" icon="building" href="/guides/org-setup">
-    Invite your team, share credentials, configure MCP servers.
+  <Card title="Org setup" icon="building" href="/guides/org-setup">
+    Team invites, shared credentials.
   </Card>
-  <Card title="Slack integration" icon="hashtag" href="/integrations/slack">
-    Start sessions by tagging @Cord in Slack.
+  <Card title="Slack" icon="hashtag" href="/integrations/slack">
+    Start sessions from Slack.
   </Card>
-  <Card title="MCP servers & skills" icon="wrench" href="/guides/mcp-and-skills">
-    Give agents access to external tools and your coding standards.
+  <Card title="MCP & skills" icon="wrench" href="/guides/mcp-and-skills">
+    External tools and coding standards.
   </Card>
-  <Card title="Drive Cord from code" icon="code" href="/reference/api">
-    Use the Cord API to start sessions, inspect diffs, and open PRs from CI, scripts, or your own tools.
+  <Card title="API" icon="code" href="/reference/api">
+    Programmatic access.
   </Card>
-  <Card title="CLI reference" icon="terminal" href="/reference/cli">
-    `cord sessions`, `cord diff`, `cord pr`, and more — Cord from your terminal.
+  <Card title="CLI" icon="terminal" href="/reference/cli">
+    Terminal commands.
   </Card>
 </CardGroup>

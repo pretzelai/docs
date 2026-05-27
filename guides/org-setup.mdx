@@ -1,57 +1,46 @@
 ---
 title: "Organization setup"
-description: "Add your team, share credentials, and configure Cord for your whole org."
+description: "Adding your team, sharing credentials, and configuring integrations."
 ---
 
-Cord is org-native. Repos, API keys, MCP servers, and integrations are set up once at the org level. Every team member gets access without configuring anything themselves.
+Repos, API keys, MCP servers, and integrations are configured at the org level. Members get access without individual setup.
 
 ## Creating an org
 
-Create an organization during onboarding or in **Settings > Organization**. You can name it and customize the URL slug.
+Created during onboarding or in **Settings > Organization**.
 
-## Inviting team members
+## Inviting members
 
-1. Go to **Settings > Organization**
-2. Click **Invite Member**
-3. Enter their email address and assign a role
-
-Members sign in with their own account and immediately get access to all connected repos and shared credentials.
+**Settings > Organization > Invite Member**. Enter email and assign a role. Members get immediate access to all connected repos and shared credentials.
 
 ## Roles
 
 | Role | Can do |
 |---|---|
-| **Owner** | Everything — transfer ownership, delete org, promote to admin/owner |
+| **Owner** | Everything — transfer ownership, delete org, promote roles |
 | **Admin** | Manage repos, shared API keys, MCP servers, integrations, invite members |
-| **Member** | Start sessions, write code, create PRs. Uses org-configured resources. |
+| **Member** | Start sessions, write code, create PRs |
 
 ## Shared API keys
 
-Instead of each developer adding their own AI provider keys, admins can set **org-level shared keys** in **Settings > Organization > Shared Provider API Keys**.
-
-When a shared key exists, every team member can start sessions with that provider — no personal keys needed. If a member also has their own key for the same provider, their personal key takes priority.
+Admins set org-level keys in **Settings > Organization > Shared Provider API Keys**. Members use these by default; personal keys take priority if configured.
 
 ## Shared MCP servers and skills
 
-Admins can configure MCP servers and skills at the org level in **Settings > MCP & Skills**. These are available in every session across the team, appearing as read-only for non-admin members.
+Configure in **Settings > MCP & Skills**. Available in every session across the team. See [MCP servers & skills](/guides/mcp-and-skills).
 
-See [MCP servers & skills](/guides/mcp-and-skills) for details.
+## Integrations
 
-## Connecting integrations
+- **Slack** — **Settings > Integrations > Connect Slack**
+- **Linear** — **Settings > Integrations > Connect Linear**
 
-Slack and Linear connect at the org level:
+See [Slack](/integrations/slack) and [Linear](/integrations/linear).
 
-- **Slack** — go to **Settings > Integrations > Connect Slack**
-- **Linear** — go to **Settings > Integrations > Connect Linear**
+## Typical onboarding
 
-See [Slack](/integrations/slack) and [Linear](/integrations/linear) for detailed setup.
-
-## Typical team onboarding
-
-1. Admin signs in, creates an org
-2. Admin connects repos the team works on
-3. Admin adds shared API keys (or connects a Claude/Codex subscription)
-4. Admin configures MCP servers if the team uses external tools
-5. Admin connects Slack and/or Linear
-6. Admin invites team members via email
-7. Members sign in — everything is ready, they pick a repo and go
+1. Admin creates org and connects repos
+2. Admin adds shared API keys
+3. Admin configures MCP servers (if needed)
+4. Admin connects Slack/Linear
+5. Admin invites members
+6. Members sign in and start working

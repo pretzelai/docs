@@ -1,20 +1,14 @@
 ---
 title: "Global skills"
-description: "Sync your local agent skills into Cord's cloud sandboxes."
+description: "Syncing local agent skills into cloud sandboxes."
 ---
 
-If you've configured skills on your local machine (Claude Code's `~/.claude/skills/` or OpenCode's `~/.agents/skills/`), sync them into Cord so every cloud session picks them up.
-
-## Syncing
+Sync local skills (`~/.claude/skills/` or `~/.agents/skills/`) into Cord:
 
 ```bash
 cord storage sync-skills
 ```
 
-This uploads your local skill directories to [persistent storage](/core-concepts/persistent-storage) and auto-mounts them at the same paths in new sandboxes. Run it again whenever you update your local skills.
+Uploads to [persistent storage](/core-concepts/persistent-storage) and auto-mounts at the same paths. Run again when you update local skills. Applies to new sandboxes only.
 
-Changes apply to new sandboxes, not already-running ones.
-
-<Tip>
-Repo-level `CLAUDE.md` and `.agents/` config files in your repository are also picked up automatically. Global skills and repo-level config work together — you don't have to choose one or the other.
-</Tip>
+Repo-level `CLAUDE.md` and `.agents/` files are picked up automatically alongside global skills.

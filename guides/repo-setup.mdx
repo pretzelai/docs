@@ -1,6 +1,6 @@
 ---
 title: "Repository setup"
-description: "Connect repos, configure builds, set environment variables, and get sandboxes running."
+description: "Connecting repos, configuring builds, and setting environment variables."
 ---
 
 ## Connecting a repository
@@ -10,13 +10,11 @@ description: "Connect repos, configure builds, set environment variables, and ge
 3. Select a repo from your GitHub installations
 4. Choose **Set up automatically** or configure manually
 
-You can connect repos from any GitHub org where the Cord GitHub App is installed.
-
 ## Automatic setup
 
-When you choose automatic setup, Cord's AI inspects your repo — reading `package.json`, Dockerfiles, config files — and proposes a complete build configuration. You can accept it as-is, chat with the AI to refine it, or switch to manual setup at any time.
+Cord's AI reads your `package.json`, Dockerfiles, and config files to propose a build configuration. You can accept, refine via chat, or switch to manual.
 
-It handles standard setups well (Next.js, Vite, Express, Django, Rails). Unusual configurations may need manual tweaking.
+Works well for standard setups (Next.js, Vite, Express, Django, Rails).
 
 ## Build configuration
 
@@ -24,11 +22,11 @@ In **Repository Settings > Build Config**:
 
 ### Root directory
 
-For monorepos or subdirectory projects, set the root (e.g., `apps/web`). All commands run from this path.
+For monorepos, set the subdirectory (e.g., `apps/web`). All commands run from this path.
 
 ### Install command
 
-Cord auto-detects this from your lockfile:
+Auto-detected from your lockfile:
 
 | Lockfile | Default |
 |---|---|
@@ -39,53 +37,45 @@ Cord auto-detects this from your lockfile:
 
 ### Build command
 
-Optional. Runs after install — for TypeScript compilation, codegen, or any build step needed before dev server start.
+Optional. Runs after install for TypeScript compilation, codegen, etc.
 
 ### Build hooks
 
-Additional commands that run after the build command, one per line. Use these for database migrations, seed scripts, installing native dependencies, or anything else your project needs during image setup.
+Additional commands after build, one per line. For migrations, seed scripts, native deps, etc.
 
 ## Runtime processes
 
-Define what runs inside your sandbox. Most projects need at least a dev server. Complex projects might have a frontend, backend, database, and worker.
+Define what runs inside your sandbox. Each process has a name, a command (e.g., `npm run dev`), and optionally a working directory. Docker Compose is also supported as a runner.
 
-Each process has a name, a command (e.g., `npm run dev`), and optionally a working directory. You can also use **Docker Compose** as the runner if your project has a `docker-compose.yml`.
-
-Processes start automatically when a session begins (configurable per-process).
+Processes auto-start when a session begins (configurable per-process).
 
 ## Endpoints
 
-Each process can expose ports as preview URLs. Mark one as **Primary** (the default preview that opens when you click Preview in a session), others as **Exposed** (accessible but not default), or **Internal** (sandbox-only, no external URL).
+Each process can expose ports as preview URLs:
+
+- **Primary** — default preview when you click Preview
+- **Exposed** — accessible via URL but not the default
+- **Internal** — sandbox-only, no external URL
 
 ## Secret files
 
-Add sensitive configuration in **Repository Settings > Environment**. Each entry is a file path + content (e.g., `.env` with your `KEY=VALUE` pairs). Files are:
-
-- Encrypted at rest
-- Written to the sandbox at the specified path on startup
-- Write-only in the UI — you can update but not read back values
+In **Repository Settings > Environment**, add file path + content pairs (e.g., `.env`). Files are encrypted at rest, injected at sandbox startup, and write-only in the UI.
 
 <Warning>
-Secret files are accessible to the AI agent in your sandbox. Don't add credentials you wouldn't want a model to see.
+Secret files are accessible to the AI agent. Don't add credentials you wouldn't want a model to see.
 </Warning>
 
 ## Per-repo defaults
-
-Override org-level settings for a specific repository:
 
 | Setting | Description |
 |---|---|
 | **Default agent** | Claude Code or OpenCode |
 | **Default model** | Provider, model, and thinking variant |
 
-Individual users can still override per-session via the model selector.
-
 ## Builds
 
-Cord builds a Docker image with your dependencies pre-installed so sandboxes start fast. View build history, logs, and trigger rebuilds in the **Builds** tab.
+Cord builds a Docker image with dependencies pre-installed so sandboxes start faster. View history, logs, and trigger rebuilds in the **Builds** tab.
 
-<Tip>
-If a new session fails to start or has missing dependencies, trigger a rebuild. This refreshes the base image with the latest dependency state.
-</Tip>
+If a session fails to start with missing dependencies, trigger a rebuild.
 
-For the full reference on every build setting — Docker Compose configuration, endpoint exposure levels, reserved ports, and more — see [Build settings](/guides/build-settings).
+For the full reference see [Build settings](/guides/build-settings).

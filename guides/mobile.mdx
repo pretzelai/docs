@@ -1,55 +1,38 @@
 ---
 title: "Mobile"
-description: "Use Cord from your phone — voice input, diff review, and PR merges on the go."
+description: "Using Cord from your phone as a PWA."
 ---
 
-Cord works as a Progressive Web App (PWA) on iOS and Android. Install it on your home screen for a native app experience.
+Cord works as a PWA on iOS and Android.
 
-## Installing the PWA
+## Installing
 
 <Tabs>
   <Tab title="iOS (Safari)">
     1. Open [runcord.com](https://runcord.com) in Safari
-    2. Tap the **Share** button (square with arrow)
-    3. Scroll down and tap **Add to Home Screen**
-    4. Tap **Add**
+    2. Tap **Share** → **Add to Home Screen** → **Add**
   </Tab>
   <Tab title="Android (Chrome)">
     1. Open [runcord.com](https://runcord.com) in Chrome
-    2. Tap the **three-dot menu**
-    3. Tap **Add to Home Screen** (or **Install app**)
-    4. Tap **Install**
+    2. Tap **three-dot menu** → **Add to Home Screen** → **Install**
   </Tab>
 </Tabs>
 
 ## Navigation
 
-The mobile interface uses bottom sheet navigation:
-
-- Tap a session to open it
-- Switch between surfaces (chat, changes, terminal) using tabs
-- Access quick actions via the menu icon
+Bottom sheet navigation. Tap a session to open it, switch between chat/changes/terminal with tabs.
 
 ## Voice input
 
-Tap the microphone icon in the composer to dictate your prompt. The screen stays awake during recording, and the transcribed text appears for review before sending.
+Tap the mic icon to dictate. Toggle **Autosend after voice dictation** in Settings to send immediately without review.
 
-In **Settings > UI Preferences**, toggle **Autosend after voice dictation** to skip the review step and send immediately.
+## What you can do on mobile
 
-Voice is great for kicking off agents on the go:
+- View session list with status indicators
+- Read diffs with syntax highlighting
+- Send follow-up messages
+- Quick PR, Create PR, merge
 
-- *"Fix the broken login form — the submit button doesn't trigger validation"*
-- *"Add a loading spinner to the dashboard while data is fetching"*
+## Slack from mobile
 
-## Reviewing on mobile
-
-The mobile interface is optimized for review:
-
-- Session list with status indicators
-- Diff view with syntax highlighting
-- Chat for reading agent reasoning and sending follow-ups
-- PR actions — Quick PR, Create PR, merge directly from your phone
-
-## Starting agents from Slack
-
-If you've set up the [Slack integration](/integrations/slack), you can start agents from your phone's Slack app. Tag Cord with a task description and the agent works in the background. You'll get a notification when it's done.
+With the [Slack integration](/integrations/slack), tag `@Cord` from your phone's Slack app to start agents.

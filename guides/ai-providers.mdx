@@ -1,54 +1,37 @@
 ---
 title: "AI providers"
-description: "Connect your Claude or ChatGPT subscription, add API keys, or use free models."
+description: "Connecting subscriptions, API keys, and free models."
 ---
-
-Cord is bring-your-own-AI. Connect your existing subscription, add API keys, or start with free credits — no credit card required.
 
 ## Starter credit
 
-Every new account gets **$100 in free AI credits** for Claude and OpenAI. Claim it during onboarding or in **Settings > Models & API Keys**. This lets you try both Claude Code and Codex sessions before connecting your own subscription.
+New accounts get **$100 in free AI credits** for Claude and OpenAI. Claim in onboarding or **Settings > Models & API Keys**.
 
-## Connect your Claude subscription
-
-If you have a **Claude Max** or **Claude Pro** plan, connect it so Cord sessions use your existing subscription.
-
-Install the CLI and log in:
+## Connect Claude subscription
 
 ```bash
 curl -fsSL https://runcord.com/install.sh | bash
 cord auth login
-```
-
-Then connect via browser OAuth:
-
-```bash
 cord providers connect claude
 ```
 
-Approve the connection on Claude's OAuth page. Token refresh is automatic — you won't need to reconnect unless you revoke access.
+Uses browser OAuth by default. Token refresh is automatic.
 
-Alternatively, connect via setup token if you prefer not to use browser OAuth:
+To use setup-token instead:
 
 ```bash
 cord providers connect claude --setup-token
 ```
 
-If Claude Code is installed locally with an active subscription, the CLI auto-generates the token for you.
+## Connect ChatGPT subscription
 
-## Connect your ChatGPT subscription
-
-If you have a **ChatGPT Plus** or **ChatGPT Pro** plan, connect it to use Codex-powered sessions.
-
-First, enable device code authorization in your ChatGPT account at [chatgpt.com/#settings/Security](https://chatgpt.com/#settings/Security).
-
-Then:
+Enable device code authorization at [chatgpt.com/#settings/Security](https://chatgpt.com/#settings/Security), then:
 
 ```bash
 cord providers connect codex
 ```
 
-The CLI shows a one-time code. Enter it on the OpenAI page to complete the connection.
+Enter the one-time code on the OpenAI page.
 
 ## Disconnect
 
@@ -57,19 +40,15 @@ cord providers disconnect claude
 cord providers disconnect codex
 ```
 
-Or disconnect from the web app via the provider connection indicator in any session.
-
 ## Check status
 
 ```bash
 cord providers list
 ```
 
-Shows all connected providers and local CLI status.
-
 ## API keys
 
-For pay-per-token pricing, add API keys in **Settings > Models & API Keys**. Supported providers:
+Add keys in **Settings > Models & API Keys**:
 
 | Provider | Notes |
 |---|---|
@@ -84,11 +63,9 @@ For pay-per-token pricing, add API keys in **Settings > Models & API Keys**. Sup
 | **Amazon Bedrock** | AWS-hosted models |
 | **Kimi** | Kimi models |
 
-Keys are encrypted at rest and never logged.
+Keys are encrypted at rest. Admins can add org-level shared keys in **Settings > Organization > Shared Provider API Keys**. Individual keys take priority.
 
-Admins can add **shared API keys** at the org level (**Settings > Organization > Shared Provider API Keys**) so the whole team uses one billing account. Individual keys take priority over shared keys.
-
-## Which agent runs with which provider?
+## Provider → agent mapping
 
 | Provider | Agent |
 |---|---|
@@ -97,11 +74,11 @@ Admins can add **shared API keys** at the org level (**Settings > Organization >
 | All other providers | **OpenCode** |
 | Cord Open Source (free) | **OpenCode** |
 
-Switch providers per session with the model selector (**Cmd+/**).
+Switch per session with **Cmd+/**.
 
 ## Free open source models
 
-Cord Open Source models are available to all accounts. They appear under **Cord Open Source** in the model selector.
+Available to all accounts under **Cord Open Source** in the model selector.
 
 | Model | Best for |
 |---|---|
@@ -113,4 +90,4 @@ Cord Open Source models are available to all accounts. They appear under **Cord 
 | **DeepSeek V3.2** | Code generation |
 | **Gemma 4 31B** | Fast responses, lighter tasks |
 
-All models support 128k context and tool calling. They run via the OpenCode agent.
+All support 128k context and tool calling via OpenCode.

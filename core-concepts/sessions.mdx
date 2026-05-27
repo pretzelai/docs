@@ -1,144 +1,111 @@
 ---
 title: "Sessions"
-description: "Each session is a branch, a sandbox, and a conversation with an agent."
+description: "A session is a branch, a sandbox, and a conversation with an agent."
 ---
 
-A session is the core unit of work in Cord. It ties together a Git branch, a cloud sandbox, and a conversation with an AI agent.
+A session ties together a Git branch, a cloud sandbox, and an AI agent.
 
-## Sessions are branches
+## Branches
 
-When you start a new session, Cord creates a fresh Git branch from your repo's default branch. Everything the agent does -- file changes, new files, deletions -- happens on this branch.
-
-The session name becomes the branch name. You can see the branch, the diff, and the PR status all in one place.
+Each session creates a branch from your repo's default branch. All file changes happen on this branch.
 
 ## Starting sessions
 
-There are several ways to start a session:
-
-- **From the Cord UI** -- Click "New Session" on a repository and type your request
-- **From Slack** -- Tag `@Cord` in a channel with a task description
-- **From Linear** -- Assign a ticket that Cord picks up automatically
-- **From the API** -- `POST /api/v1/sessions` to create sessions programmatically, then send follow-ups, inspect diffs, and open PRs. See the [API reference](/reference/api).
-- **From the CLI** -- `cord sessions create --repository my-org/app --message "..."`. See the [CLI reference](/reference/cli#sessions).
-- **From your local agent** -- Say "push to Cord" to your agent and it hands off to a cloud session. See [Push & Pull](/guides/push-pull).
-- **From your phone** -- Record a voice message describing what you want
-
-Each method creates the same thing: a branch, a sandbox, and an agent working on your request.
+- **Web UI** — click "New Session" on a repo
+- **Slack** — tag `@Cord` with a task description
+- **Linear** — assign a ticket to Cord
+- **CLI** — `cord sessions create --repository my-org/app --message "..."`
+- **API** — `POST /api/v1/sessions`
+- **Push & Pull** — say "push to Cord" from your local agent
+- **Mobile** — voice message
 
 ## Parallel sessions
 
-You can run multiple sessions at the same time, even on the same repo. Each session gets its own branch and sandbox. This is useful for:
+Multiple sessions can run simultaneously on the same repo. Each gets its own branch and sandbox.
 
-- Working on several features simultaneously
-- Having an agent fix a bug while another agent builds a new feature
-- Trying different approaches to the same problem
-
-## The chat interface
-
-Each session has a chat panel where you communicate with the agent. Beyond plain text, you can:
+## Chat
 
 ### @ mentions
 
-Type `@` to reference context the agent should use:
+Type `@` to attach context: files, sessions, PRs, skills, MCP tools, or scratch pad notes.
 
-- **Files** -- `@src/server.ts` to point the agent at specific files
-- **Sessions** -- reference a previous session for context
-- **Skills** -- invoke a specific skill
-- **MCP tools** -- reference an MCP tool
-- **PRs** -- reference a pull request
-- **Scratch pad notes** -- attach notes you've written
+### Attachments
 
-### Image and file attachments
-
-Paste, drag-and-drop, or use the file picker to attach images and files. Useful for:
-
-- Screenshots of bugs you want fixed
-- Design mockups for the agent to implement
-- Error screenshots from the browser
+Paste or drag-and-drop images, screenshots, mockups, error logs.
 
 ### Prompt history
 
-Press **Up/Down arrows** in the input to navigate through your previous prompts, like a terminal.
+**Up/Down** arrows navigate previous prompts.
 
-### Edit while running
+### Queuing messages
 
-You can queue a follow-up message while the agent is still working. It will be delivered when the current operation completes.
+You can queue a follow-up while the agent is still working.
 
 ## Slash commands
 
-Type `/` to access built-in commands:
-
-| Command | Description |
+| Command | What it does |
 |---|---|
-| `/undo` | Rewind the agent's last step |
-| `/redo` | Restore a rewound step |
-| `/compact` (or `/summarize`) | Summarize the conversation and free up context window space |
-| `/init` | Re-initialize repo context |
-| `/review` | Ask the agent to do a review pass on its own changes |
+| `/model` | Switch model or thinking level |
+| `/voice` | Dictate a message |
+| `/expand` | Show native terminal panels |
+| `/repository` | Switch active repository |
 
-Skills and MCP servers can add custom slash commands on top of these.
+## Quick actions
+
+Buttons below the input:
+
+- **Undo** / **Redo** — rewind or restore the agent's last step
+- **Compact** — summarize conversation to reclaim context
+- **Review** — agent self-reviews its changes
 
 ## Build mode vs Plan mode
 
-Toggle between modes with **Cmd+Shift+B**:
+**Shift+Tab** toggles:
 
-- **Build mode** (default) -- The agent reads, writes, and runs code. It takes action.
-- **Plan mode** -- The agent analyzes and plans but doesn't make changes. Useful for discussing architecture or getting a plan before committing to an approach.
+- **Build** (default) — reads, writes, and runs code
+- **Plan** — analyzes and plans without making changes
 
 ## Scratch pad
 
-Press **Cmd+J** to open the scratch pad -- a quick notes area within your session. Useful for:
+**Alt+S** opens a notes area. Reference with `@scratch pad`.
 
-- Jotting down requirements before giving the agent a task
-- Tracking things you want to follow up on
-- Notes you want to reference later with `@scratch pad`
+## Forking
 
-## Forking sessions
-
-You can **fork a session** at any message point to create a child session. The fork starts from the exact state of the parent at that message -- same branch, same file changes, same context. Useful for:
-
-- Trying an alternative approach without losing your current work
-- Branching off a session that's going in one direction to explore another
-- Creating a "save point" you can return to
+Fork a session at any message to create a child session with the same state.
 
 ## Context capacity
 
-The context capacity ring in the chat input shows how much of the agent's context window is being used. When it fills up, use `/compact` to summarize the conversation and free space without losing important context.
+The ring in the input shows context usage. Use **Compact** when it fills up.
 
-## Stopping the agent
+## Stopping
 
-Press **Escape** once to see a warning, press **Escape** again to stop the agent immediately. All code changes made so far are preserved -- nothing is rolled back.
+**Escape** once for warning, again to stop. Changes are preserved.
 
-## Continuing sessions
+## Continuing
 
-Sessions can be continued after the agent finishes:
+- Send follow-up instructions on the same branch
+- **Keep Working** after merge to start a new session with previous context
+- Fork from any point
 
-- **Keep working** -- Give the agent follow-up instructions on the same branch
-- **Continue after merge** -- After merging a PR, start a new session that builds on the merged changes
-- **Fork** -- Create a new session from any point in an existing session
+Also via CLI: `cord sessions send <id> --message "..."`.
 
-You can also send follow-up messages from the [CLI](/reference/cli#sessions) or [API](/reference/api#send-a-message-to-a-session) — `cord sessions send <session-id> --message "..."` is the terminal equivalent of typing in the chat box.
+## Lifecycle
 
-## Session lifecycle
-
-1. **Running** -- An agent is actively working
-2. **Ready** -- Agent is done, waiting for your review
-3. **PR open** -- A pull request has been created
-4. **Merged** -- The PR was merged
-5. **Archived** -- Session is no longer active
-
-You can see the status of all sessions in the sidebar, grouped by repository. Each shows the branch name, diff count, and current status.
+1. **Running** — agent working
+2. **Ready** — waiting for review
+3. **PR open** — pull request created
+4. **Merged** — PR merged
+5. **Archived** — no longer active
 
 ## Keyboard shortcuts
 
 | Shortcut | Action |
 |---|---|
-| **Cmd+K** | Open command palette |
+| **Cmd+K** | Command palette |
 | **Cmd+B** | Toggle sidebar |
 | **Cmd+Alt+B** | Toggle file explorer |
 | **Ctrl+`** | Toggle terminal |
-| **Cmd+'** | Toggle model selector |
-| **Cmd+Shift+B** | Toggle Build/Plan mode |
-| **Cmd+J** | Toggle scratch pad |
+| **Cmd+/** | Model selector |
+| **Shift+Tab** | Build/Plan mode |
+| **Alt+S** | Scratch pad |
 | **Escape** (2x) | Stop agent |
-| **Up/Down** | Navigate prompt history |

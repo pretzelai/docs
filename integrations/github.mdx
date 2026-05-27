@@ -1,70 +1,47 @@
 ---
 title: "GitHub"
-description: "How Cord connects to GitHub — authentication, repos, branches, PRs, and org admin controls."
+description: "Connecting repos, branches, PRs, and org controls."
 ---
-
-GitHub is Cord's core integration. Your code lives on GitHub, and Cord creates branches and pull requests there.
 
 ## Connecting repositories
 
-Cord uses a **GitHub App** for repository access. In **Settings > GitHub**:
+Cord uses a **GitHub App** for repo access. In **Settings > GitHub**:
 
-1. Click **Add Organization** (or **Add Personal** for personal repos)
-2. GitHub's standard app installation flow opens — choose which repos to grant access to
-3. After approval you're redirected back to Cord
+1. Click **Add Organization** (or **Add Personal**)
+2. Select repos in GitHub's install flow
+3. Redirected back to Cord
 
-You can have multiple installations — one per org, plus personal repos if your org allows it. Add more at any time from the same settings page.
-
-For organization repos, an org admin may need to approve the installation.
+Multiple installations supported (one per org plus personal). Org admin may need to approve.
 
 ## PR attribution
 
-By default, PRs are created under Cord's bot account. To have PRs show your name and avatar on GitHub:
-
-1. Go to **Settings > GitHub**
-2. Under **Pull Request Attribution**, click **Link GitHub Account**
-3. Authorize the connection
-
-Once linked, every PR you create looks like you authored it. If the link expires, Cord prompts you to reconnect.
-
-<Tip>
-If your org requires everyone to link their GitHub account, PR operations won't work until you do. You'll see a prompt if this applies to you.
-</Tip>
+PRs default to Cord's bot account. To use your name/avatar: **Settings > GitHub > Pull Request Attribution > Link GitHub Account**.
 
 ## Collaborator access
 
-If you're a collaborator on a repo whose owner hasn't installed the Cord GitHub App, you can still connect it via **classic OAuth**. In **Settings > GitHub**, look for the **Collaborator Repository Access** section and authorize with your GitHub account. This grants Cord access to repos where you have push permissions, even without an app installation.
+For repos where you're a collaborator but the owner hasn't installed the Cord GitHub App: use **Collaborator Repository Access** (classic OAuth) in **Settings > GitHub**.
 
 ## Organization rules
 
-Org admins see an **Organization Rules** section in **Settings > GitHub** with three controls:
+Admins see **Organization Rules** in **Settings > GitHub**:
 
 | Rule | What it does |
 |---|---|
-| **Allow personal repository installs** | Let team members connect personal GitHub repos (not just org repos) |
-| **Require each person to link GitHub** | Block PR operations until a team member links their GitHub account |
-| **Only admins can add org installs** | Restrict who can install the Cord GitHub App for the org |
-
-## What Cord does on GitHub
-
-For each session, Cord:
-
-- Creates a branch from your default branch (usually `main`)
-- Pushes commits as the agent works
-- Opens a PR when you click Quick PR or Create PR
-- Pushes follow-up commits to the same branch if you keep iterating
+| **Allow personal repository installs** | Members can connect personal repos |
+| **Require each person to link GitHub** | Blocks PR operations until linked |
+| **Only admins can add org installs** | Restricts app installation |
 
 ## Branch naming
 
-Branches always use the `cord/` prefix:
+Always `cord/` prefix:
 
-- Before the first commit: `cord/adjective-animal-e7b7` (auto-generated placeholder)
-- After first commit: `cord/descriptive-slug-a1b2c3` (derived from the commit message, max 5 words)
+- Before first commit: `cord/adjective-animal-e7b7`
+- After first commit: `cord/descriptive-slug-a1b2c3`
 
-## CI/CD compatibility
+## CI/CD
 
-Cord PRs are standard GitHub pull requests. Your existing CI/CD pipelines, status checks, branch protection rules, and code review requirements all work normally. Cord doesn't bypass any of your existing workflows — even YOLO respects branch protection.
+Standard GitHub PRs. Existing pipelines, status checks, and branch protection work normally.
 
 ## Quick PR and YOLO visibility
 
-Quick PR and YOLO buttons are visible by default. If you don't use them and want a cleaner header, you can toggle them off in **Settings > UI Preferences > Thread Shortcut Settings**.
+Toggle off in **Settings > UI Preferences > Thread Shortcut Settings** if you don't use them.

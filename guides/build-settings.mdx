@@ -1,11 +1,9 @@
 ---
 title: "Build settings"
-description: "Complete reference for configuring how your project builds, runs, and exposes services in Cord sandboxes."
+description: "Reference for build, runtime, and endpoint configuration."
 ---
 
-When you add a repository, Cord's AI can auto-detect your build configuration. But if you want to configure things manually or fine-tune what the AI suggested, this page covers every setting.
-
-Build settings are found in **Repository Settings** (click the gear icon on any repo). There are six tabs:
+Build settings are in **Repository Settings** (gear icon on any repo). Six tabs:
 
 | Tab | What it controls |
 |---|---|
@@ -22,13 +20,11 @@ Build settings are found in **Repository Settings** (click the gear icon on any 
 
 ### Root directory
 
-For monorepos or projects where the code lives in a subdirectory, set the **root directory** (e.g., `apps/web` or `packages/api`). All commands run from this directory.
-
-Leave blank if your project is at the repo root.
+For monorepos, set the subdirectory (e.g., `apps/web`). All commands run from here.
 
 ### Install command
 
-The command that installs dependencies. Cord auto-detects this from your lockfile:
+Auto-detected from your lockfile:
 
 | Lockfile | Default command |
 |---|---|
@@ -37,40 +33,25 @@ The command that installs dependencies. Cord auto-detects this from your lockfil
 | `package-lock.json` | `npm install` |
 | `bun.lockb` | `bun install` |
 
-Override this if you need custom flags (e.g., `pnpm install --frozen-lockfile`).
+Override with custom flags if needed (e.g., `pnpm install --frozen-lockfile`).
 
 ### Build command
 
-An optional command that runs after install (e.g., `npm run build`, `next build`). Use this for TypeScript compilation, code generation, or any build step needed before the dev server starts.
-
-Leave blank if your project doesn't need a build step.
+Optional. Runs after install for TypeScript compilation, codegen, etc.
 
 ### Build hooks
 
-Additional commands that run after the build command completes. Add one command per line. Use these for:
-
-- Installing native dependencies (`pnpm install sharp`)
-- Running database migrations or seed scripts
-- Custom setup scripts that depend on the build output
-- Installing system packages
-
-Build hooks run in order during the image build phase.
+Additional commands after build, one per line. For native deps, migrations, seed scripts, system packages. Run in order during image build.
 
 ### Sandbox provider
 
-Choose which infrastructure provider runs your sandboxes. Provider availability and capabilities are deployment-specific; Repository Settings lists the available providers and whether they support Docker or Docker Compose for your workspace.
-
-If your project uses Docker Compose, choose a provider that supports Compose.
+Choose which provider runs your sandboxes. Availability is deployment-specific. If using Docker Compose, choose a provider that supports it.
 
 ---
 
 ## Runtime processes
 
-Runtime processes define what runs inside your sandbox when a session starts. Most projects need at least one -- the dev server. Complex projects might have several (frontend, backend, database, queue worker, etc.).
-
-### Adding a process
-
-Click **Add Process** in the Build Config tab. Each process has:
+Define what runs in your sandbox. Click **Add Process**:
 
 | Field | Description |
 |---|---|
@@ -80,20 +61,11 @@ Click **Add Process** in the Build Config tab. Each process has:
 | **Working directory** | Subdirectory to run from, relative to the repo root. Leave blank for repo root. |
 | **Auto-start** | Whether the process launches automatically in new sessions (default: yes) |
 
-You can define up to **16 processes** per repository.
-
-### Command runner
-
-The most common type. Just a shell command that starts a service:
-
-- `npm run dev` -- Node.js dev server
-- `python manage.py runserver 0.0.0.0:8000` -- Django
-- `cargo watch -x run` -- Rust
-- `air` -- Go with hot reload
+Up to **16 processes** per repository.
 
 ### Docker Compose runner
 
-For projects that use Docker Compose, select **Docker Compose** as the runner. Configure:
+Select **Docker Compose** as the runner for Compose projects:
 
 | Field | Description |
 |---|---|
@@ -101,20 +73,14 @@ For projects that use Docker Compose, select **Docker Compose** as the runner. C
 | **Project name** | Optional stable project name for the compose stack. |
 
 <Info>
-Docker Compose requires a sandbox provider that supports Compose. If you select Compose as a runner, make sure your selected provider supports it.
+Docker Compose requires a provider that supports it.
 </Info>
-
-Cord manages the Compose lifecycle for you -- you don't need to write a `docker compose up` command. The compose stack starts automatically based on your config.
 
 ---
 
 ## Endpoints
 
-Each runtime process can expose one or more **endpoints** -- ports that get tunnel URLs for browser access.
-
-### Adding an endpoint
-
-Within a process, click **Add Endpoint**:
+Each process can expose ports as tunnel URLs. Click **Add Endpoint**:
 
 | Field | Description |
 |---|---|
@@ -126,21 +92,19 @@ Within a process, click **Add Endpoint**:
 
 | Level | Description |
 |---|---|
-| **Primary** | The default preview URL for this process. Opens when you click "Preview" in the session. Only one per process. |
-| **Exposed** | Gets a browser-accessible URL, but isn't the default preview. |
-| **Internal** | Only accessible within the sandbox (no external URL). Use for databases, internal services, etc. |
+| **Primary** | Default preview URL. One per process. |
+| **Exposed** | Browser-accessible but not default. |
+| **Internal** | Sandbox-only, no external URL. |
 
-You can have up to **16 endpoints per process** and **11 exposed endpoints** total across all processes.
+Up to 16 endpoints per process, 11 exposed total.
 
 ### Reserved ports
-
-These ports are used by Cord's infrastructure and cannot be assigned to your endpoints:
 
 `4096`, `4097`, `4098`, `4190`, `7681`, `18080`
 
 ### Docker Compose endpoints
 
-For Compose processes, endpoints also require:
+For Compose processes, also requires:
 
 | Field | Description |
 |---|---|
@@ -151,140 +115,67 @@ For Compose processes, endpoints also require:
 
 ## Environment
 
-### Secret files
-
-Add environment variables and secret configuration files. Each entry has:
+Each entry:
 
 | Field | Description |
 |---|---|
 | **File path** | Where the file is written in the sandbox (e.g., `.env`, `apps/web/.env.local`) |
 | **Content** | The file contents (typically `KEY=VALUE` pairs) |
 
-Secret files are:
-- **Encrypted at rest** in the database
-- **Injected** into every sandbox on startup at the specified path
-- **Write-only** in the UI -- after saving, you can update but not read back the values
+Encrypted at rest, injected at startup, write-only in the UI.
 
-You can have multiple secret files (e.g., separate `.env` files for different services in a monorepo).
+### Mounted files
 
-### Mounted files from persistent storage
-
-This section shows files from your [persistent storage](/core-concepts/persistent-storage) that are configured to mount into this repo's sandboxes. Manage them in **Settings > Persistent Storage**.
+Files from [persistent storage](/core-concepts/persistent-storage) configured for this repo. Manage in **Settings > Persistent Storage**.
 
 ---
 
 ## Builds (prebuilt images)
 
-Cord builds a Docker image with your dependencies pre-installed so sandboxes start faster. The build runs your install command, build command, and build hooks, then snapshots the result.
+Docker image with dependencies pre-installed for faster sandbox startup. Runs install, build, and hooks, then snapshots.
 
 ### Build phases
 
-1. **Create sandbox** -- provision the build environment
-2. **Clone repository** -- check out the latest code
-3. **Install dependencies** -- run your install command
-4. **Run build command** -- run your build command (if set)
-5. **Run build hooks** -- run your build hooks (if set)
-6. **Snapshot workspace** -- capture the filesystem state
-7. **Cleanup** -- tear down the build environment
+1. Create sandbox → 2. Clone repo → 3. Install → 4. Build → 5. Hooks → 6. Snapshot → 7. Cleanup
 
 ### Managing builds
 
-In the Builds tab:
-
-- **View build history** -- see past builds with status and timestamps
-- **View build logs** -- expand any build to see the full log output
-- **Trigger a rebuild** -- click "Rebuild" to create a fresh image from the latest code
-- **Cancel a build** -- stop an in-progress build
+In the Builds tab: view history, view logs, trigger rebuild, cancel in-progress builds.
 
 ### When to rebuild
 
-Rebuild when:
-- You've changed dependencies (new packages in `package.json`)
-- Your install or build commands have changed
-- A session fails to start with missing dependencies
-- The base image is flagged as "stale" (Cord detects this automatically)
-
-<Tip>
-If a new session fails to start or has missing dependencies, the first thing to try is triggering a rebuild in the Builds tab. This refreshes the image with the latest dependency state.
-</Tip>
+After dependency changes, command changes, or when sessions fail to start with missing deps.
 
 ---
 
 ## Agent & Model
 
-Override the org-level defaults for this specific repository:
-
-| Setting | Description |
-|---|---|
-| **Default agent** | Claude Code or OpenCode |
-| **Default model** | Provider, model, and thinking variant |
-
-These apply when anyone starts a new session on this repo. Individual users can still override per-session using the model selector (**Cmd+/**).
+Override org defaults for this repo. Users can still override per-session with **Cmd+/**.
 
 ### Cross-repository access
 
-| Setting | Default | Description |
-|---|---|---|
-| **Allow all repository access** | Off | When enabled, the sandbox gets a GitHub token that can clone any repo in your GitHub App installation — not just this one. Useful for projects that depend on private packages from other repos. |
+When enabled, the sandbox gets a GitHub token that can clone any repo in your GitHub App installation. For projects depending on private packages from other repos.
 
 <Warning>
-Enabling cross-repository access means the AI agent can read code from other repos in your organization. Only enable this if your project needs it (e.g., private npm packages, shared libraries).
+The AI agent will be able to read code from other repos in your org.
 </Warning>
 
 ---
 
 ## AI Tools
 
-Configure repo-scoped MCP servers and skills. These are available in addition to org-level and user-level tools.
+Repo-scoped MCP servers and skills, in addition to org and user-level ones.
 
-### Repo MCP servers
-
-Add MCP servers that should be available in every session on this repo. Works the same as org-level MCP configuration -- see [MCP servers & skills](/guides/mcp-and-skills).
-
-### Repo skills
-
-Add skills (instruction files) that are specific to this repo. These supplement org-level skills and personal skills.
-
-### Effective config preview
-
-Shows the merged configuration that new sessions will receive -- combining org-level, repo-level, and user-level MCP servers and skills. Useful for debugging which tools are available.
+**Effective config preview** shows the merged configuration new sessions receive.
 
 ---
 
 ## Testing
 
-### Browser testing instructions
-
-Free-text instructions that tell the agent how to test your app in the browser. For example:
-
-```
-To test the app:
-1. Open the preview URL
-2. Log in with test@example.com / password123
-3. Navigate to /dashboard
-4. Verify the charts load with sample data
-```
-
-Two scopes:
-- **For everyone** (admin) -- repo-wide instructions visible to all team members
-- **For me** -- personal override that takes priority over the repo-wide instructions
-
-The agent reads these when doing visual verification with the headless browser.
+Free-text instructions telling the agent how to test in the browser. Two scopes: **For everyone** (admin, repo-wide) and **For me** (personal override). Read during headless browser verification.
 
 ---
 
-## AI-powered auto-detection
+## Auto-detection
 
-When you choose **Set up automatically** during repo onboarding, Cord's AI inspects your repo using these tools:
-
-- **List directory** -- browse your file structure
-- **Read file** -- read config files, package.json, Dockerfiles, etc.
-- **Search files** -- regex search across the codebase
-
-It then proposes a complete `BuildSettings` configuration (install command, build command, runtime processes, endpoints). You can:
-
-- **Accept** the proposal as-is
-- **Iterate** -- chat with the AI to refine the config
-- **Switch to manual** -- fill in the fields yourself
-
-The AI is good at detecting standard setups (Next.js, Vite, Express, Django, Rails, etc.) but may need help with unusual configurations.
+**Set up automatically** inspects your repo (file structure, package.json, Dockerfiles) and proposes a full config. Accept, iterate via chat, or switch to manual.

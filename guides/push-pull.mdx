@@ -1,14 +1,14 @@
 ---
 title: "Push & Pull"
-description: "Say 'push to Cord' to hand off work to the cloud. Say 'pull from Cord' to get it back."
+description: "Hand off work between your local agent and Cord's cloud agents."
 ---
 
-Push & Pull lets you hand off work between your local agent and Cord's cloud agents. Say "push to Cord" and your agent commits, writes a handoff, and sends it to the cloud. Say "pull from Cord" later and your agent retrieves what the cloud did, syncs the code, and continues.
+Push & Pull lets you move work between your local agent and Cord. "Push to Cord" sends your work to the cloud. "Pull from Cord" retrieves what the cloud did.
 
-Works with any agent that can run shell commands — Claude Code, Cursor, Codex CLI, Aider, Amp, or anything else.
+Works with any agent that can run shell commands (Claude Code, Cursor, Codex CLI, Aider, Amp, etc.).
 
 <Info>
-**Quick version:** Install the skill (`npx skills add pretzelai/cord-cloud-skill -g -y`), then tell your agent "push to Cord" or "pull from Cord". That's it.
+Install the skill (`npx skills add pretzelai/cord-cloud-skill -g -y`), then tell your agent "push to Cord" or "pull from Cord".
 </Info>
 
 ## Setup
@@ -20,50 +20,32 @@ npm install -g cord-cli
 cord auth login
 ```
 
-`cord auth login` opens a browser for device auth. Sign in and approve.
-
 ### 2. Install the skill
 
 ```bash
 npx skills add pretzelai/cord-cloud-skill -g -y
 ```
 
-This drops the skill into your agent's skills directory. Manual alternatives:
+Manual alternative — place the skill file at:
 
 | Agent | Path |
 |---|---|
 | Cursor / OpenCode | `.agents/skills/cord-push-pull/SKILL.md` |
 | Claude Code | `.claude/skills/cord-push-pull/SKILL.md` |
 
-Or just tell your agent: *"Install the cord push/pull skill from github.com/pretzelai/cord-cloud-skill"*.
-
 ---
 
 ## Pushing
 
-When you want a cloud agent to take over — you're closing your laptop, the task is long-running, or you want to parallelize:
-
-> "Push this to Cord and let it finish the API tests overnight"
-
-Your agent commits, pushes, writes a structured handoff (what's done, current state, next steps), and calls `cord push`. Cord creates a session on your branch and starts working immediately.
-
-You get a session URL you can check anytime, or forget about until morning.
+Tell your agent something like "push this to Cord and finish the API tests." Your agent commits, writes a handoff, and calls `cord push`. Cord starts a session on your branch.
 
 ---
 
 ## Pulling
 
-When you want to retrieve what Cord did:
+Tell your agent "pull from Cord." It calls `cord pull`, gets the handoff context, runs `git pull`, and continues where Cord left off. The cloud session suspends automatically.
 
-> "Pull from Cord"
-
-Your agent calls `cord pull`, reads the handoff context, runs `git pull`, and continues where Cord left off. The cloud session is suspended so you're not charged while working locally.
-
-If Cord is still mid-task, it tells you — try again later or open the link to watch progress.
-
-### Pull works for any session
-
-`cord pull` isn't just for sessions you pushed. It works with any Cord session on your branch — started from the web app, Slack, or Linear. Check out the branch and pull.
+`cord pull` works with any session on your branch — not just ones you pushed.
 
 ```bash
 cord pull                              # auto-detects from current branch
@@ -79,61 +61,24 @@ cord pull --branch feature/auth        # by branch name
 cord status
 ```
 
-Shows whether the session is running, idle, blocked, error, or suspended, with a link to the web UI.
-
----
-
-## The loop
-
-```
-Monday evening:
-  You: "Push this to Cord, have it finish the API routes"
-  Agent: commits → pushes → handoff → cord push
-  You: close laptop
-
-Tuesday morning:
-  You: "Pull from Cord, what did it do?"
-  Agent: cord pull → git pull → continues working
-
-Tuesday evening:
-  You: "Push again, have Cord add the test suite"
-```
-
-Your local agent and Cord trade context back and forth, each picking up where the other left off.
-
 ---
 
 ## Manual CLI usage
 
-Drive it yourself without going through an agent:
-
 ```bash
-# Push with instructions
 cord push --message "Finish implementing the pagination"
-
-# Push with rich context
-cord push --context "Rate limiting done. Need token refresh and tests." \
-  --message "Implement token refresh"
-
-# Push from a file
+cord push --context "Rate limiting done. Need token refresh." --message "Implement token refresh"
 cord push --context-file ./HANDOFF.md --message "Continue this work"
-
-# Resume a suspended session
 cord push --session session_abc123 --message "I fixed the types, continue"
 ```
 
 ```bash
-# Pull (auto-detects session from branch)
 cord pull
-
-# Save handoff to a file
 cord pull --output ./handoff.md
-
-# Keep cloud session running
 cord pull --no-suspend
 ```
 
-All commands support `--json` for scripting.
+All commands support `--json`.
 
 ### Push flags
 

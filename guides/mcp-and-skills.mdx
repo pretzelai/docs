@@ -1,28 +1,20 @@
 ---
 title: "MCP servers & skills"
-description: "Give agents access to external tools, data sources, and your coding standards."
+description: "Connecting agents to external tools and coding standards."
 ---
 
 ## MCP servers
 
-Cord supports the [Model Context Protocol](https://modelcontextprotocol.io/) for connecting agents to external tools and data sources. When configured, agents can call MCP tools during sessions — querying databases, searching docs, hitting internal APIs, or interacting with third-party services.
+Cord supports [MCP](https://modelcontextprotocol.io/) for connecting agents to external tools and data sources.
 
 ### Adding an MCP server
 
-Go to **Settings > MCP & Skills > MCP Servers** and either:
+In **Settings > MCP & Skills > MCP Servers**:
 
-- Click **Add MCP Server** and enter the URL + auth details
-- Paste a JSON config block — Cord auto-detects everything from the config
+- Click **Add MCP Server** and enter URL + auth details, or
+- Paste a JSON config block
 
-Cord supports **remote HTTP** MCP servers with three auth modes:
-
-| Auth mode | Description |
-|---|---|
-| **None** | No authentication (internal/trusted servers) |
-| **API key** | Key passed in request header |
-| **OAuth** | Full OAuth flow with automatic token refresh |
-
-For OAuth servers, click **Connect** after adding to start the authorization flow. Cord tracks connection state and prompts you to reconnect if tokens expire.
+Auth modes: **None**, **API key**, or **OAuth** (with automatic token refresh).
 
 ### Scoping
 
@@ -32,30 +24,24 @@ For OAuth servers, click **Connect** after adding to start the authorization flo
 | **User-level** | Individual users | Only their sessions |
 | **Repo-level** | Repo settings | Sessions on that repo |
 
-Org-level is the most common for teams — set up shared tools once and everyone gets them automatically.
-
-Each MCP server can be enabled/disabled individually.
-
 ## Skills
 
-Skills are instruction files that teach agents your team's coding patterns, style, and conventions.
+Skills are instruction files that teach agents your coding patterns and conventions.
 
 ### Installing skills
 
-**From GitHub:** Click **Install from GitHub** in Settings > MCP & Skills > Skills, enter a repo URL, and select which skill files to install.
-
-**From skills.sh:** Enter a skills.sh URL to browse community-maintained skills.
-
-**Create inline:** Click **Create Skill** to write instructions directly in the Cord UI.
+- **From GitHub** — enter a repo URL and select skill files
+- **From skills.sh** — browse community skills
+- **Create inline** — write instructions in the Cord UI
 
 ### Scoping
 
 | Scope | Description |
 |---|---|
-| **Org-level** | Team-wide standards managed by admins. Every session reads them. |
-| **Repo-level** | `CLAUDE.md` and `.agents/` files in your repo root — picked up automatically. |
-| **User-level** | Personal preferences. Added in settings or [synced from local machine](/guides/global-skills). |
+| **Org-level** | Team-wide standards. Every session reads them. |
+| **Repo-level** | `CLAUDE.md` and `.agents/` files in your repo root. |
+| **User-level** | Personal preferences. [Synced from local machine](/guides/global-skills) or added in settings. |
 
 ### Managing skills
 
-View, edit, enable/disable, or delete skills in the Skills tab. You can change scope between org and user level at any time.
+View, edit, enable/disable, or delete in the Skills tab.

@@ -1,37 +1,24 @@
 ---
 title: "Usage & sandbox hours"
-description: "How sandbox compute is metered and what counts toward your usage."
+description: "How sandbox compute is metered."
 ---
 
-## What are sandbox hours?
+## Sandbox hours
 
-A sandbox hour is one hour of active compute time in a cloud sandbox. This is the primary unit of usage on Cord.
+One sandbox hour = one hour of active compute time.
 
-## What counts
+**Counts:** Active sandbox time (agent working, dev server running, you browsing preview), startup time.
 
-- **Active compute** -- time when a sandbox is running (agent working, dev server active, you browsing the preview)
-- **Startup time** -- the few seconds it takes to spin up a new sandbox
+**Doesn't count:** Idle/suspended time, resume time, Cord UI usage (browsing sessions, reviewing diffs).
 
-## What doesn't count
+## Suspension
 
-- **Idle/suspended time** -- when a sandbox is suspended, you're not charged
-- **Resume time** -- waking up a suspended sandbox is near-instant and not billed separately
-- **Cord UI usage** -- browsing sessions, reviewing diffs, and reading chat history is free
+Sandboxes suspend automatically after idle time. No charge while suspended. State is preserved. Resumes instantly.
 
-## How suspension works
+## Checking usage
 
-Sandboxes automatically suspend after a period of inactivity. When suspended:
+Shown in the dashboard if enabled for your workspace. Otherwise contact support.
 
-- No compute is billed
-- File changes and state are preserved
-- The sandbox resumes instantly when you return
+## Limits
 
-This means you don't need to worry about forgetting to close a session. Idle sandboxes cost nothing.
-
-## Checking your usage
-
-Usage reporting and billing limits depend on your workspace plan. If usage reporting is enabled for your workspace, usage details are shown in the dashboard. Otherwise, contact support for current usage and billing details.
-
-## Limits and overages
-
-Sandbox-hour limits, overages, and included capacity depend on your plan. Contact support for details on your workspace's current limits.
+Depend on your plan. Contact support for specifics.
