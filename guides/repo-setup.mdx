@@ -1,116 +1,91 @@
 ---
 title: "Repository setup"
-description: "Connect repos, configure builds, set environment variables, and customize per-repo settings."
+description: "Connect repos, configure builds, set environment variables, and get sandboxes running."
 ---
 
 ## Connecting a repository
 
 1. Go to your Cord dashboard
 2. Click **Add Repository**
-3. Select a repo from your GitHub account or organization
-4. Cord runs an AI-powered setup wizard
+3. Select a repo from your GitHub installations
+4. Choose **Set up automatically** or configure manually
 
-You can connect repos from any GitHub organization you have access to. Cord needs read/write access to create branches and pull requests.
+You can connect repos from any GitHub org where the Cord GitHub App is installed.
 
-## AI-powered setup wizard
+## Automatic setup
 
-When you add a repo, Cord's AI setup chat detects your project configuration automatically:
+When you choose automatic setup, Cord's AI inspects your repo — reading `package.json`, Dockerfiles, config files — and proposes a complete build configuration. You can accept it as-is, chat with the AI to refine it, or switch to manual setup at any time.
 
-- **Package manager** -- npm, yarn, pnpm, bun
-- **Framework** -- Next.js, Vite, Express, Django, Rails, etc.
-- **Build commands** -- install, build, dev server start
-- **Port** -- which port your dev server runs on
-- **Runtime processes** -- any background services your project needs
+It handles standard setups well (Next.js, Vite, Express, Django, Rails). Unusual configurations may need manual tweaking.
 
-The wizard proposes a configuration that you can review and adjust. If something looks wrong, you can chat with the AI to refine the setup.
+## Build configuration
 
-## Root directory
+In **Repository Settings > Build Config**:
 
-If your repo is a monorepo or your project lives in a subdirectory, set the **root directory** in repository settings. This tells the agent and sandbox where the project actually starts (e.g., `apps/web` or `packages/api`).
+### Root directory
 
-## Build commands
+For monorepos or subdirectory projects, set the root (e.g., `apps/web`). All commands run from this path.
 
-Cord detects these automatically, but you can override them:
+### Install command
 
-| Command | Description | Example |
-|---|---|---|
-| **Install** | Install dependencies | `npm install`, `pnpm install` |
-| **Build** | Build the project | `npm run build`, `next build` |
-| **Dev** | Start the dev server | `npm run dev`, `next dev` |
+Cord auto-detects this from your lockfile:
 
-For a complete reference of every build setting -- runtime processes, endpoints, Docker Compose, build hooks, and more -- see [Build settings](/guides/build-settings).
+| Lockfile | Default |
+|---|---|
+| `pnpm-lock.yaml` | `pnpm install` |
+| `yarn.lock` | `yarn install` |
+| `package-lock.json` | `npm install` |
+| `bun.lockb` | `bun install` |
+
+### Build command
+
+Optional. Runs after install — for TypeScript compilation, codegen, or any build step needed before dev server start.
+
+### Build hooks
+
+Additional commands that run after the build command, one per line. Use these for database migrations, seed scripts, installing native dependencies, or anything else your project needs during image setup.
 
 ## Runtime processes
 
-Some projects need more than just a dev server. In repository settings, you can define multiple **runtime processes** that start with every sandbox:
+Define what runs inside your sandbox. Most projects need at least a dev server. Complex projects might have a frontend, backend, database, and worker.
 
-- A backend API server
-- A frontend dev server
-- A database or queue (via Docker Compose)
-- A watch process for TypeScript compilation
+Each process has a name, a command (e.g., `npm run dev`), and optionally a working directory. You can also use **Docker Compose** as the runner if your project has a `docker-compose.yml`.
 
-Each process gets a name and a start command. They all run in the sandbox simultaneously.
+Processes start automatically when a session begins (configurable per-process).
 
-## Runtime endpoints
+## Endpoints
 
-Define which URLs should be exposed from the sandbox. Each endpoint maps a port to a preview URL. For example:
+Each process can expose ports as preview URLs. Mark one as **Primary** (the default preview that opens when you click Preview in a session), others as **Exposed** (accessible but not default), or **Internal** (sandbox-only, no external URL).
 
-- Port 3000 -- frontend dev server
-- Port 8080 -- backend API
-- Port 5432 -- database (for tools that need direct access)
+## Secret files
 
-## Docker and Docker Compose
+Add sensitive configuration in **Repository Settings > Environment**. Each entry is a file path + content (e.g., `.env` with your `KEY=VALUE` pairs). Files are:
 
-Docker is available in every sandbox by default. If your project uses Docker Compose for local development (e.g., running Postgres, Redis, or other services), it works the same way in a sandbox.
-
-No additional configuration needed -- just make sure your `docker-compose.yml` is in the repo.
-
-## Build hooks
-
-Build hooks let you run custom scripts at specific points in the sandbox setup:
-
-- **Post-install** -- after dependencies are installed
-- **Post-build** -- after the build completes
-- **Pre-start** -- before the dev server starts
-
-Use these for things like database migrations, seed scripts, or custom setup steps that aren't covered by the standard build commands.
-
-## Environment variables
-
-Add environment variables in **Repository Settings > Secret Files**:
-
-- Variables are **encrypted at rest** in the database
-- **Injected automatically** into every sandbox on startup
-- **Write-only** -- after saving, values are hidden in the UI (you can update but not read back)
-- Available to the agent and all processes in the sandbox
+- Encrypted at rest
+- Written to the sandbox at the specified path on startup
+- Write-only in the UI — you can update but not read back values
 
 <Warning>
-Environment variables are available to the AI agent running in your sandbox. Don't add secrets you wouldn't want an AI model to see in context.
+Secret files are accessible to the AI agent in your sandbox. Don't add credentials you wouldn't want a model to see.
 </Warning>
 
 ## Per-repo defaults
 
-Override org-level defaults for a specific repository:
+Override org-level settings for a specific repository:
 
 | Setting | Description |
 |---|---|
-| **Default agent** | Claude Code or OpenCode for sessions on this repo |
-| **Default model** | Which provider and model to use |
-| **Thinking mode** | Enable/disable extended thinking by default |
-| **Branch prefix** | Custom prefix for session branches (default: `cord/`) |
+| **Default agent** | Claude Code or OpenCode |
+| **Default model** | Provider, model, and thinking variant |
 
-## Sandbox provider
+Individual users can still override per-session via the model selector.
 
-The available sandbox providers are shown in Repository Settings. Your deployment may offer Modal, Daytona, or Freestyle; choose the provider supported for your repo's requirements.
+## Builds
 
-## Build status
-
-View build history and status in repository settings:
-
-- See past builds with timestamps and outcomes
-- **Trigger a rebuild** manually if something went stale
-- Check build logs for debugging setup issues
+Cord builds a Docker image with your dependencies pre-installed so sandboxes start fast. View build history, logs, and trigger rebuilds in the **Builds** tab.
 
 <Tip>
-If a new session fails to start or has missing dependencies, try triggering a rebuild in repository settings. This refreshes the base image with the latest dependency state.
+If a new session fails to start or has missing dependencies, trigger a rebuild. This refreshes the base image with the latest dependency state.
 </Tip>
+
+For the full reference on every build setting — Docker Compose configuration, endpoint exposure levels, reserved ports, and more — see [Build settings](/guides/build-settings).

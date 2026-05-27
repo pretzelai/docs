@@ -3,185 +3,114 @@ title: "AI providers"
 description: "Connect your Claude or ChatGPT subscription, add API keys, or use free models."
 ---
 
-Cord is bring-your-own-AI. Connect your existing Claude or ChatGPT subscription, add API keys from any supported provider, or use Cord Open Source models when your account has access. You can also get started immediately with [\$100 in free AI credits](#starter-credit) -- no credit card required.
+Cord is bring-your-own-AI. Connect your existing subscription, add API keys, or start with free credits — no credit card required.
+
+## Starter credit
+
+Every new account gets **$100 in free AI credits** for Claude and OpenAI. Claim it during onboarding or in **Settings > Models & API Keys**. This lets you try both Claude Code and Codex sessions before connecting your own subscription.
 
 ## Connect your Claude subscription
 
-If you have a **Claude Max** or **Claude Pro** plan from Anthropic, connect it to Cord using the CLI. This lets you run **Claude Code** sessions using your existing subscription -- Cord doesn't charge separately for AI usage.
+If you have a **Claude Max** or **Claude Pro** plan, connect it so Cord sessions use your existing subscription.
 
-### Prerequisites
+Install the CLI and log in:
 
-1. **Install the Cord CLI** if you haven't already:
-   ```bash
-   curl -fsSL https://runcord.com/install.sh | bash
-   ```
+```bash
+curl -fsSL https://runcord.com/install.sh | bash
+cord auth login
+```
 
-2. **Log in to Cord:**
-   ```bash
-   cord auth login
-   ```
-
-### Connect via browser OAuth (recommended)
-
-The simplest way to connect. Run this command, and Cord opens your browser to authorize with Claude:
+Then connect via browser OAuth:
 
 ```bash
 cord providers connect claude
 ```
 
-You'll be taken to Claude's OAuth page. Approve the connection, and you're done:
+Approve the connection on Claude's OAuth page. Token refresh is automatic — you won't need to reconnect unless you revoke access.
 
-```
-Connected Claude
-Stored your Claude OAuth credential set in Cord.
-```
-
-This method automatically handles token refresh -- you won't need to reconnect unless you revoke access.
-
-### Connect via setup token
-
-If you prefer not to use browser OAuth, you can connect using a Claude setup token:
+Alternatively, connect via setup token if you prefer not to use browser OAuth:
 
 ```bash
-# If you have Claude Code installed locally with an active subscription,
-# the CLI auto-generates the token for you:
 cord providers connect claude --setup-token
-
-# Or provide a token directly:
-cord providers connect claude --token sk-ant-oat...
 ```
 
-If Claude Code is installed and authenticated locally with a Claude subscription, the CLI detects it and offers to generate the token automatically. API-key-authenticated Claude installs, unknown auth methods, non-interactive terminals, or unsupported platforms fall back to manual token entry.
-
-### Disconnect
-
-Disconnect from the CLI:
-
-```bash
-cord providers disconnect claude
-```
-
-Or disconnect directly from the web app via the provider connection indicator in any session.
+If Claude Code is installed locally with an active subscription, the CLI auto-generates the token for you.
 
 ## Connect your ChatGPT subscription
 
-If you have a **ChatGPT Plus** or **ChatGPT Pro** plan from OpenAI, connect it to use **Codex**-powered sessions.
+If you have a **ChatGPT Plus** or **ChatGPT Pro** plan, connect it to use Codex-powered sessions.
 
-### Prerequisites
+First, enable device code authorization in your ChatGPT account at [chatgpt.com/#settings/Security](https://chatgpt.com/#settings/Security).
 
-Before connecting, enable device code authorization in your ChatGPT account:
-
-1. Open [chatgpt.com/#settings/Security](https://chatgpt.com/#settings/Security)
-2. Toggle ON: **"Enable device code authorization for Codex"**
-
-### Connect
+Then:
 
 ```bash
 cord providers connect codex
 ```
 
-The CLI shows a one-time code and opens your browser:
+The CLI shows a one-time code. Enter it on the OpenAI page to complete the connection.
 
-```
-Your one-time code:  ABCD-1234
-```
-
-Enter the code on the OpenAI page, approve the connection, and the CLI confirms:
-
-```
-Codex connected successfully!
-```
-
-### Disconnect
-
-Disconnect from the CLI:
+## Disconnect
 
 ```bash
+cord providers disconnect claude
 cord providers disconnect codex
 ```
 
-Or disconnect directly from the web app: click the Codex connection indicator in any session and select **Disconnect**.
+Or disconnect from the web app via the provider connection indicator in any session.
 
-## Check connection status
-
-See all your connected providers and local CLI status. Remote provider status requires browser CLI auth (`cord auth login`); API-key CLI auth is not enough for provider commands.
+## Check status
 
 ```bash
 cord providers list
 ```
 
-```
-Cord provider connections
-Codex: connected (account-id)
-Claude: connected (user@email.com, OAuth)
-Cord Open Source: connected (user, key-prefix)
-
-Local provider binaries
-Local Codex binary: authenticated, v1.2.3, model_provider=openai
-Local Claude binary: authenticated, subscription auth, v2.0.0
-```
+Shows all connected providers and local CLI status.
 
 ## API keys
 
-If you prefer pay-per-token pricing, or want to use providers that don't have a subscription model, you can add API keys directly in **Settings > Models & API Keys**.
-
-### Supported providers
+For pay-per-token pricing, add API keys in **Settings > Models & API Keys**. Supported providers:
 
 | Provider | Notes |
 |---|---|
 | **Anthropic** | Claude models via API |
-| **OpenAI** | GPT-4, o-series models via API |
+| **OpenAI** | GPT-4, o-series via API |
 | **Google** | Gemini models |
 | **Mistral** | Mistral models |
-| **DeepSeek** | DeepSeek models via API |
+| **DeepSeek** | DeepSeek models |
 | **xAI** | Grok models |
 | **Groq** | Fast inference |
 | **OpenRouter** | Multi-provider routing |
 | **Amazon Bedrock** | AWS-hosted models |
-| **Kimi** | Kimi models via API |
+| **Kimi** | Kimi models |
 
-Keys are encrypted at rest with AES-256-GCM and never logged.
+Keys are encrypted at rest and never logged.
 
-### Org-level shared keys
-
-Admins can add **shared API keys** at the org level so the whole team uses the same provider:
-
-1. Go to **Settings > Organization**
-2. Scroll to **Shared Provider API Keys**
-3. Add keys for any provider
-
-When a shared key is set, team members don't need their own keys for that provider. Individual keys take priority over shared keys if both exist.
+Admins can add **shared API keys** at the org level (**Settings > Organization > Shared Provider API Keys**) so the whole team uses one billing account. Individual keys take priority over shared keys.
 
 ## Which agent runs with which provider?
 
-| Provider | Agent | Notes |
-|---|---|---|
-| Claude subscription | **Claude Code** | Uses your Anthropic subscription |
-| Anthropic API key | **Claude Code** | Same agent, pay-per-token |
-| Codex / ChatGPT subscription | **OpenCode** | Uses your OpenAI subscription |
-| OpenAI API key | **OpenCode** | GPT-4 / o-series via API |
-| All other providers | **OpenCode** | Works with any OpenAI-compatible API |
-| Cord Open Source (free) | **OpenCode** | Free models, no key needed |
+| Provider | Agent |
+|---|---|
+| Claude subscription or Anthropic API key | **Claude Code** |
+| ChatGPT subscription or OpenAI API key | **OpenCode** |
+| All other providers | **OpenCode** |
+| Cord Open Source (free) | **OpenCode** |
 
-You can switch providers per session -- you're not locked into one.
-
-## Starter credit
-
-Every new account gets **\$100 in free AI credits** -- \$50 for Claude and \$50 for OpenAI. Claim it during onboarding or in **Settings > Models & API Keys**. No credit card required, credits don't expire.
-
-This is the fastest way to try both Claude Code and Codex-powered sessions before connecting your own subscription.
+Switch providers per session with the model selector (**Cmd+/**).
 
 ## Free open source models
 
-Cord Open Source models are available when your account has a configured Cord Open Source credential or credit allocation. If available, they appear under the **Cord Open Source** provider in the model selector.
+Cord Open Source models are available to all accounts. They appear under **Cord Open Source** in the model selector.
 
 | Model | Best for |
 |---|---|
-| **Kimi K2.6** | General-purpose coding, default for new sessions |
+| **DeepSeek V4 Pro** | Strong reasoning and code generation |
+| **Kimi K2.6** | General-purpose coding |
 | **Qwen 3.6 Plus** | Multi-language, large context |
-| **GLM 5.1** | Strong general-purpose coding |
-| **MiniMax M2.7** | Strong general-purpose coding |
-| **DeepSeek V3.2** | Reasoning, code generation |
+| **GLM 5.1** | General-purpose coding |
+| **MiniMax M2.7** | General-purpose coding |
+| **DeepSeek V3.2** | Code generation |
 | **Gemma 4 31B** | Fast responses, lighter tasks |
 
-All models support 128k context and tool calling. They run via the OpenCode agent inside your sandbox.
+All models support 128k context and tool calling. They run via the OpenCode agent.

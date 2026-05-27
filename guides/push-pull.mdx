@@ -1,305 +1,172 @@
 ---
 title: "Push & Pull"
-description: "Install a skill, say 'push to Cord' to your local agent, walk away. Say 'pull from Cord' tomorrow morning."
+description: "Say 'push to Cord' to hand off work to the cloud. Say 'pull from Cord' to get it back."
 ---
 
-Push & Pull lets you hand off work between your local coding agent and Cord's cloud agents. You say "push to Cord" and your local agent commits your work, writes a structured handoff, and sends it to the cloud. Later you say "pull from Cord" and your agent retrieves what the cloud did, syncs the code, and continues where it left off.
+Push & Pull lets you hand off work between your local agent and Cord's cloud agents. Say "push to Cord" and your agent commits, writes a handoff, and sends it to the cloud. Say "pull from Cord" later and your agent retrieves what the cloud did, syncs the code, and continues.
 
-It works with any agent that can run shell commands: Claude Code, Cursor, Codex CLI, Aider, Amp, or anything else.
+Works with any agent that can run shell commands — Claude Code, Cursor, Codex CLI, Aider, Amp, or anything else.
 
 <Info>
-**Quick version:** Install the skill (`npx skills add pretzelai/cord-cloud-skill -g -y`), then tell your agent "push to Cord" to hand off work or "pull from Cord" to get it back. That's it.
+**Quick version:** Install the skill (`npx skills add pretzelai/cord-cloud-skill -g -y`), then tell your agent "push to Cord" or "pull from Cord". That's it.
 </Info>
 
 ## Setup
 
-Two things need to happen once:
-
-### 1. Install the Cord CLI
+### 1. Install the CLI
 
 ```bash
 npm install -g cord-cli
 cord auth login
 ```
 
-`cord auth login` opens a browser. Sign in (or sign up) and approve. If your repo isn't connected yet, the CLI will surface the GitHub App install link when you first push.
+`cord auth login` opens a browser for device auth. Sign in and approve.
 
 ### 2. Install the skill
-
-The skill is a markdown file that teaches your agent how to do the push/pull workflow. Install it with:
 
 ```bash
 npx skills add pretzelai/cord-cloud-skill -g -y
 ```
 
-This drops the skill into your agent's skills directory. If you prefer to install it manually:
+This drops the skill into your agent's skills directory. Manual alternatives:
 
-| Agent | Where to put it |
+| Agent | Path |
 |---|---|
 | Cursor / OpenCode | `.agents/skills/cord-push-pull/SKILL.md` |
 | Claude Code | `.claude/skills/cord-push-pull/SKILL.md` |
-| Any agent | Reference the raw URL in your project instructions |
 
-Raw skill URL for manual setups:
-```
-https://raw.githubusercontent.com/pretzelai/cord-cloud-skill/main/SKILL.md
-```
-
-<Tip>
-You can also just tell your agent: "Install the cord push/pull skill from github.com/pretzelai/cord-cloud-skill". If your agent supports skill installation (Claude Code, Cursor), it'll handle it.
-</Tip>
-
-That's all the setup. From now on, your agent knows how to push and pull.
+Or just tell your agent: *"Install the cord push/pull skill from github.com/pretzelai/cord-cloud-skill"*.
 
 ---
 
-## Pushing work to Cord
+## Pushing
 
-When you want a cloud agent to take over — you're closing your laptop, the task is long-running, or you just want to parallelise — tell your agent:
+When you want a cloud agent to take over — you're closing your laptop, the task is long-running, or you want to parallelize:
 
 > "Push this to Cord and let it finish the API tests overnight"
 
-### What your agent does
+Your agent commits, pushes, writes a structured handoff (what's done, current state, next steps), and calls `cord push`. Cord creates a session on your branch and starts working immediately.
 
-The skill teaches your agent to:
-
-1. **Ensure you're on a feature branch** — if you're on main, it creates one
-2. **Commit and push** — all uncommitted work gets committed with a descriptive message, then pushed to GitHub
-3. **Write a structured handoff** — a summary covering what's done, current state, what to do next, key decisions, and gotchas
-4. **Call `cord push`** — sends the handoff to Cord with your branch and repo auto-detected
-
-### What Cord does
-
-Cord creates a cloud session on your branch:
-- Clones your repo and checks out the exact branch you pushed
-- Receives the handoff context as its first message
-- Starts working immediately
-
-You get back a session URL you can check any time in the browser, or just forget about it until morning.
-
-### Examples of what to say
-
-- *"Push this to Cord, have it finish the pagination component"*
-- *"Hand off to cloud — it needs to write tests for everything in src/api/"*
-- *"Let Cord continue overnight, the auth flow is mostly done but needs the token refresh logic"*
-- *"Push to Cord and close up"*
-
-Your agent figures out the rest — it knows what was done because it was doing the work.
+You get a session URL you can check anytime, or forget about until morning.
 
 ---
 
-## Pulling work from Cord
+## Pulling
 
-When you want to retrieve what Cord did — or take over a session that's still running — tell your agent:
+When you want to retrieve what Cord did:
 
 > "Pull from Cord"
 
-### What your agent does
+Your agent calls `cord pull`, reads the handoff context, runs `git pull`, and continues where Cord left off. The cloud session is suspended so you're not charged while working locally.
 
-1. **Calls `cord pull`** — the CLI finds the Cord session linked to your current branch
-2. **Waits if needed** — if Cord has uncommitted work, the cloud agent commits and pushes it first
-3. **Reads the handoff context** — what was accomplished, current state, what's remaining
-4. **Runs `git pull`** — gets the actual code changes
-5. **Continues working** — picks up from where Cord left off, informed by the handoff
+If Cord is still mid-task, it tells you — try again later or open the link to watch progress.
 
-### What happens on Cord's side
+### Pull works for any session
 
-When you pull:
-- If the cloud agent has uncommitted or unpushed work, Cord asks it to commit and push before returning
-- Cord generates a handoff summary from the session's conversation
-- The cloud session is suspended (so you're not charged while working locally)
-
-### If the cloud agent is still running
-
-If Cord is mid-task when you pull, it tells you:
-
-```
-Agent is still working
-Check progress: https://runcord.com/s/session_xyz789
-Run `cord pull` again later or use `cord status` to check.
-```
-
-Your agent reports this to you. Try again later, or open the link to watch progress.
-
-### Pulling from any session
-
-Pull doesn't only work for sessions you pushed. You can pull from any Cord session — including ones started from the web app, Slack, or Linear:
+`cord pull` isn't just for sessions you pushed. It works with any Cord session on your branch — started from the web app, Slack, or Linear. Check out the branch and pull.
 
 ```bash
-# Pull from the session on your current branch
-cord pull
-
-# Pull from a specific session by ID
-cord pull --session session_abc123
-
-# Pull from a session on a different branch
-cord pull --branch feature/auth-refactor
+cord pull                              # auto-detects from current branch
+cord pull --session session_abc123     # specific session
+cord pull --branch feature/auth        # by branch name
 ```
-
-This makes pull a universal "get work from Cord back to local" command regardless of how the session was created.
 
 ---
 
 ## Checking status
 
-Want a quick peek without pulling?
-
-> "Check Cord status"
-
-or manually:
-
 ```bash
 cord status
 ```
 
-Shows whether the session is `running`, `idle`, `blocked`, `error`, or `suspended`, plus a link to the web UI.
+Shows whether the session is running, idle, blocked, error, or suspended, with a link to the web UI.
 
 ---
 
-## The full loop
-
-Here's what a typical multi-day workflow looks like:
+## The loop
 
 ```
 Monday evening:
   You: "Push this to Cord, have it finish the API routes"
-  Agent: commits → pushes → writes handoff → cord push
+  Agent: commits → pushes → handoff → cord push
   You: close laptop
 
 Tuesday morning:
   You: "Pull from Cord, what did it do?"
-  Agent: cord pull → reads handoff → git pull → continues working
-  You: iterate locally with your agent
+  Agent: cord pull → git pull → continues working
 
 Tuesday evening:
   You: "Push again, have Cord add the test suite"
-  Agent: commits → pushes → writes new handoff → cord push
 ```
 
-Each cycle is seamless. Your local agent and Cord's cloud agent trade context back and forth, each picking up exactly where the other left off.
+Your local agent and Cord trade context back and forth, each picking up where the other left off.
 
 ---
 
-## Pull works for any session
+## Manual CLI usage
 
-An important thing to understand: `cord pull` isn't just for sessions you created via push. It works with any Cord session on your branch:
-
-- **Sessions started from the web app** — you reviewed the work in the browser, now want to continue locally
-- **Sessions started from Slack** — someone tagged @Cord in Slack, it worked on a branch, now you want to pull that work down
-- **Sessions you're taking over** — a teammate's session finished, you want the context
-
-Just check out the branch locally and run `cord pull`. If there's a Cord session on that branch, you get the handoff.
-
----
-
-## How the skill works
-
-The skill (`SKILL.md`) is a set of instructions your agent reads. It covers:
-
-- **When to activate** — recognizes phrases like "push to Cord", "pull from Cord", "hand off to cloud"
-- **Prerequisites** — checks the CLI is installed and authenticated before proceeding
-- **Push workflow** — how to prepare the branch, write good handoff context, and call the CLI
-- **Pull workflow** — how to call the CLI, handle different states (running, preparing, ready), and continue work
-- **Error handling** — what to do if the repo isn't connected, if auth fails, if the branch is in a weird state
-
-The quality of the handoff depends on your agent. The skill gives it a specific structure to follow (what's done, current state, next steps, decisions, gotchas) so that the receiving agent gets useful context rather than a vague "continue working."
-
----
-
-## Manual usage
-
-If you want to drive the CLI yourself without going through an agent:
-
-### Push
+Drive it yourself without going through an agent:
 
 ```bash
-# Simplest: just a message
+# Push with instructions
 cord push --message "Finish implementing the pagination"
 
-# With rich context
-cord push --context "Rate limiting is done in src/middleware/rate-limit.ts. Need token refresh and tests." \
-  --message "Implement the token refresh flow"
+# Push with rich context
+cord push --context "Rate limiting done. Need token refresh and tests." \
+  --message "Implement token refresh"
 
-# From a file
+# Push from a file
 cord push --context-file ./HANDOFF.md --message "Continue this work"
 
-# Piped
-cat notes.md | cord push --message "Take over from here"
-
-# Resume a previously suspended session
-cord push --session session_abc123 --message "I fixed the types, continue with tests"
+# Resume a suspended session
+cord push --session session_abc123 --message "I fixed the types, continue"
 ```
 
-### Pull
-
 ```bash
-# Auto-detects session from current branch
+# Pull (auto-detects session from branch)
 cord pull
 
 # Save handoff to a file
 cord pull --output ./handoff.md
 
-# Then get the code
-git pull
-
-# Keep the cloud session running instead of suspending
+# Keep cloud session running
 cord pull --no-suspend
 ```
+
+All commands support `--json` for scripting.
 
 ### Push flags
 
 | Flag | Default | Description |
 |---|---|---|
-| `--message <msg>` | — | What the cloud agent should do |
-| `--context <text>` | — | Handoff context (inline) |
-| `--context-file <path>` | — | Handoff context (from file) |
-| `--branch <branch>` | Current git branch | Branch for the session |
-| `--repository <repo>` | From git remote | GitHub repo (owner/name) |
-| `--session <id>` | — | Resume an existing session |
-| `--model <provider/model>` | Your default | Override model |
-| `--thinking <variant>` | — | Thinking/reasoning mode |
+| `--message` | — | What the cloud agent should do |
+| `--context` | — | Handoff context (inline) |
+| `--context-file` | — | Handoff context (from file) |
+| `--branch` | Current branch | Branch for the session |
+| `--repository` | From git remote | GitHub repo (owner/name) |
+| `--session` | — | Resume an existing session |
+| `--model` | Your default | Override model |
+| `--thinking` | — | Thinking/reasoning variant |
 
 ### Pull flags
 
 | Flag | Default | Description |
 |---|---|---|
-| `--session <id>` | — | Pull from a specific session |
-| `--branch <branch>` | Current git branch | Find session by branch |
-| `--repository <repo>` | From git remote | Narrow lookup to a repo |
-| `--output <path>` | stdout | Save context to a file |
-| `--no-suspend` | — | Keep the cloud session running |
-
-All commands support `--json` for structured output in scripts and automation.
+| `--session` | — | Pull from a specific session |
+| `--branch` | Current branch | Find session by branch |
+| `--repository` | From git remote | Narrow lookup to a repo |
+| `--output` | stdout | Save context to a file |
+| `--no-suspend` | — | Keep cloud session running |
 
 ---
 
 ## Troubleshooting
 
-### "cord: command not found"
-
-The CLI isn't installed. Run:
-```bash
-npm install -g cord-cli
-```
-
-### "Not authenticated"
-
-Run `cord auth login` to open the browser and log in.
-
-### "Repository not accessible" / installUrl in error
-
-Cord's GitHub App isn't installed on this repo. The error includes an install link — click it to grant access, then retry.
-
-### "No Cord session found for this branch"
-
-There's no session linked to your current branch. Either:
-- You haven't pushed from this branch yet
-- The session was on a different branch — use `cord pull --session <id>` or `cord pull --branch <name>`
-
-### "Refusing to push base branch"
-
-You're on `main` (or your repo's default branch). Create a feature branch first, then push.
-
-### Agent doesn't know about push/pull
-
-The skill isn't installed. Run `npx skills add pretzelai/cord-cloud-skill -g -y` or manually add the SKILL.md to your agent's skills directory.
+| Error | Fix |
+|---|---|
+| `cord: command not found` | `npm install -g cord-cli` |
+| `Not authenticated` | `cord auth login` |
+| `Repository not accessible` | Install the Cord GitHub App (link in error message) |
+| `No Cord session found for this branch` | Use `--session <id>` or `--branch <name>` |
+| `Refusing to push base branch` | Create a feature branch first |
+| Agent doesn't know push/pull | `npx skills add pretzelai/cord-cloud-skill -g -y` |

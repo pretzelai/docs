@@ -1,51 +1,20 @@
 ---
 title: "Global skills"
-description: "Sync your local agent skills and configuration into Cord's cloud sandboxes."
+description: "Sync your local agent skills into Cord's cloud sandboxes."
 ---
 
-If you've configured Claude Code skills or agent skills on your local machine, you can sync them into Cord so they're available in new cloud sandboxes.
+If you've configured skills on your local machine (Claude Code's `~/.claude/skills/` or OpenCode's `~/.agents/skills/`), sync them into Cord so every cloud session picks them up.
 
-## What are skills?
-
-Skills are instruction files that give agents context about your coding standards, project conventions, and preferred patterns. For example:
-
-- Code style preferences
-- Framework-specific patterns
-- Testing conventions
-- Deployment workflows
-
-Claude Code reads skills from `~/.claude/skills/` and agent-specific `CLAUDE.md` files. OpenCode reads from `~/.agents/skills/`.
-
-## Syncing your skills
-
-Install the CLI and log in if you haven't already:
-
-```bash
-curl -fsSL https://runcord.com/install.sh | bash
-cord auth login
-```
-
-Then sync your local skills:
+## Syncing
 
 ```bash
 cord storage sync-skills
 ```
 
-This will:
+This uploads your local skill directories to [persistent storage](/core-concepts/persistent-storage) and auto-mounts them at the same paths in new sandboxes. Run it again whenever you update your local skills.
 
-1. Upload `~/.claude/skills/` if it exists and contains uploadable files
-2. Upload `~/.agents/skills/` if it exists and contains uploadable files
-3. Store them in your [persistent storage](/core-concepts/persistent-storage)
-4. Auto-mount them at the same paths for all repositories in new sandboxes
-
-Run the command again any time you update your local skills. It replaces existing synced skill attachments at the same mount paths.
-
-## How they're used
-
-When a new sandbox starts, synced skill attachments are mounted from persistent storage. The agent picks up those skill files and uses them as context. Changes apply to new sandboxes, not already-running ones.
-
-This means your coding standards and preferences follow you into every Cord session, just like they do on your local machine.
+Changes apply to new sandboxes, not already-running ones.
 
 <Tip>
-Repo-level `CLAUDE.md` and `.agents/` config files in your repository are also picked up automatically by agents. Global skills and repo-level config work together.
+Repo-level `CLAUDE.md` and `.agents/` config files in your repository are also picked up automatically. Global skills and repo-level config work together — you don't have to choose one or the other.
 </Tip>

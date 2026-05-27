@@ -7,7 +7,7 @@ Cord is org-native. Repos, API keys, MCP servers, and integrations are set up on
 
 ## Creating an org
 
-When you sign in for the first time, Cord creates an organization automatically based on your GitHub account. You can rename it and customize the URL slug in **Settings > Organization**.
+Create an organization during onboarding or in **Settings > Organization**. You can name it and customize the URL slug.
 
 ## Inviting team members
 
@@ -15,66 +15,43 @@ When you sign in for the first time, Cord creates an organization automatically 
 2. Click **Invite Member**
 3. Enter their email address and assign a role
 
-Members receive an invite and sign in with their own GitHub account. They immediately get access to all connected repos and shared credentials.
+Members sign in with their own account and immediately get access to all connected repos and shared credentials.
 
 ## Roles
 
 | Role | Can do |
 |---|---|
-| **Owner** | Everything. Transfer ownership, delete org. |
-| **Admin** | Manage repos, shared API keys, MCP servers, integrations, invite members. |
+| **Owner** | Everything — transfer ownership, delete org, promote to admin/owner |
+| **Admin** | Manage repos, shared API keys, MCP servers, integrations, invite members |
 | **Member** | Start sessions, write code, create PRs. Uses org-configured resources. |
 
 ## Shared API keys
 
-Instead of each developer adding their own AI provider keys, admins can set **org-level shared keys**:
+Instead of each developer adding their own AI provider keys, admins can set **org-level shared keys** in **Settings > Organization > Shared Provider API Keys**.
 
-1. Go to **Settings > Organization > Shared Provider API Keys**
-2. Add keys for Anthropic, OpenAI, or any supported provider
+When a shared key exists, every team member can start sessions with that provider — no personal keys needed. If a member also has their own key for the same provider, their personal key takes priority.
 
-When a shared key exists, every team member can start sessions using that provider without configuring anything. If a member also has a personal key for the same provider, their personal key takes priority.
+## Shared MCP servers and skills
 
-This is particularly useful for teams that want to:
-- Centralize AI spend on a single billing account
-- Onboard new devs without them needing their own API keys
-- Control which models the team uses
+Admins can configure MCP servers and skills at the org level in **Settings > MCP & Skills**. These are available in every session across the team, appearing as read-only for non-admin members.
 
-## Shared MCP servers
-
-Admins can configure MCP servers at the org level so every session across the team has access to the same external tools:
-
-1. Go to **Settings > MCP & Skills**
-2. Add MCP servers under the **Organization** section
-
-Org-level MCP servers appear as read-only for non-admin members. They're automatically available in every sandbox without per-user configuration.
-
-See [MCP servers & skills](/guides/mcp-and-skills) for details on scoping and configuration.
-
-## Shared skills
-
-Skills (instruction files that teach agents your team's coding standards) can also be managed at the org level. Configure them once and every agent session picks them up.
+See [MCP servers & skills](/guides/mcp-and-skills) for details.
 
 ## Connecting integrations
 
 Slack and Linear connect at the org level:
 
-- **Slack** -- Go to **Settings > Integrations > Connect Slack**. The whole workspace gets access to `@Cord`.
-- **Linear** -- Go to **Settings > Integrations > Connect Linear**. Cord auto-maps team members by email.
+- **Slack** — go to **Settings > Integrations > Connect Slack**
+- **Linear** — go to **Settings > Integrations > Connect Linear**
 
 See [Slack](/integrations/slack) and [Linear](/integrations/linear) for detailed setup.
 
-## Repository management
+## Typical team onboarding
 
-Repos are added at the org level. Any org member can start sessions on connected repos. Only admins and repo owners can disconnect repos or change repo settings (build commands, environment variables, branch prefix).
-
-## What the onboarding flow looks like
-
-For a typical team setup:
-
-1. **Admin signs in** with GitHub, org is created
-2. **Admin adds repos** the team works on
-3. **Admin adds shared API keys** (or connects a Claude/Codex subscription)
-4. **Admin configures MCP servers** if the team uses external tools
-5. **Admin connects Slack and/or Linear**
-6. **Admin invites team members** via email
-7. **Members sign in** -- everything is ready. They pick a repo, start a session, and go.
+1. Admin signs in, creates an org
+2. Admin connects repos the team works on
+3. Admin adds shared API keys (or connects a Claude/Codex subscription)
+4. Admin configures MCP servers if the team uses external tools
+5. Admin connects Slack and/or Linear
+6. Admin invites team members via email
+7. Members sign in — everything is ready, they pick a repo and go

@@ -5,116 +5,57 @@ description: "Give agents access to external tools, data sources, and your codin
 
 ## MCP servers
 
-Cord supports the [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) for connecting agents to external tools and data sources. When an MCP server is configured, the agent can call its tools during a session -- querying databases, searching docs, hitting internal APIs, or interacting with third-party services.
+Cord supports the [Model Context Protocol](https://modelcontextprotocol.io/) for connecting agents to external tools and data sources. When configured, agents can call MCP tools during sessions — querying databases, searching docs, hitting internal APIs, or interacting with third-party services.
 
 ### Adding an MCP server
 
-1. Go to **Settings > MCP & Skills > MCP Servers**
-2. Click **Add MCP Server**
-3. Enter the server URL and authentication details
+Go to **Settings > MCP & Skills > MCP Servers** and either:
 
-**Or** paste a JSON config block -- Cord auto-detects servers, authentication, secrets, and headers from the config.
+- Click **Add MCP Server** and enter the URL + auth details
+- Paste a JSON config block — Cord auto-detects everything from the config
 
-Cord supports **remote HTTP** MCP servers. Authentication options:
+Cord supports **remote HTTP** MCP servers with three auth modes:
 
 | Auth mode | Description |
 |---|---|
-| **None** | No authentication (for internal or trusted servers) |
-| **API key** | Pass an API key in the request header |
+| **None** | No authentication (internal/trusted servers) |
+| **API key** | Key passed in request header |
 | **OAuth** | Full OAuth flow with automatic token refresh |
 
-### OAuth connections
-
-For MCP servers that use OAuth:
-
-1. Add the server with OAuth auth mode
-2. Click **Connect** to start the authorization flow
-3. Complete the OAuth flow in your browser
-4. Cord stores tokens and refreshes them automatically
-
-Connection states are tracked: **Connected**, **Needs re-auth**, **Expired**, **Error**. If a token expires, Cord prompts you to reconnect.
+For OAuth servers, click **Connect** after adding to start the authorization flow. Cord tracks connection state and prompts you to reconnect if tokens expire.
 
 ### Scoping
-
-MCP servers can be configured at three levels:
 
 | Scope | Who configures | Who gets access |
 |---|---|---|
 | **Org-level** | Admins | Every session in the org |
-| **User-level** | Individual users | Only that user's sessions |
-| **Repo-level** | Via repo config files | Sessions on that specific repo |
+| **User-level** | Individual users | Only their sessions |
+| **Repo-level** | Repo settings | Sessions on that repo |
 
-**Org-level** is the most common for teams. Set up your shared tools once and every developer gets them automatically.
+Org-level is the most common for teams — set up shared tools once and everyone gets them automatically.
 
-Non-admin members see org-level MCP servers as read-only ("Organization servers -- Managed by admin"). They can add their own user-level servers alongside them.
-
-### Per-session control
-
-When starting a session, you can toggle which MCP servers are active. This is useful if a specific server isn't relevant to a task, or if you want to limit the agent's tool access.
-
-### Enable/disable
-
-Each MCP server has an enable/disable toggle. Disabled servers are kept in your config but not loaded into sessions.
+Each MCP server can be enabled/disabled individually.
 
 ## Skills
 
-Skills are instruction files that teach agents your team's coding patterns, style guidelines, and conventions.
-
-### What goes in a skill
-
-A skill is a markdown file (or a bundle of files) that might contain:
-
-- Code style preferences (naming conventions, file organization)
-- Framework-specific patterns ("always use server components for data fetching")
-- Testing conventions ("write integration tests for every new API endpoint")
-- Architecture decisions ("use the repository pattern for database access")
-- Deployment guidelines
+Skills are instruction files that teach agents your team's coding patterns, style, and conventions.
 
 ### Installing skills
 
-There are several ways to add skills:
+**From GitHub:** Click **Install from GitHub** in Settings > MCP & Skills > Skills, enter a repo URL, and select which skill files to install.
 
-**From GitHub:**
-1. Go to **Settings > MCP & Skills > Skills**
-2. Click **Install from GitHub**
-3. Enter a GitHub repo URL (e.g., `anthropics/skills`)
-4. Select which skills to install from the discovered skill files
-5. Choose the scope: org-level or user-level
+**From skills.sh:** Enter a skills.sh URL to browse community-maintained skills.
 
-**From skills.sh:**
-Enter a skills.sh URL to browse and install community-maintained skills.
+**Create inline:** Click **Create Skill** to write instructions directly in the Cord UI.
 
-**Create custom inline:**
-Click **Create Skill** to write a skill directly in the Cord UI. Give it a name, write the instructions, and choose the scope.
-
-### Skill scoping
-
-Like MCP servers, skills have three scope levels:
+### Scoping
 
 | Scope | Description |
 |---|---|
-| **Org-level** | Team-wide standards. Managed by admins. Every session reads them. |
-| **Repo-level** | `CLAUDE.md` and `.agents/` files in your repo root are picked up automatically. |
-| **User-level** | Personal preferences. Added in settings or synced from local machine. |
+| **Org-level** | Team-wide standards managed by admins. Every session reads them. |
+| **Repo-level** | `CLAUDE.md` and `.agents/` files in your repo root — picked up automatically. |
+| **User-level** | Personal preferences. Added in settings or [synced from local machine](/guides/global-skills). |
 
 ### Managing skills
 
-In the Skills tab, you can:
-
-- **View** skill contents in a file tree viewer
-- **Edit** inline skill content
-- **Enable/disable** individual skills
-- **Delete** skills you no longer need
-- **Change scope** between org and user level
-
-### Syncing local skills
-
-If you maintain skills on your local machine, sync them to Cord:
-
-```bash
-curl -fsSL https://runcord.com/install.sh | bash
-cord auth login
-cord storage sync-skills
-```
-
-This uploads existing, non-empty `~/.claude/skills/` and `~/.agents/skills/` directories to [persistent storage](/core-concepts/persistent-storage) and auto-mounts them for new sandboxes. Run it again after editing local skills.
+View, edit, enable/disable, or delete skills in the Skills tab. You can change scope between org and user level at any time.

@@ -219,13 +219,13 @@ Override the org-level defaults for this specific repository:
 | **Default agent** | Claude Code or OpenCode |
 | **Default model** | Provider, model, and thinking variant |
 
-These apply when anyone starts a new session on this repo. Individual users can still override per-session using the model selector.
+These apply when anyone starts a new session on this repo. Individual users can still override per-session using the model selector (**Cmd+/**).
 
 ### Cross-repository access
 
 | Setting | Default | Description |
 |---|---|---|
-| **Allow all repository access** | Off | When enabled, the sandbox gets a GitHub token that can clone any repo in your GitHub App installation -- not just this one. Useful for projects that depend on private packages from other repos. |
+| **Allow all repository access** | Off | When enabled, the sandbox gets a GitHub token that can clone any repo in your GitHub App installation — not just this one. Useful for projects that depend on private packages from other repos. |
 
 <Warning>
 Enabling cross-repository access means the AI agent can read code from other repos in your organization. Only enable this if your project needs it (e.g., private npm packages, shared libraries).
